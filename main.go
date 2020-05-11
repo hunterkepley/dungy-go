@@ -11,7 +11,7 @@ import (
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 
-	"github.com/hunterkepley/commonpixel"
+	commonPixel "github.com/hunterkepley/commonpixel"
 )
 
 var (
@@ -57,14 +57,12 @@ func run() {
 	loadResources()
 
 	// Set up the matrices for the view of the world
-	letterBox(win)
+	commonPixel.LetterBox(win, winWidth, winHeight)
 
 	//player = createPlayer()
 
-	// Set up all levels
-	loadLevels()
-
-	viewCanvas.SetFragmentShader(regularShader)
+	// FUTURE: FOR SHADERS
+	//viewCanvas.SetFragmentShader(regularShader)
 
 	clearColor = color.RGBA{0x0a, 0x0a, 0x0a, 0x0a}
 
@@ -74,14 +72,13 @@ func run() {
 			// Resize event
 			currentWinWidth = win.Bounds().W()
 			currentWinHeight = win.Bounds().H()
-			letterBox(win)
+			commonPixel.LetterBox(win, winWidth, winHeight)
 		}
 		imd := imdraw.New(nil)
 		dt = time.Since(last).Seconds() // For fps decoupled updates.
 
-
 		// This is used for when the window is frozen for a very long time to prevent noclip
-		if dt > 0.25 { 
+		if dt > 0.25 {
 			dt = 0.
 		}
 		last = time.Now() // For fps decoupled updates
@@ -100,8 +97,8 @@ func run() {
 			renderGame(win, viewCanvas, imd, dt)
 			clearColor = color.RGBA{0x0a, 0x0a, 0x0a, 0x0a}
 		case 1: // In menu [?Likely to be separate menus?]
-			updateMenu(win, viewCanvas, dt)
-			renderMenu(win, viewCanvas)
+			//updateMenu(win, viewCanvas, dt)
+			//renderMenu(win, viewCanvas)
 			clearColor = color.Black
 		}
 
@@ -121,7 +118,7 @@ func run() {
 
 func loadResources() {
 	//Load the player sprite sheets for the game
-	loadPlayerSpritesheets()
+	//loadPlayerSpritesheets()
 }
 
 func main() {

@@ -12,15 +12,26 @@ const (
 	screenHeight = 768 / 2  // ^
 )
 
-var ()
+var (
+	gameInitialized bool = false
+)
 
 // Game is the info for the game
 type Game struct {
 	player Player
 }
 
+// Init initializes the game
+func (g *Game) Init() {
+	g.player = createPlayer(NewVec2f(screenWidth/2, screenHeight/2))
+}
+
 // Update updates the game
 func (g *Game) Update(screen *ebiten.Image) error {
+	if !gameInitialized {
+		g.Init()
+		gameInitialized = true
+	}
 	g.player.update()
 	return nil
 }

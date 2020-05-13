@@ -13,7 +13,8 @@ const (
 )
 
 var (
-	gameInitialized bool = false
+	gameInitialized     bool = false
+	testBackgroundImage *ebiten.Image
 )
 
 // Game is the info for the game
@@ -24,6 +25,7 @@ type Game struct {
 // Init initializes the game
 func (g *Game) Init() {
 	g.player = createPlayer(NewVec2f(screenWidth/2, screenHeight/2))
+	testBackgroundImage, _ = loadImage("./Assets/Art/testBackground.png")
 }
 
 // Update updates the game
@@ -38,6 +40,9 @@ func (g *Game) Update(screen *ebiten.Image) error {
 
 // Draw renders the game
 func (g *Game) Draw(screen *ebiten.Image) {
+	bgop := &ebiten.DrawImageOptions{}
+	//bgop.GeoM.Translate(0, 0)
+	screen.DrawImage(testBackgroundImage, bgop)
 	g.player.render(screen)
 }
 

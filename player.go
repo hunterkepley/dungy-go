@@ -9,15 +9,16 @@ import (
 // Player is the player in the fuckin game I hate useless comments
 type Player struct {
 	position Vec2f
-	image    *ebiten.Image
-	speed    float64
+	//center   Vec2f
+	image *ebiten.Image
+	speed float64
 }
 
 func createPlayer(position Vec2f) Player {
-	speed := 5.
+	speed := 3.
 	return Player{
 		position,
-		playerSpritesheet,
+		gameSpritesheet,
 		speed,
 	}
 }
@@ -32,7 +33,7 @@ func (p *Player) render(screen *ebiten.Image) {
 	//i := (g.count / 5) % frameNum
 	//sx, sy := frameOX+i*frameWidth, frameOY
 	//image, _ := loadPicture("./Assets/Art/Player/rightIdle.png")
-	screen.DrawImage(playerSpritesheet.SubImage(image.Rect(0, 0, 15, 15)).(*ebiten.Image), op) //runnerImage.SubImage(image.Rect(sx, sy, sx+frameWidth, sy+frameHeight)).(*ebiten.Image), op)
+	screen.DrawImage(gameSpritesheet.SubImage(image.Rect(0, 0, 15, 27)).(*ebiten.Image), op) //runnerImage.SubImage(image.Rect(sx, sy, sx+frameWidth, sy+frameHeight)).(*ebiten.Image), op)
 }
 
 func (p *Player) input() {

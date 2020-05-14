@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/hajimehoshi/ebiten"
 )
 
@@ -44,7 +42,6 @@ func createSpritesheet(startPosition Vec2i, endPosition Vec2i, numberOfSprites i
 		)
 		// Add sprite to slice
 		sprites[i] = Sprite{spriteStartPosition, spriteEndPosition, spriteSize}
-		fmt.Println(sprites[i].startPosition.x)
 	}
 	return Spritesheet{
 		sprites,

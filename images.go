@@ -3,9 +3,10 @@ package main
 import "github.com/hajimehoshi/ebiten"
 
 var (
-	playerSpritesheet *ebiten.Image
+	// i_ prefix is for images
+	i_playerSpritesheet *ebiten.Image
 )
 
 func loadPlayerImages() {
-	playerSpritesheet, _ = loadImage("./Assets/Art/Player/spritesheet.png")
+	i_playerSpritesheet, _ = loadImage("./Assets/Art/Player/spritesheet.png")
 }

@@ -10,30 +10,40 @@ import (
 type Player struct {
 	position Vec2f
 	//center   Vec2f
-	image *ebiten.Image
-	speed float64
+	speed       float64
+	spritesheet Spritesheet // Current spritesheet
+	animation   Animation   // Current animation
+	image       *ebiten.Image
 }
 
 func createPlayer(position Vec2f) Player {
 	speed := 3.
+	image := playerSpritesheet
+	spritesheet := createSpritesheet(newVec2i(0, 0), newVec2i(75, 26), 5, image)
 	return Player{
 		position,
-		gameSpritesheet,
 		speed,
+		spritesheet,
+		createAnimation(spritesheet, image),
+		image,
 	}
 }
 
 func (p *Player) update() {
+	p.animation.play(0.3)
 	p.input()
 }
 
 func (p *Player) render(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(p.position.x, p.position.y)
-	//i := (g.count / 5) % frameNum
-	//sx, sy := frameOX+i*frameWidth, frameOY
-	//image, _ := loadPicture("./Assets/Art/Player/rightIdle.png")
-	screen.DrawImage(gameSpritesheet.SubImage(image.Rect(0, 0, 15, 27)).(*ebiten.Image), op) //runnerImage.SubImage(image.Rect(sx, sy, sx+frameWidth, sy+frameHeight)).(*ebiten.Image), op)
+	subImageRect := image.Rect(
+		p.spritesheet.sprites[p.animation.currentFrame].startPosition.x,
+		p.spritesheet.sprites[p.animation.currentFrame].startPosition.y,
+		p.spritesheet.sprites[p.animation.currentFrame].endPosition.x,
+		p.spritesheet.sprites[p.animation.currentFrame].endPosition.y,
+	)
+	screen.DrawImage(p.image.SubImage(subImageRect).(*ebiten.Image), op)
 }
 
 func (p *Player) input() {

@@ -1,8 +1,36 @@
 package main
 
+import (
+	"github.com/hajimehoshi/ebiten"
+)
+
 // Animation a system for animating an image using Ebiten subsets
 type Animation struct {
-	startPosition Vec2f
-	endPosition   Vec2f
-	numFrames     Vec2f
+	spritesheet  Spritesheet
+	currentFrame int
+	timer        float64
+	maxTimer     float64
+}
+
+func createAnimation(spritesheet Spritesheet, image *ebiten.Image) Animation {
+
+	return Animation{
+		spritesheet,
+		0,  // currentFrame
+		0,  // timer
+		10, // maxTimer
+	}
+}
+
+func (a *Animation) play(speed float64) {
+	if a.timer >= a.maxTimer {
+		a.timer = 0
+		a.currentFrame++
+		if a.currentFrame == a.spritesheet.numberOfSprites {
+			// Reached the end!
+			a.currentFrame = 0
+		}
+	} else {
+		a.timer += 1 * speed
+	}
 }

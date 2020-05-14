@@ -7,6 +7,17 @@ type Vec2f struct {
 }
 
 // NewVec2f creates a new Vec2f and returns it
-func NewVec2f(x float64, y float64) Vec2f {
+func newVec2f(x float64, y float64) Vec2f {
 	return Vec2f{x, y}
+}
+
+// Vec2i is a vector 2 2 int's
+type Vec2i struct {
+	x int
+	y int
+}
+
+// NewVec2i creates a new Vec2i and returns it
+func newVec2i(x int, y int) Vec2i {
+	return Vec2i{x, y}
 }

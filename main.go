@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	screenWidth  = 1366 / 2 // Multiplied by 2 later to scale images
-	screenHeight = 768 / 2  // ^
+	screenWidth  = 1366 / 3 // Multiplied by 2 later to scale images
+	screenHeight = 768 / 3  // ^
 )
 
 var (
@@ -19,12 +19,13 @@ var (
 
 // Game is the info for the game
 type Game struct {
-	player Player
+	player  Player
+	player2 Player
 }
 
 // Init initializes the game
 func (g *Game) Init() {
-	g.player = createPlayer(NewVec2f(screenWidth/2, screenHeight/2))
+	g.player = createPlayer(newVec2f(screenWidth/2, screenHeight/2))
 	testBackgroundImage, _ = loadImage("./Assets/Art/testBackground.png")
 }
 
@@ -41,7 +42,6 @@ func (g *Game) Update(screen *ebiten.Image) error {
 // Draw renders the game
 func (g *Game) Draw(screen *ebiten.Image) {
 	bgop := &ebiten.DrawImageOptions{}
-	//bgop.GeoM.Translate(0, 0)
 	screen.DrawImage(testBackgroundImage, bgop)
 	g.player.render(screen)
 }
@@ -58,7 +58,7 @@ func loadPregameResources() {
 func main() {
 
 	loadPregameResources()
-	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
+	ebiten.SetWindowSize(screenWidth*3, screenHeight*3)
 	ebiten.SetWindowTitle("D U N G Y")
 
 	if err := ebiten.RunGame(&Game{}); err != nil {

@@ -2,21 +2,27 @@ package main
 
 import (
 	"fmt"
+	"image/color"
 	_ "image/png"
 	"log"
 
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/text"
+	"golang.org/x/image/font"
 )
 
 const (
 	screenWidth  = 1366 / 3 // Multiplied by 2 later to scale images
 	screenHeight = 768 / 3  // ^
+	version      = "0.0.1"
 )
 
 var (
-	gameInitialized     bool    = false
-	tpsDisplayTimer     float64 = 0
+	gameInitialized     bool = false
 	testBackgroundImage *ebiten.Image
+
+	mdataFont    font.Face
+	mversionFont font.Face
 )
 
 // Game is the info for the game
@@ -29,6 +35,22 @@ type Game struct {
 func (g *Game) Init() {
 	g.player = createPlayer(newVec2f(screenWidth/2, screenHeight/2))
 	testBackgroundImage, _ = loadImage("./Assets/Art/testBackground.png")
+	g.InitFonts()
+}
+
+// InitFonts initializes fonts for the game
+func (g *Game) InitFonts() {
+
+	const dpi = 72
+	var err error
+	mdataFont, err = loadTTF("./Assets/Font/PressStart2P-Regular.ttf", dpi, 8)
+	if err != nil {
+		log.Fatal(err)
+	}
+	mversionFont, err = loadTTF("./Assets/Font/PressStart2P-Regular.ttf", dpi, 8)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Update updates the game
@@ -38,7 +60,6 @@ func (g *Game) Update(screen *ebiten.Image) error {
 		gameInitialized = true
 	}
 	g.player.update()
-	displayTPS()
 	return nil
 }
 
@@ -47,6 +68,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	bgop := &ebiten.DrawImageOptions{}
 	screen.DrawImage(testBackgroundImage, bgop)
 	g.player.render(screen)
+
+	// Basic text render calls
+	displayVersion(screen)
+	displayTPS(screen)
 }
 
 // Layout is the screen layout?...
@@ -54,13 +79,15 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return screenWidth, screenHeight
 }
 
-func displayTPS() {
-	// Update TPS
-	tpsDisplayTimer++
-	if tpsDisplayTimer > 30 {
-		ebiten.SetWindowTitle(fmt.Sprint("D U N G Y | TPS: ", ebiten.CurrentTPS()))
-		tpsDisplayTimer = 0
-	}
+func displayGameInfo(screen *ebiten.Image) {
+	// Draw DUNGY V...
+	versionFontPosition := newVec2i(2, 10)
+	msg := fmt.Sprintf("DUNGY v%s", version)
+	text.Draw(screen, msg, mversionFont, versionFontPosition.x, versionFontPosition.y, color.White)
+	// Draw info
+	tpsFontPosition := newVec2i(2, 20)
+	msg = fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS())
+	text.Draw(screen, msg, mdataFont, tpsFontPosition.x, tpsFontPosition.y, color.White)
 }
 
 func loadPregameResources() {

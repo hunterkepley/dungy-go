@@ -109,6 +109,7 @@ func (p *Player) update() {
 func (p *Player) render(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(p.position.x, p.position.y)
+	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
 	subImageRect := image.Rect(
 		p.spritesheet.sprites[p.animation.currentFrame].startPosition.x,
 		p.spritesheet.sprites[p.animation.currentFrame].startPosition.y,

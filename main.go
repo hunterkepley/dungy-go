@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	_ "image/png"
 	"log"
 
@@ -13,7 +14,8 @@ const (
 )
 
 var (
-	gameInitialized     bool = false
+	gameInitialized     bool    = false
+	tpsDisplayTimer     float64 = 0
 	testBackgroundImage *ebiten.Image
 )
 
@@ -36,6 +38,7 @@ func (g *Game) Update(screen *ebiten.Image) error {
 		gameInitialized = true
 	}
 	g.player.update()
+	displayTPS()
 	return nil
 }
 
@@ -51,6 +54,15 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return screenWidth, screenHeight
 }
 
+func displayTPS() {
+	// Update TPS
+	tpsDisplayTimer++
+	if tpsDisplayTimer > 30 {
+		ebiten.SetWindowTitle(fmt.Sprint("D U N G Y | FPS: ", ebiten.CurrentTPS()))
+		tpsDisplayTimer = 0
+	}
+}
+
 func loadPregameResources() {
 	loadPlayerImages()
 }
@@ -60,6 +72,7 @@ func main() {
 	loadPregameResources()
 	ebiten.SetWindowSize(screenWidth*3, screenHeight*3)
 	ebiten.SetWindowTitle("D U N G Y")
+	ebiten.SetWindowResizable(true)
 
 	if err := ebiten.RunGame(&Game{}); err != nil {
 		log.Fatal(err)

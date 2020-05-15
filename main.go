@@ -43,11 +43,11 @@ func (g *Game) InitFonts() {
 
 	const dpi = 72
 	var err error
-	mdataFont, err = loadTTF("./Assets/Font/PressStart2P-Regular.ttf", dpi, 8)
+	mdataFont, err = loadTTF("./Assets/Font/LoRe.ttf", dpi, 8)
 	if err != nil {
 		log.Fatal(err)
 	}
-	mversionFont, err = loadTTF("./Assets/Font/PressStart2P-Regular.ttf", dpi, 8)
+	mversionFont, err = loadTTF("./Assets/Font/LoRe.ttf", dpi, 8)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -70,8 +70,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.player.render(screen)
 
 	// Basic text render calls
-	displayVersion(screen)
-	displayTPS(screen)
+	displayGameInfo(screen)
 }
 
 // Layout is the screen layout?...

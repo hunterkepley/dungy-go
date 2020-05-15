@@ -1,20 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"image/color"
 	_ "image/png"
 	"log"
 
 	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/text"
 	"golang.org/x/image/font"
 )
 
 const (
 	screenWidth  = 1366 / 3 // Multiplied by 2 later to scale images
 	screenHeight = 768 / 3  // ^
-	version      = "0.0.1"
 )
 
 var (
@@ -60,6 +56,7 @@ func (g *Game) Update(screen *ebiten.Image) error {
 		gameInitialized = true
 	}
 	g.player.update()
+	checkChangeDisplayInfo()
 	return nil
 }
 
@@ -70,7 +67,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.player.render(screen)
 
 	// Basic text render calls
-	displayGameInfo(screen)
+	if displayInfo {
+		displayGameInfo(screen)
+	}
 }
 
 // Layout is the screen layout?...
@@ -78,19 +77,9 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return screenWidth, screenHeight
 }
 
-func displayGameInfo(screen *ebiten.Image) {
-	// Draw DUNGY V...
-	versionFontPosition := newVec2i(2, 10)
-	msg := fmt.Sprintf("DUNGY v%s", version)
-	text.Draw(screen, msg, mversionFont, versionFontPosition.x, versionFontPosition.y, color.White)
-	// Draw info
-	tpsFontPosition := newVec2i(2, 20)
-	msg = fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS())
-	text.Draw(screen, msg, mdataFont, tpsFontPosition.x, tpsFontPosition.y, color.White)
-}
-
 func loadPregameResources() {
 	loadPlayerImages()
+	loadUIImages()
 }
 
 func main() {

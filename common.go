@@ -20,6 +20,24 @@ func (d Direction) String() string {
 
 // ^ DIRECTION ENUM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// Movement is a type for the movement enum [for player/enemies]
+type Movement int
+
+const (
+	// Idle ... MOVEMENT ENUM [0]
+	Idle Movement = iota
+	// Walking ... MOVEMENT ENUM [1]
+	Walking
+	// Running ... MOVEMENT ENUM [2]
+	Running
+)
+
+func (m Movement) String() string {
+	return [...]string{"Idle", "Walking", "Running"}[m]
+}
+
+// ^ MOVEMENT ENUM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 // Vec2f is a vector of 2 float64's
 type Vec2f struct {
 	x float64

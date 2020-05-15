@@ -58,7 +58,7 @@ func displayTPS() {
 	// Update TPS
 	tpsDisplayTimer++
 	if tpsDisplayTimer > 30 {
-		ebiten.SetWindowTitle(fmt.Sprint("D U N G Y | FPS: ", ebiten.CurrentTPS()))
+		ebiten.SetWindowTitle(fmt.Sprint("D U N G Y | TPS: ", ebiten.CurrentTPS()))
 		tpsDisplayTimer = 0
 	}
 }

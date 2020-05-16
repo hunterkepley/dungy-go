@@ -15,7 +15,7 @@ var (
 	title                     = "DUNGY" // Game title
 )
 
-func displayGameInfo(screen *ebiten.Image) {
+func displayGameInfo(screen *ebiten.Image, player Player) {
 	// Draw box
 	op := &ebiten.DrawImageOptions{}
 	informationBoxPosition := newVec2f(0, 0)
@@ -29,6 +29,11 @@ func displayGameInfo(screen *ebiten.Image) {
 	tpsFontPosition := newVec2i(2, 20)
 	msg = fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS())
 	text.Draw(screen, msg, mdataFont, tpsFontPosition.x, tpsFontPosition.y, color.White)
+	// Draw player movement
+	movementFontPosition := newVec2i(2, 30)
+	msg = fmt.Sprintf("Movement: %s", player.movement)
+	text.Draw(screen, msg, mdataFont, movementFontPosition.x, movementFontPosition.y, color.White)
+
 }
 
 // Check if the game should display game info or not

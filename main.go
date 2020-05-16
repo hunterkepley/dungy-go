@@ -23,15 +23,20 @@ var (
 
 // Game is the info for the game
 type Game struct {
-	player  Player
-	player2 Player
+	player Player
+	t1     Tile
+	t2     Tile
+	t3     Tile
 }
 
 // Init initializes the game
 func (g *Game) Init() {
 	g.player = createPlayer(newVec2f(screenWidth/2, screenHeight/2))
-	testBackgroundImage, _ = loadImage("./Assets/Art/testBackground.png")
+	testBackgroundImage, _ = loadImage("./Assets/Art/background.png")
 	g.InitFonts()
+	g.t1 = createTile(newVec2f(0, 30), SmallTile)
+	g.t2 = createTile(newVec2f(30, 30), BigTile)
+	g.t3 = createTile(newVec2f(70, 30), WallTile)
 }
 
 // InitFonts initializes fonts for the game
@@ -64,22 +69,22 @@ func (g *Game) Update(screen *ebiten.Image) error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	bgop := &ebiten.DrawImageOptions{}
 	screen.DrawImage(testBackgroundImage, bgop)
+
+	g.t1.render(screen)
+	g.t2.render(screen)
+	g.t3.render(screen)
+
 	g.player.render(screen)
 
 	// Basic text render calls
 	if displayInfo {
-		displayGameInfo(screen)
+		displayGameInfo(screen, g.player)
 	}
 }
 
 // Layout is the screen layout?...
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return screenWidth, screenHeight
-}
-
-func loadPregameResources() {
-	loadPlayerImages()
-	loadUIImages()
 }
 
 func main() {
@@ -92,4 +97,10 @@ func main() {
 	if err := ebiten.RunGame(&Game{}); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func loadPregameResources() {
+	loadPlayerImages()
+	loadUIImages()
+	loadTileImages()
 }

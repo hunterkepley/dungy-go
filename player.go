@@ -83,7 +83,7 @@ func createPlayer(position Vec2f) Player {
 		},
 		PlayerAnimationSpeeds{ // All animation speeds
 			1,   // idle
-			1.4, // walking
+			1.6, // walking
 			2.3, // running
 		},
 

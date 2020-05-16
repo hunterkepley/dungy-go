@@ -38,22 +38,26 @@ type Tile struct {
 	image  *ebiten.Image // Spritesheet
 }
 
-func createTile(position Vec2f, tileType TileType) Tile {
-	size := newVec2i(0, 0)
+var (
+	smallTileSize = newVec2i(16, 17)
+	bigTileSize   = newVec2i(31, 32)
+	wallTileSize  = newVec2i(16, 29)
+)
+
+func createTile(position Vec2f, tileType TileType, image *ebiten.Image) Tile {
 	var sprite Sprite
-	image := itileSpritesheet
+	size := smallTileSize
 	switch tileType {
 	case (SmallTile):
-		size = newVec2i(16, 17)
-		sprite = createSprite(newVec2i(0, 0), size, size, image)
+		sprite = createSprite(newVec2i(0, 0), smallTileSize, smallTileSize, image)
 		break
 	case (BigTile):
-		size = newVec2i(31, 32)
-		sprite = createSprite(newVec2i(0, 18), newVec2i(31, 50), size, image)
+		sprite = createSprite(newVec2i(0, 18), newVec2i(31, 50), bigTileSize, image)
+		size = bigTileSize
 		break
 	case (WallTile):
-		size = newVec2i(16, 29)
-		sprite = createSprite(newVec2i(0, 51), newVec2i(16, 80), size, image)
+		sprite = createSprite(newVec2i(0, 51), newVec2i(16, 80), wallTileSize, image)
+		size = wallTileSize
 		break
 	}
 	return Tile{
@@ -81,4 +85,14 @@ func (t *Tile) render(screen *ebiten.Image) {
 		t.sprite.endPosition.y,
 	)
 	screen.DrawImage(t.image.SubImage(subImageRect).(*ebiten.Image), op)
+}
+
+// Generate the wall tiles at the top of the screen
+func generateWalls(image *ebiten.Image) []Tile {
+	numberOfWalls := screenWidth / wallTileSize.x
+	t := make([]Tile, numberOfWalls)
+	for i := 0; i < numberOfWalls; i++ {
+		t[i] = createTile(newVec2f(float64(i*wallTileSize.x), 0), WallTile, image)
+	}
+	return t
 }

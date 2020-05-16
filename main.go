@@ -24,34 +24,19 @@ var (
 // Game is the info for the game
 type Game struct {
 	player Player
-	t1     Tile
-	t2     Tile
-	t3     Tile
+	walls  []Tile
 }
 
 // Init initializes the game
 func (g *Game) Init() {
+	// Player
 	g.player = createPlayer(newVec2f(screenWidth/2, screenHeight/2))
+	// Background image
 	testBackgroundImage, _ = loadImage("./Assets/Art/background.png")
+	// Fonts
 	g.InitFonts()
-	g.t1 = createTile(newVec2f(0, 30), SmallTile)
-	g.t2 = createTile(newVec2f(30, 30), BigTile)
-	g.t3 = createTile(newVec2f(70, 30), WallTile)
-}
-
-// InitFonts initializes fonts for the game
-func (g *Game) InitFonts() {
-
-	const dpi = 72
-	var err error
-	mdataFont, err = loadTTF("./Assets/Font/LoRe.ttf", dpi, 8)
-	if err != nil {
-		log.Fatal(err)
-	}
-	mversionFont, err = loadTTF("./Assets/Font/LoRe.ttf", dpi, 8)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Generate starting walls
+	g.walls = generateWalls(itileSpritesheet)
 }
 
 // Update updates the game
@@ -70,9 +55,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	bgop := &ebiten.DrawImageOptions{}
 	screen.DrawImage(testBackgroundImage, bgop)
 
-	g.t1.render(screen)
-	g.t2.render(screen)
-	g.t3.render(screen)
+	for i := 0; i < len(g.walls); i++ {
+		g.walls[i].render(screen)
+	}
 
 	g.player.render(screen)
 

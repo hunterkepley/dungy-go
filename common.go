@@ -4,18 +4,18 @@ package main
 type Direction int
 
 const (
-	// Up ... DIRECTION ENUM [0]
-	Up Direction = iota
-	// Down ... DIRECTION ENUM [1]
+	// Up ... DIRECTION ENUM [1]
+	Up Direction = iota + 1
+	// Down ... DIRECTION ENUM [2]
 	Down
-	// Left ... DIRECTION ENUM [2]
+	// Left ... DIRECTION ENUM [3]
 	Left
-	// Right ... DIRECTION ENUM [3]
+	// Right ... DIRECTION ENUM [4]
 	Right
 )
 
 func (d Direction) String() string {
-	return [...]string{"Up", "Down", "Left", "Right"}[d]
+	return [...]string{"Unknown", "Up", "Down", "Left", "Right"}[d]
 }
 
 // ^ DIRECTION ENUM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -24,16 +24,16 @@ func (d Direction) String() string {
 type Movement int
 
 const (
-	// Idle ... MOVEMENT ENUM [0]
-	Idle Movement = iota
-	// Walking ... MOVEMENT ENUM [1]
+	// Idle ... MOVEMENT ENUM [1]
+	Idle Movement = iota + 1
+	// Walking ... MOVEMENT ENUM [2]
 	Walking
-	// Running ... MOVEMENT ENUM [2]
+	// Running ... MOVEMENT ENUM [3]
 	Running
 )
 
 func (m Movement) String() string {
-	return [...]string{"Idle", "Walking", "Running"}[m]
+	return [...]string{"Unknown", "Idle", "Walking", "Running"}[m]
 }
 
 // ^ MOVEMENT ENUM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

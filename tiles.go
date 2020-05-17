@@ -14,16 +14,16 @@ const (
 type TileType int
 
 const (
-	// SmallTile ... TILETYPE ENUM [0]
-	SmallTile TileType = iota
-	// BigTile ... TILETYPE ENUM [1]
+	// SmallTile ... TILETYPE ENUM [1]
+	SmallTile TileType = iota + 1
+	// BigTile ... TILETYPE ENUM [2]
 	BigTile
-	// WallTile ... TILETYPE ENUM [2]
+	// WallTile ... TILETYPE ENUM [3]
 	WallTile
 )
 
 func (t TileType) String() string {
-	return [...]string{"SmallTile", "BigTile", "WallTile"}[t]
+	return [...]string{"Unknown", "SmallTile", "BigTile", "WallTile"}[t]
 }
 
 // ^ TILETYPE ENUM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

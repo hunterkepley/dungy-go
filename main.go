@@ -25,6 +25,7 @@ var (
 type Game struct {
 	player Player
 	walls  []Tile
+	tiles  [][]Tile
 }
 
 // Init initializes the game
@@ -37,6 +38,7 @@ func (g *Game) Init() {
 	g.InitFonts()
 	// Generate starting walls
 	g.walls = generateWalls(itileSpritesheet)
+	g.tiles = generateTiles(itileSpritesheet)
 }
 
 // Update updates the game
@@ -57,6 +59,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	for i := 0; i < len(g.walls); i++ {
 		g.walls[i].render(screen)
+	}
+	for i := 0; i < len(g.tiles); i++ {
+		for j := 0; j < len(g.tiles[i]); j++ {
+			g.tiles[i][j].render(screen)
+		}
 	}
 
 	g.player.render(screen)

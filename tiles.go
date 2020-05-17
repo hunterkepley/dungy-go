@@ -90,9 +90,30 @@ func (t *Tile) render(screen *ebiten.Image) {
 // Generate the wall tiles at the top of the screen
 func generateWalls(image *ebiten.Image) []Tile {
 	numberOfWalls := screenWidth / wallTileSize.x
+	numberOfWalls++ // One more wall could fit
+
+	offset := newVec2f(10, 0) // Offset of the walls
 	t := make([]Tile, numberOfWalls)
 	for i := 0; i < numberOfWalls; i++ {
-		t[i] = createTile(newVec2f(float64(i*wallTileSize.x), 0), WallTile, image)
+		// wallTileSize.x-1 to make them overlap on the x axis by 1 pixel
+		t[i] = createTile(newVec2f(float64(i*(wallTileSize.x-1))+offset.x, offset.y), WallTile, image)
+	}
+	return t
+}
+
+// Generate the tiles for the game
+func generateTiles(image *ebiten.Image) [][]Tile {
+	numberOfTiles := newVec2i(screenWidth/smallTileSize.x, screenHeight/smallTileSize.y)
+	numberOfTiles.x++ // One more tile could fit on x
+	numberOfTiles.y--
+	offset := newVec2f(10, float64(wallTileSize.y)) // Offset of the tiles
+	t := [][]Tile{}
+	for i := 0; i < numberOfTiles.x; i++ {
+		t = append(t, []Tile{})
+		for j := 0; j < numberOfTiles.y; j++ {
+			// smallTileSize.x-1 to make them overlap on the x axis by 1 pixel
+			t[i] = append(t[i], createTile(newVec2f(float64(i*(smallTileSize.x-1))+offset.x, float64(j*(smallTileSize.y-1))+offset.y), SmallTile, image))
+		}
 	}
 	return t
 }

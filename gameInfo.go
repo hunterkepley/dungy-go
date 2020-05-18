@@ -12,7 +12,7 @@ var (
 	displayInfo          bool = false
 	canChangeDisplayInfo bool = true    // If you can press f5 again
 	version                   = "0.0.3" // Game version
-	title                     = "DUNGY" // Game title
+	title                     = "UNRAY" // Game title
 )
 
 func displayGameInfo(screen *ebiten.Image, player Player) {

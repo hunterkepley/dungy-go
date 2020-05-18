@@ -83,7 +83,7 @@ func main() {
 
 	loadPregameResources()
 	ebiten.SetWindowSize(screenWidth*3, screenHeight*3)
-	ebiten.SetWindowTitle("D U N G Y")
+	ebiten.SetWindowTitle("U N R A Y")
 	ebiten.SetWindowResizable(true)
 	//ebiten.SetFullscreen(true)
 

@@ -48,7 +48,7 @@ func (g *Game) Update(screen *ebiten.Image) error {
 		gameInitialized = true
 	}
 	g.player.update()
-	checkChangeDisplayInfo()
+	go checkChangeDisplayInfo()
 	return nil
 }
 
@@ -85,6 +85,7 @@ func main() {
 	ebiten.SetWindowSize(screenWidth*3, screenHeight*3)
 	ebiten.SetWindowTitle("D U N G Y")
 	ebiten.SetWindowResizable(true)
+	//ebiten.SetFullscreen(true)
 
 	if err := ebiten.RunGame(&Game{}); err != nil {
 		log.Fatal(err)

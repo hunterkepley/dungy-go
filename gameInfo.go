@@ -24,7 +24,7 @@ func displayGameInfo(screen *ebiten.Image, player Player) {
 	// Draw DUNGY V...
 	versionFontPosition := newVec2i(2, 10)
 	msg := fmt.Sprintf("%s v%s", title, version)
-	text.Draw(screen, msg, mversionFont, versionFontPosition.x, versionFontPosition.y, color.White)
+	text.Draw(screen, msg, mversionFont, versionFontPosition.x, versionFontPosition.y, color.NRGBA{255, 0, 0, 255})
 	// Draw info
 	tpsFontPosition := newVec2i(2, 20)
 	msg = fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS())
@@ -32,7 +32,7 @@ func displayGameInfo(screen *ebiten.Image, player Player) {
 	// Draw player movement
 	movementFontPosition := newVec2i(2, 30)
 	msg = fmt.Sprintf("Movement: %s", player.movement)
-	text.Draw(screen, msg, mdataFont, movementFontPosition.x, movementFontPosition.y, color.White)
+	text.Draw(screen, msg, mdataFont, movementFontPosition.x, movementFontPosition.y, color.NRGBA{200, 200, 200, 200})
 
 }
 

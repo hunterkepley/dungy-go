@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten"
@@ -17,10 +18,11 @@ var (
 
 func displayGameInfo(screen *ebiten.Image, player Player) {
 	// Draw box
+	boxRect := image.Rect(0, 16, 100, 51)
 	op := &ebiten.DrawImageOptions{}
 	informationBoxPosition := newVec2f(0, 0)
 	op.GeoM.Translate(informationBoxPosition.x, informationBoxPosition.y)
-	screen.DrawImage(iinformationBox, op)
+	screen.DrawImage(iUISpritesheet.SubImage(boxRect).(*ebiten.Image), op)
 	// Draw DUNGY V...
 	versionFontPosition := newVec2i(2, 10)
 	msg := fmt.Sprintf("%s v%s", title, version)

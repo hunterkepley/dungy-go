@@ -7,6 +7,7 @@ var (
 	iplayerSpritesheet *ebiten.Image
 	iinformationBox    *ebiten.Image
 	itileSpritesheet   *ebiten.Image
+	icursor            *ebiten.Image
 )
 
 func loadPlayerImages() {
@@ -15,6 +16,7 @@ func loadPlayerImages() {
 
 func loadUIImages() {
 	iinformationBox, _ = loadImage("./Assets/Art/UI/informationBox.png")
+	icursor, _ = loadImage("./Assets/Art/UI/cursor.png")
 }
 
 func loadTileImages() {

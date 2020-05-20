@@ -27,8 +27,9 @@ type Game struct {
 	player Player
 	cursor Cursor
 
-	walls []Tile
-	tiles [][]Tile
+	walls   []Tile
+	tiles   [][]Tile
+	borders []Border
 }
 
 // Init initializes the game
@@ -44,6 +45,7 @@ func (g *Game) Init() {
 	// Generate starting walls
 	g.walls = generateWalls(itileSpritesheet)
 	g.tiles = generateTiles(itileSpritesheet)
+	g.borders = generateBorders(itileSpritesheet)
 }
 
 // Update updates the game
@@ -70,13 +72,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(testBackgroundImage, bgop)
 
 	// Render game walls/tiles
-	for i := 0; i < len(g.walls); i++ {
-		g.walls[i].render(screen)
+	for _, w := range g.walls {
+		w.render(screen)
 	}
 	for i := 0; i < len(g.tiles); i++ {
 		for j := 0; j < len(g.tiles[i]); j++ {
 			g.tiles[i][j].render(screen)
 		}
+	}
+	// Render borders
+	for _, b := range g.borders {
+		b.render(screen)
 	}
 
 	// Render player

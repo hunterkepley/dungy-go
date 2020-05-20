@@ -112,7 +112,7 @@ func generateTiles(image *ebiten.Image) [][]Tile {
 		t = append(t, []Tile{})
 		for j := 0; j < numberOfTiles.y; j++ {
 			// smallTileSize.x-1 to make them overlap on the x axis by 1 pixel
-			t[i] = append(t[i], createTile(newVec2f(float64(i*(smallTileSize.x-1))+offset.x, float64(j*(smallTileSize.y-1))+offset.y), SmallTile, image))
+			t[i] = append(t[i], createTile(newVec2f(float64(i*(smallTileSize.x-1))+offset.x, float64(j*(smallTileSize.y-2))+offset.y), SmallTile, image))
 		}
 	}
 	return t

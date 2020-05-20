@@ -18,10 +18,9 @@ type Cursor struct {
 }
 
 func createCursor(image *ebiten.Image) Cursor {
-	sizeX, sizeY := image.Size()
 	return Cursor{
 		newVec2i(0, 0),
-		newVec2i(sizeX, sizeY),
+		newVec2i(0, 0),
 
 		0,
 		[]Sprite{
@@ -37,7 +36,18 @@ func createCursor(image *ebiten.Image) Cursor {
 
 func (c *Cursor) update() {
 	x, y := ebiten.CursorPosition()
-	c.position = newVec2i(x-c.size.x/2, y-c.size.y/2)
+	if c.checkInScreen(x, y) {
+		c.position = newVec2i(x-c.size.x/2, y-c.size.y/2)
+	}
+	c.size = newVec2i(c.cursors[c.currentCursor].size.x, c.cursors[c.currentCursor].size.y)
+}
+
+// Checks if the mouse is in the screen
+func (c *Cursor) checkInScreen(x int, y int) bool {
+	if x >= 0 && y >= 0 && x <= screenWidth && y <= screenHeight {
+		return true
+	}
+	return false
 }
 
 func (c *Cursor) render(screen *ebiten.Image) {

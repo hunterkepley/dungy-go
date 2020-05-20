@@ -16,8 +16,6 @@ func loadPlayerImages() {
 }
 
 func loadUIImages() {
-	iinformationBox, _ = loadImage("./Assets/Art/UI/informationBox.png")
-	icursor, _ = loadImage("./Assets/Art/UI/cursor.png")
 	iUISpritesheet, _ = loadImage("./Assets/Art/UI/spritesheet.png")
 }
 

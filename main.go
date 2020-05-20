@@ -36,7 +36,7 @@ func (g *Game) Init() {
 	// Player
 	g.player = createPlayer(newVec2f(screenWidth/2, screenHeight/2))
 	// Cursor
-	g.cursor = createCursor(icursor)
+	g.cursor = createCursor(iUISpritesheet)
 	// Background image
 	testBackgroundImage, _ = loadImage("./Assets/Art/background.png")
 	// Fonts

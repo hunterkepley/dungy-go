@@ -38,6 +38,11 @@ func (m Movement) String() string {
 
 // ^ MOVEMENT ENUM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+const (
+	// PI
+	Pi = 3.14159265358979323846264338327950288419716939937510582097494459 // https://oeis.org/A000796
+)
+
 // Vec2f is a vector of 2 float64's
 type Vec2f struct {
 	x float64
@@ -48,7 +53,7 @@ func newVec2f(x float64, y float64) Vec2f {
 	return Vec2f{x, y}
 }
 
-// Vec2i is a vector 2 2 int's
+// Vec2i is a vector of 2 int's
 type Vec2i struct {
 	x int
 	y int
@@ -56,4 +61,14 @@ type Vec2i struct {
 
 func newVec2i(x int, y int) Vec2i {
 	return Vec2i{x, y}
+}
+
+// Vec2b is a vector of 2 bool's
+type Vec2b struct {
+	x bool
+	y bool
+}
+
+func newVec2b(x bool, y bool) Vec2b {
+	return Vec2b{x, y}
 }

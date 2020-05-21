@@ -45,6 +45,7 @@ func (g *Game) Init() {
 	// Generate starting walls
 	g.walls = generateWalls(itileSpritesheet)
 	g.tiles = generateTiles(itileSpritesheet)
+	generateBigTiles(g.tiles, itileSpritesheet)
 	g.borders = generateBorders(itileSpritesheet)
 }
 

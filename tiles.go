@@ -10,6 +10,10 @@ const (
 	wallOffset = 6 // How big the walls are, start tiles at this
 )
 
+var (
+	numberOfTiles Vec2i
+)
+
 // TileType is a type for the tyletype enum
 type TileType int
 
@@ -20,10 +24,12 @@ const (
 	BigTile
 	// WallTile ... TILETYPE ENUM [3]
 	WallTile
+	// Empty ... TILETYPE ENUM [4]
+	Empty // Used for holes or big tiles
 )
 
 func (t TileType) String() string {
-	return [...]string{"Unknown", "SmallTile", "BigTile", "WallTile"}[t]
+	return [...]string{"Unknown", "SmallTile", "BigTile", "WallTile", "Empty"}[t]
 }
 
 // ^ TILETYPE ENUM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -75,16 +81,18 @@ func (t *Tile) update() {
 }
 
 func (t *Tile) render(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(t.position.x, t.position.y)
-	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
-	subImageRect := image.Rect(
-		t.sprite.startPosition.x,
-		t.sprite.startPosition.y,
-		t.sprite.endPosition.x,
-		t.sprite.endPosition.y,
-	)
-	screen.DrawImage(t.image.SubImage(subImageRect).(*ebiten.Image), op)
+	if t.tileType != Empty {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(t.position.x, t.position.y)
+		op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+		subImageRect := image.Rect(
+			t.sprite.startPosition.x,
+			t.sprite.startPosition.y,
+			t.sprite.endPosition.x,
+			t.sprite.endPosition.y,
+		)
+		screen.DrawImage(t.image.SubImage(subImageRect).(*ebiten.Image), op)
+	}
 }
 
 // Generate the wall tiles at the top of the screen
@@ -102,16 +110,74 @@ func generateWalls(image *ebiten.Image) []Tile {
 
 // Generate the tiles for the game
 func generateTiles(image *ebiten.Image) [][]Tile {
-	numberOfTiles := newVec2i(screenWidth/smallTileSize.x, screenHeight/smallTileSize.y)
-	numberOfTiles.y--
+	numberOfTiles = newVec2i(screenHeight/smallTileSize.y, screenWidth/smallTileSize.x)
+	numberOfTiles.x--
 	offset := newVec2f(17, float64(wallTileSize.y)) // Offset of the tiles
 	t := [][]Tile{}
 	for i := 0; i < numberOfTiles.x; i++ {
 		t = append(t, []Tile{})
 		for j := 0; j < numberOfTiles.y; j++ {
 			// smallTileSize.x-1 to make them overlap on the x axis by 1 pixel
-			t[i] = append(t[i], createTile(newVec2f(float64(i*(smallTileSize.x-1))+offset.x, float64(j*(smallTileSize.y-2))+offset.y), SmallTile, image))
+			t[i] = append(t[i], createTile(newVec2f(float64(j*(smallTileSize.x-1))+offset.x, float64(i*(smallTileSize.y-2))+offset.y), SmallTile, image))
 		}
 	}
 	return t
+}
+
+func generateBigTiles(tiles [][]Tile, image *ebiten.Image) {
+	y := numberOfTiles.x - 2 // arrays start at 0, and for some reason it needs 1 more, so -2
+	x := numberOfTiles.y - 2 // ^
+
+	// middle
+	makeBigTile(newVec2i(y/2, x/2), tiles, image)
+
+	// top left tile
+	makeBigTile(newVec2i(1, 1), tiles, image)
+	// next to ^
+	makeBigTile(newVec2i(1, 4), tiles, image)
+	// below ^
+	makeBigTile(newVec2i(4, 4), tiles, image)
+	// next to ^
+	makeBigTile(newVec2i(4, 7), tiles, image)
+
+	// We have to flip X and Y because the way tiles were generated
+	// bottom right tile
+	makeBigTile(newVec2i(y-1, x-1), tiles, image)
+	// next to ^
+	makeBigTile(newVec2i(y-1, x-4), tiles, image)
+	// above ^
+	makeBigTile(newVec2i(y-4, x-4), tiles, image)
+	// next to ^
+	makeBigTile(newVec2i(y-4, x-7), tiles, image)
+
+	// top right tile
+	makeBigTile(newVec2i(1, x-1), tiles, image)
+	// next to ^
+	makeBigTile(newVec2i(1, x-4), tiles, image)
+	// below ^
+	makeBigTile(newVec2i(4, x-4), tiles, image)
+	// next to ^
+	makeBigTile(newVec2i(4, x-7), tiles, image)
+
+	// bottom left tile
+	makeBigTile(newVec2i(y-1, 1), tiles, image)
+	// next to ^
+	makeBigTile(newVec2i(y-1, 4), tiles, image)
+	// above ^
+	makeBigTile(newVec2i(y-4, 4), tiles, image)
+	// next to ^
+	makeBigTile(newVec2i(y-4, 7), tiles, image)
+}
+
+func makeBigTile(tilePosition Vec2i, tiles [][]Tile, image *ebiten.Image) {
+	// Actual tile
+	tiles[tilePosition.x][tilePosition.y] = createTile(
+		tiles[tilePosition.x][tilePosition.y].position,
+		BigTile,
+		image,
+	)
+	// Make empties
+	tiles[tilePosition.x+1][tilePosition.y].tileType = Empty // Don't need to waste time making a new tile
+	tiles[tilePosition.x][tilePosition.y+1].tileType = Empty
+	tiles[tilePosition.x+1][tilePosition.y+1].tileType = Empty
 }

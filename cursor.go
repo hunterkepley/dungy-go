@@ -36,6 +36,17 @@ func createCursor(image *ebiten.Image) Cursor {
 
 func (c *Cursor) update() {
 	x, y := ebiten.CursorPosition()
+
+	if ebiten.IsKeyPressed(ebiten.Key1) {
+		c.currentCursor = 0
+	} else if ebiten.IsKeyPressed(ebiten.Key2) {
+		c.currentCursor = 1
+	} else if ebiten.IsKeyPressed(ebiten.Key3) {
+		c.currentCursor = 2
+	} else if ebiten.IsKeyPressed(ebiten.Key4) {
+		c.currentCursor = 3
+	}
+
 	if c.checkInScreen(x, y) {
 		c.position = newVec2i(x-c.size.x/2, y-c.size.y/2)
 	}

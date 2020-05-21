@@ -13,6 +13,9 @@ type Player struct {
 	walkSpeed float64
 	runSpeed  float64
 
+	dynamicSize Vec2i // This is the player's dynamic size
+	staticSize  Vec2i // This value is the player's largest size for wall collisions
+
 	direction Direction // Up? Down?
 	movement  Movement  // Walking? Running?
 	isMoving  bool      // Is currently moving due to input?
@@ -63,6 +66,9 @@ func createPlayer(position Vec2f) Player {
 		walkSpeed,
 		runSpeed,
 
+		newVec2i(0, 0),                          // Dynamic size
+		runningRightSpritesheet.sprites[0].size, // Static size
+
 		Down,    // Direction
 		Walking, // Movement
 		false,
@@ -104,6 +110,9 @@ func (p *Player) update() {
 		break
 	}
 	p.input()
+	// Set size
+	p.dynamicSize = p.animation.spritesheet.sprites[0].size
+	p.wallCollisions()
 }
 
 func (p *Player) render(screen *ebiten.Image) {
@@ -262,5 +271,36 @@ func (p *Player) changeAnimation(animation Animation) {
 	if p.animation.id != animation.id {
 		p.animation = animation
 		p.spritesheet = p.animation.spritesheet
+	}
+}
+
+func (p *Player) wallCollisions() {
+	// Left/Right wall width: 17
+	// Bottom wall height: 17
+	if p.position.x <= 17 {
+		if p.movement == Walking {
+			p.position.x += p.walkSpeed
+		} else if p.movement == Running {
+			p.position.x += p.runSpeed
+		}
+	} else if p.position.x+float64(p.staticSize.x) >= screenWidth-17 {
+		if p.movement == Walking {
+			p.position.x -= p.walkSpeed
+		} else if p.movement == Running {
+			p.position.x -= p.runSpeed
+		}
+	}
+	if p.position.y <= 8 {
+		if p.movement == Walking {
+			p.position.y += p.walkSpeed
+		} else if p.movement == Running {
+			p.position.y += p.runSpeed
+		}
+	} else if p.position.y+float64(p.staticSize.y) >= screenHeight-17 {
+		if p.movement == Walking {
+			p.position.y -= p.walkSpeed
+		} else if p.movement == Running {
+			p.position.y -= p.runSpeed
+		}
 	}
 }

@@ -64,6 +64,11 @@ func (g *Game) Update(screen *ebiten.Image) error {
 
 	// Game info update/check
 	go checkChangeDisplayInfo()
+
+	// Temporary
+	if ebiten.IsKeyPressed(ebiten.KeyF) {
+		ebiten.SetFullscreen(true)
+	}
 	return nil
 }
 

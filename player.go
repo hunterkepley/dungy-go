@@ -20,6 +20,10 @@ type Player struct {
 	movement  Movement  // Walking? Running?
 	isMoving  bool      // Is currently moving due to input?
 
+	canBlinkTimer int  // Timer between blinks
+	endBlinkTimer int  // Timer for each blink
+	blinking      bool // If blinking
+
 	spritesheet     Spritesheet           // Current spritesheet
 	animation       Animation             // Current Animation
 	animations      PlayerAnimations      // All animations
@@ -48,6 +52,10 @@ type PlayerAnimationSpeeds struct {
 }
 
 func createPlayer(position Vec2f) Player {
+
+	canBlinkTimer := 0
+	endBlinkTimer := 0
+
 	walkSpeed := 1.
 	runSpeed := 1.5
 	image := iplayerSpritesheet
@@ -71,6 +79,10 @@ func createPlayer(position Vec2f) Player {
 
 		Down,    // Direction
 		Walking, // Movement
+		false,
+
+		canBlinkTimer, // Time between blinks
+		endBlinkTimer, // Time for each blink
 		false,
 
 		idleFrontSpritesheet,                         // Current animation spritesheet
@@ -135,94 +147,99 @@ func (p *Player) input() {
 	// Check if a direction this turn was already decided
 	directionDecided := false
 
-	if ebiten.IsKeyPressed(ebiten.KeyA) { // LEFT
+	// Blink
+	p.blink()
 
-		if p.movement == Walking {
-			p.position.x -= p.walkSpeed
-		} else if p.movement == Running {
-			p.position.x -= p.runSpeed
+	if !p.blinking {
+		if ebiten.IsKeyPressed(ebiten.KeyA) { // LEFT
+
+			if p.movement == Walking {
+				p.position.x -= p.walkSpeed
+			} else if p.movement == Running {
+				p.position.x -= p.runSpeed
+			}
+
+			if !directionDecided {
+				p.changeLeft()
+			}
+
+			p.isMoving = true
+			directionDecided = true
+		} else if ebiten.IsKeyPressed(ebiten.KeyD) { // RIGHT
+
+			if p.movement == Walking {
+				p.position.x += p.walkSpeed
+			} else if p.movement == Running {
+				p.position.x += p.runSpeed
+			}
+
+			if !directionDecided {
+				p.changeRight()
+			}
+
+			p.isMoving = true
+			directionDecided = true
 		}
 
-		if !directionDecided {
-			p.changeLeft()
+		if ebiten.IsKeyPressed(ebiten.KeyW) { // UP
+
+			if p.movement == Walking {
+				p.position.y -= p.walkSpeed
+			} else if p.movement == Running {
+				p.position.y -= p.runSpeed
+			}
+
+			if !directionDecided {
+				p.changeUp()
+			}
+
+			p.isMoving = true
+			directionDecided = true
+		} else if ebiten.IsKeyPressed(ebiten.KeyS) { // DOWN
+
+			if p.movement == Walking {
+				p.position.y += p.walkSpeed
+			} else if p.movement == Running {
+				p.position.y += p.runSpeed
+			}
+
+			if !directionDecided {
+				p.changeDown()
+			}
+
+			p.isMoving = true
+			directionDecided = true
 		}
 
-		p.isMoving = true
-		directionDecided = true
-	} else if ebiten.IsKeyPressed(ebiten.KeyD) { // RIGHT
-
-		if p.movement == Walking {
-			p.position.x += p.walkSpeed
-		} else if p.movement == Running {
-			p.position.x += p.runSpeed
-		}
-
-		if !directionDecided {
-			p.changeRight()
-		}
-
-		p.isMoving = true
-		directionDecided = true
-	}
-
-	if ebiten.IsKeyPressed(ebiten.KeyW) { // UP
-
-		if p.movement == Walking {
-			p.position.y -= p.walkSpeed
-		} else if p.movement == Running {
-			p.position.y -= p.runSpeed
-		}
-
-		if !directionDecided {
-			p.changeUp()
-		}
-
-		p.isMoving = true
-		directionDecided = true
-	} else if ebiten.IsKeyPressed(ebiten.KeyS) { // DOWN
-
-		if p.movement == Walking {
-			p.position.y += p.walkSpeed
-		} else if p.movement == Running {
-			p.position.y += p.runSpeed
-		}
-
-		if !directionDecided {
-			p.changeDown()
-		}
-
-		p.isMoving = true
-		directionDecided = true
-	}
-
-	// Decide movement
-	// Not moving
-	if !p.isMoving {
-		p.movement = Idle
-		switch p.direction {
-		case (Up):
-			p.changeAnimation(p.animations.idleBack)
-			break
-		case (Down):
-			p.changeAnimation(p.animations.idleFront)
-			break
-		case (Left):
-			p.changeAnimation(p.animations.idleLeft)
-			break
-		case (Right):
-			p.changeAnimation(p.animations.idleRight)
-			break
-		}
-	} else {
-		// Moving
-		if p.movement != Walking {
-			// Change to walking before checking if sprinting [to walk again after sprinting]
-			p.movement = Walking
-		}
-		if ebiten.IsKeyPressed(ebiten.KeyShift) {
-			// If holding shift, change to running if not already running!
-			if p.movement != Running {
-				p.movement = Running
+		// Decide movement
+		// Not moving
+		if !p.isMoving {
+			p.movement = Idle
+			switch p.direction {
+			case (Up):
+				p.changeAnimation(p.animations.idleBack)
+				break
+			case (Down):
+				p.changeAnimation(p.animations.idleFront)
+				break
+			case (Left):
+				p.changeAnimation(p.animations.idleLeft)
+				break
+			case (Right):
+				p.changeAnimation(p.animations.idleRight)
+				break
+			}
+		} else {
+			// Moving
+			if p.movement != Walking {
+				// Change to walking before checking if sprinting [to walk again after sprinting]
+				p.movement = Walking
+			}
+			if ebiten.IsKeyPressed(ebiten.KeyShift) {
+				// If holding shift, change to running if not already running!
+				if p.movement != Running {
+					p.movement = Running
+				}
 			}
 		}
 	}
@@ -265,6 +282,25 @@ func (p *Player) changeRight() {
 }
 
 // ^ DIRECTION CHANGES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// BLINK
+func (p *Player) blink() {
+	betweenBlinkTime := 100
+	blinkTime := 50
+	if p.canBlinkTimer >= betweenBlinkTime && ebiten.IsKeyPressed(ebiten.KeyControl) && !p.blinking {
+		p.blinking = true
+		p.canBlinkTimer = 0
+	} else {
+		p.canBlinkTimer++
+	}
+
+	if p.endBlinkTimer <= blinkTime && p.blinking {
+		p.endBlinkTimer++
+	} else {
+		p.blinking = false
+		p.endBlinkTimer = 0
+	}
+}
 
 func (p *Player) changeAnimation(animation Animation) {
 	// Only switch animation if not already the current animation

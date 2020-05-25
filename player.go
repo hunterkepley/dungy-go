@@ -112,14 +112,11 @@ func createPlayer(position Vec2f) Player {
 func (p *Player) update() {
 	switch p.movement {
 	case (Idle):
-		p.animation.play(p.animationSpeeds.idle)
-		break
+		p.animation.update(p.animationSpeeds.idle)
 	case (Walking):
-		p.animation.play(p.animationSpeeds.walking)
-		break
+		p.animation.update(p.animationSpeeds.walking)
 	case (Running):
-		p.animation.play(p.animationSpeeds.running)
-		break
+		p.animation.update(p.animationSpeeds.running)
 	}
 	p.input()
 	// Set size
@@ -293,9 +290,9 @@ func (p *Player) changeRight() {
 
 // BLINK
 func (p *Player) blink() {
-	betweenBlinkTime := 100
+	betweenBlinkTime := 200
 	blinkSpeed := p.runSpeed * 2
-	blinkTime := 25
+	blinkTime := 15
 	if p.canBlinkTimer >= betweenBlinkTime && ebiten.IsKeyPressed(ebiten.KeyControl) && !p.blinking {
 		p.blinking = true
 		p.canBlinkTimer = 0
@@ -306,38 +303,32 @@ func (p *Player) blink() {
 	// If actually blinking
 	if p.endBlinkTimer <= blinkTime && p.blinking {
 		p.endBlinkTimer++
+		p.animation.pause()
 		switch p.direction {
 		case (Right):
 			p.position.x += blinkSpeed
-			break
 		case (Left):
 			p.position.x -= blinkSpeed
-			break
 		case (Up):
 			p.position.y -= blinkSpeed
-			break
 		case (Down):
 			p.position.y += blinkSpeed
-			break
 		case (UpRight):
 			p.position.x += blinkSpeed
 			p.position.y -= blinkSpeed
-			break
 		case (UpLeft):
 			p.position.x -= blinkSpeed
 			p.position.y -= blinkSpeed
-			break
 		case (DownRight):
 			p.position.x += blinkSpeed
 			p.position.y += blinkSpeed
-			break
 		case (DownLeft):
 			p.position.x -= blinkSpeed
 			p.position.y += blinkSpeed
-			break
 		}
 	} else {
 		p.blinking = false
+		p.animation.startForwards()
 		p.endBlinkTimer = 0
 	}
 }

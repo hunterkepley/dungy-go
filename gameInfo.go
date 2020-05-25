@@ -23,7 +23,7 @@ func displayGameInfo(screen *ebiten.Image, player Player) {
 	informationBoxPosition := newVec2f(0, 0)
 	op.GeoM.Translate(informationBoxPosition.x, informationBoxPosition.y)
 	screen.DrawImage(iUISpritesheet.SubImage(boxRect).(*ebiten.Image), op)
-	// Draw DUNGY V...
+	// Draw UNRAY V...
 	versionFontPosition := newVec2i(2, 10)
 	msg := fmt.Sprintf("%s v%s", title, version)
 	text.Draw(screen, msg, mversionFont, versionFontPosition.x, versionFontPosition.y, color.NRGBA{255, 0, 0, 255})

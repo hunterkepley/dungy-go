@@ -56,15 +56,12 @@ func createTile(position Vec2f, tileType TileType, image *ebiten.Image) Tile {
 	switch tileType {
 	case (SmallTile):
 		sprite = createSprite(newVec2i(0, 0), smallTileSize, smallTileSize, image)
-		break
 	case (BigTile):
 		sprite = createSprite(newVec2i(0, 18), newVec2i(31, 50), bigTileSize, image)
 		size = bigTileSize
-		break
 	case (WallTile):
 		sprite = createSprite(newVec2i(0, 51), newVec2i(16, 80), wallTileSize, image)
 		size = wallTileSize
-		break
 	}
 	return Tile{
 		position,

@@ -12,10 +12,19 @@ const (
 	Left
 	// Right ... DIRECTION ENUM [4]
 	Right
+	// UpLeft ... DIRECTION ENUM [5]
+	UpLeft
+	// UpRight ... DIRECTION ENUM [6]
+	UpRight
+	// DownLeft ... DIRECTION ENUM [7]
+	DownLeft
+	// DownRight ... DIRECTION ENUM [8]
+	DownRight
 )
 
 func (d Direction) String() string {
-	return [...]string{"Unknown", "Up", "Down", "Left", "Right"}[d]
+	return [...]string{"Unknown", "Up", "Down", "Left", "Right",
+		"UpLeft", "UpRight", "DownLeft", "DownRight"}[d]
 }
 
 // ^ DIRECTION ENUM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -39,7 +48,7 @@ func (m Movement) String() string {
 // ^ MOVEMENT ENUM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 const (
-	// PI
+	// Pi is pi
 	Pi = 3.14159265358979323846264338327950288419716939937510582097494459 // https://oeis.org/A000796
 )
 

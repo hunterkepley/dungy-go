@@ -191,6 +191,12 @@ func (p *Player) input() {
 
 			if !directionDecided {
 				p.changeUp()
+			} else { // Then it is two keys at once!
+				if p.direction == Left {
+					p.direction = UpLeft
+				} else {
+					p.direction = UpRight
+				}
 			}
 
 			p.isMoving = true
@@ -205,6 +211,12 @@ func (p *Player) input() {
 
 			if !directionDecided {
 				p.changeDown()
+			} else {
+				if p.direction == Left {
+					p.direction = DownLeft
+				} else { // Then it is two keys at once!
+					p.direction = DownRight
+				}
 			}
 
 			p.isMoving = true
@@ -215,19 +227,15 @@ func (p *Player) input() {
 		// Not moving
 		if !p.isMoving {
 			p.movement = Idle
-			switch p.direction {
-			case (Up):
+			switch {
+			case p.direction == Up:
 				p.changeAnimation(p.animations.idleBack)
-				break
-			case (Down):
+			case p.direction == Down:
 				p.changeAnimation(p.animations.idleFront)
-				break
-			case (Left):
+			case p.direction == Left || p.direction == UpLeft || p.direction == DownLeft:
 				p.changeAnimation(p.animations.idleLeft)
-				break
-			case (Right):
+			case p.direction == Right || p.direction == UpRight || p.direction == DownRight:
 				p.changeAnimation(p.animations.idleRight)
-				break
 			}
 		} else {
 			// Moving
@@ -287,7 +295,7 @@ func (p *Player) changeRight() {
 func (p *Player) blink() {
 	betweenBlinkTime := 100
 	blinkSpeed := p.runSpeed * 2
-	blinkTime := 50
+	blinkTime := 25
 	if p.canBlinkTimer >= betweenBlinkTime && ebiten.IsKeyPressed(ebiten.KeyControl) && !p.blinking {
 		p.blinking = true
 		p.canBlinkTimer = 0
@@ -298,7 +306,36 @@ func (p *Player) blink() {
 	// If actually blinking
 	if p.endBlinkTimer <= blinkTime && p.blinking {
 		p.endBlinkTimer++
-		p.position.x += blinkSpeed
+		switch p.direction {
+		case (Right):
+			p.position.x += blinkSpeed
+			break
+		case (Left):
+			p.position.x -= blinkSpeed
+			break
+		case (Up):
+			p.position.y -= blinkSpeed
+			break
+		case (Down):
+			p.position.y += blinkSpeed
+			break
+		case (UpRight):
+			p.position.x += blinkSpeed
+			p.position.y -= blinkSpeed
+			break
+		case (UpLeft):
+			p.position.x -= blinkSpeed
+			p.position.y -= blinkSpeed
+			break
+		case (DownRight):
+			p.position.x += blinkSpeed
+			p.position.y += blinkSpeed
+			break
+		case (DownLeft):
+			p.position.x -= blinkSpeed
+			p.position.y += blinkSpeed
+			break
+		}
 	} else {
 		p.blinking = false
 		p.endBlinkTimer = 0
@@ -317,33 +354,13 @@ func (p *Player) wallCollisions() {
 	// Left/Right wall width: 17
 	// Bottom wall height: 17
 	if p.position.x <= 17 {
-		/*if p.movement == Walking {
-			p.position.x += p.walkSpeed
-		} else if p.movement == Running {
-			p.position.x += p.runSpeed
-		}*/
 		p.position.x = 17
 	} else if p.position.x+float64(p.staticSize.x) >= screenWidth-17 {
-		/*if p.movement == Walking {
-			p.position.x -= p.walkSpeed
-		} else if p.movement == Running {
-			p.position.x -= p.runSpeed
-		}*/
 		p.position.x = screenWidth - 17 - float64(p.staticSize.x)
 	}
 	if p.position.y <= 8 {
-		/*if p.movement == Walking {
-			p.position.y += p.walkSpeed
-		} else if p.movement == Running {
-			p.position.y += p.runSpeed
-		}*/
 		p.position.y = 8
 	} else if p.position.y+float64(p.staticSize.y) >= screenHeight-17 {
-		/*if p.movement == Walking {
-			p.position.y -= p.walkSpeed
-		} else if p.movement == Running {
-			p.position.y -= p.runSpeed
-		}*/
 		p.position.y = screenHeight - 17 - float64(p.staticSize.y)
 	}
 }

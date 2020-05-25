@@ -286,6 +286,7 @@ func (p *Player) changeRight() {
 // BLINK
 func (p *Player) blink() {
 	betweenBlinkTime := 100
+	blinkSpeed := p.runSpeed * 2
 	blinkTime := 50
 	if p.canBlinkTimer >= betweenBlinkTime && ebiten.IsKeyPressed(ebiten.KeyControl) && !p.blinking {
 		p.blinking = true
@@ -294,8 +295,10 @@ func (p *Player) blink() {
 		p.canBlinkTimer++
 	}
 
+	// If actually blinking
 	if p.endBlinkTimer <= blinkTime && p.blinking {
 		p.endBlinkTimer++
+		p.position.x += blinkSpeed
 	} else {
 		p.blinking = false
 		p.endBlinkTimer = 0
@@ -314,29 +317,33 @@ func (p *Player) wallCollisions() {
 	// Left/Right wall width: 17
 	// Bottom wall height: 17
 	if p.position.x <= 17 {
-		if p.movement == Walking {
+		/*if p.movement == Walking {
 			p.position.x += p.walkSpeed
 		} else if p.movement == Running {
 			p.position.x += p.runSpeed
-		}
+		}*/
+		p.position.x = 17
 	} else if p.position.x+float64(p.staticSize.x) >= screenWidth-17 {
-		if p.movement == Walking {
+		/*if p.movement == Walking {
 			p.position.x -= p.walkSpeed
 		} else if p.movement == Running {
 			p.position.x -= p.runSpeed
-		}
+		}*/
+		p.position.x = screenWidth - 17 - float64(p.staticSize.x)
 	}
 	if p.position.y <= 8 {
-		if p.movement == Walking {
+		/*if p.movement == Walking {
 			p.position.y += p.walkSpeed
 		} else if p.movement == Running {
 			p.position.y += p.runSpeed
-		}
+		}*/
+		p.position.y = 8
 	} else if p.position.y+float64(p.staticSize.y) >= screenHeight-17 {
-		if p.movement == Walking {
+		/*if p.movement == Walking {
 			p.position.y -= p.walkSpeed
 		} else if p.movement == Running {
 			p.position.y -= p.runSpeed
-		}
+		}*/
+		p.position.y = screenHeight - 17 - float64(p.staticSize.y)
 	}
 }

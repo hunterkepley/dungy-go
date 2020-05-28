@@ -30,6 +30,7 @@ type Game struct {
 	walls   []Tile
 	tiles   [][]Tile
 	borders []Border
+	ui      []UI
 }
 
 // Init initializes the game
@@ -47,6 +48,7 @@ func (g *Game) Init() {
 	g.tiles = generateTiles(itileSpritesheet)
 	generateBigTiles(g.tiles, itileSpritesheet)
 	g.borders = generateBorders(itileSpritesheet)
+	g.ui = generateUI(iUISpritesheet)
 }
 
 // Update updates the game
@@ -64,6 +66,11 @@ func (g *Game) Update(screen *ebiten.Image) error {
 
 	// Game info update/check
 	go checkChangeDisplayInfo()
+
+	// Update UI
+	for _, u := range g.ui {
+		u.update()
+	}
 
 	// Temporary
 	if ebiten.IsKeyPressed(ebiten.KeyF) {
@@ -97,6 +104,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Basic text render calls
 	if displayInfo {
 		displayGameInfo(screen, g.player)
+	}
+
+	// Render UI
+	for _, u := range g.ui {
+		u.render(screen)
 	}
 
 	// Render cursor

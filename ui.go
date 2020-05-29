@@ -73,8 +73,8 @@ type StaticImage struct {
 	image *ebiten.Image
 }
 
-func createStaticImage(position Vec2i, ui UIImage, image *ebiten.Image) StaticImage {
-	return StaticImage{
+func createStaticImage(position Vec2i, ui UIImage, image *ebiten.Image) *StaticImage {
+	return &StaticImage{
 		position,
 		ui,
 		image,
@@ -134,7 +134,7 @@ func (m MeterImage) render(screen *ebiten.Image) {
 	screen.DrawImage(m.image.SubImage(image.Rect(
 		subRect.Min.X,
 		subRect.Min.Y,
-		subRect.Max.X*(m.meterSize.x/m.meterSize.y),
+		int(float64(subRect.Max.X)*(float64(m.meterSize.x)/float64(m.meterSize.y))),
 		subRect.Max.Y,
 	)).(*ebiten.Image), op)
 }

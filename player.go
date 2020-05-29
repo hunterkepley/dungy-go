@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 
 	"github.com/hajimehoshi/ebiten"
@@ -12,6 +13,11 @@ type Player struct {
 	//center   Vec2f
 	walkSpeed float64
 	runSpeed  float64
+
+	health    int
+	maxHealth int
+	energy    int
+	maxEnergy int
 
 	dynamicSize Vec2i // This is the player's dynamic size
 	staticSize  Vec2i // This value is the player's largest size for wall collisions
@@ -53,6 +59,9 @@ type PlayerAnimationSpeeds struct {
 
 func createPlayer(position Vec2f) Player {
 
+	health := 9
+	energy := 9
+
 	canBlinkTimer := 0
 	endBlinkTimer := 0
 
@@ -73,6 +82,11 @@ func createPlayer(position Vec2f) Player {
 		position,
 		walkSpeed,
 		runSpeed,
+
+		health,
+		health,
+		energy,
+		energy,
 
 		newVec2i(0, 0),                          // Dynamic size
 		runningRightSpritesheet.sprites[0].size, // Static size
@@ -146,6 +160,11 @@ func (p *Player) input() {
 
 	// Blink
 	p.blink()
+
+	if ebiten.IsKeyPressed(ebiten.KeyY) {
+		p.health--
+		fmt.Println(p.health)
+	}
 
 	if !p.blinking {
 		if ebiten.IsKeyPressed(ebiten.KeyA) { // LEFT

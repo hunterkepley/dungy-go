@@ -178,3 +178,14 @@ func makeBigTile(tilePosition Vec2i, tiles [][]Tile, image *ebiten.Image) {
 	tiles[tilePosition.x][tilePosition.y+1].tileType = Empty
 	tiles[tilePosition.x+1][tilePosition.y+1].tileType = Empty
 }
+
+func renderTiles(g *Game, screen *ebiten.Image) {
+	for _, w := range g.walls {
+		w.render(screen)
+	}
+	for i := 0; i < len(g.tiles); i++ {
+		for j := 0; j < len(g.tiles[i]); j++ {
+			g.tiles[i][j].render(screen)
+		}
+	}
+}

@@ -68,9 +68,7 @@ func (g *Game) Update(screen *ebiten.Image) error {
 	go checkChangeDisplayInfo()
 
 	// Update UI
-	for _, u := range g.ui {
-		u.update()
-	}
+	updateUI(g)
 
 	// Temporary
 	if ebiten.IsKeyPressed(ebiten.KeyF) {
@@ -85,14 +83,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(testBackgroundImage, bgop)
 
 	// Render game walls/tiles
-	for _, w := range g.walls {
-		w.render(screen)
-	}
-	for i := 0; i < len(g.tiles); i++ {
-		for j := 0; j < len(g.tiles[i]); j++ {
-			g.tiles[i][j].render(screen)
-		}
-	}
+	renderTiles(g, screen)
 	// Render borders
 	for _, b := range g.borders {
 		b.render(screen)
@@ -107,9 +98,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	// Render UI
-	for _, u := range g.ui {
-		u.render(screen)
-	}
+	renderUI(g, screen)
 
 	// Render cursor
 	g.cursor.render(screen)

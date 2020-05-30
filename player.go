@@ -15,8 +15,13 @@ type Player struct {
 
 	health    int
 	maxHealth int
-	energy    int
-	maxEnergy int
+
+	energy               int
+	maxEnergy            int
+	energyRegenTimer     int
+	energyRegenTimerMax  int
+	sprintEnergyTimer    int
+	sprintEnergyTimerMax int
 
 	dynamicSize Vec2i // This is the player's dynamic size
 	staticSize  Vec2i // This value is the player's largest size for wall collisions
@@ -59,7 +64,10 @@ type PlayerAnimationSpeeds struct {
 func createPlayer(position Vec2f) Player {
 
 	health := 9
+
 	energy := 9
+	energyTimer := 120
+	sprintEnergyTimer := 20
 
 	canBlinkTimer := 0
 	endBlinkTimer := 0
@@ -84,8 +92,13 @@ func createPlayer(position Vec2f) Player {
 
 		health,
 		health,
+
 		energy,
 		energy,
+		energyTimer,
+		energyTimer,
+		sprintEnergyTimer,
+		sprintEnergyTimer,
 
 		newVec2i(0, 0),                          // Dynamic size
 		runningRightSpritesheet.sprites[0].size, // Static size
@@ -133,6 +146,9 @@ func (p *Player) update() {
 	}
 	p.input()
 	go p.updateLevels()
+	if p.movement != Running && !p.blinking {
+		go p.energyRegeneration()
+	}
 	// Set size
 	p.dynamicSize = p.animation.spritesheet.sprites[0].size
 	p.wallCollisions()
@@ -173,6 +189,15 @@ func (p *Player) input() {
 	// TEMPORARY
 
 	if !p.blinking {
+		// Deplete energy!
+		if p.movement == Running {
+			if p.sprintEnergyTimer <= 0 {
+				p.sprintEnergyTimer = p.sprintEnergyTimerMax
+				p.energy--
+			} else {
+				p.sprintEnergyTimer--
+			}
+		}
 		if ebiten.IsKeyPressed(ebiten.KeyA) { // LEFT
 
 			if p.movement == Walking {
@@ -267,7 +292,8 @@ func (p *Player) input() {
 			}
 			if ebiten.IsKeyPressed(ebiten.KeyShift) {
 				// If holding shift, change to running if not already running!
-				if p.movement != Running {
+				// Also check if you have energy!
+				if p.movement != Running && p.energy > 0 {
 					p.movement = Running
 				}
 			}
@@ -395,5 +421,15 @@ func (p *Player) updateLevels() {
 	}
 	if p.energy > p.maxEnergy {
 		p.energy = p.maxEnergy
+	}
+}
+
+// Deals with energy regeneration
+func (p *Player) energyRegeneration() {
+	if p.energyRegenTimer <= 0 {
+		p.energy++ // Add an energy
+		p.energyRegenTimer = p.energyRegenTimerMax
+	} else {
+		p.energyRegenTimer--
 	}
 }

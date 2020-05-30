@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 
 	"github.com/hajimehoshi/ebiten"
@@ -133,6 +132,7 @@ func (p *Player) update() {
 		p.animation.update(p.animationSpeeds.running)
 	}
 	p.input()
+	go p.updateLevels()
 	// Set size
 	p.dynamicSize = p.animation.spritesheet.sprites[0].size
 	p.wallCollisions()
@@ -161,10 +161,16 @@ func (p *Player) input() {
 	// Blink
 	p.blink()
 
+	// TEMPORARY
 	if ebiten.IsKeyPressed(ebiten.KeyY) {
 		p.health--
-		fmt.Println(p.health)
+		p.energy++
 	}
+	if ebiten.IsKeyPressed(ebiten.KeyU) {
+		p.health++
+		p.energy--
+	}
+	// TEMPORARY
 
 	if !p.blinking {
 		if ebiten.IsKeyPressed(ebiten.KeyA) { // LEFT
@@ -313,6 +319,7 @@ func (p *Player) blink() {
 	blinkSpeed := p.runSpeed * 2
 	blinkTime := 15
 	if p.canBlinkTimer >= betweenBlinkTime && ebiten.IsKeyPressed(ebiten.KeyControl) && !p.blinking {
+		p.energy-- // Use one energy!
 		p.blinking = true
 		p.canBlinkTimer = 0
 	} else {
@@ -372,5 +379,21 @@ func (p *Player) wallCollisions() {
 		p.position.y = 8
 	} else if p.position.y+float64(p.staticSize.y) >= screenHeight-17 {
 		p.position.y = screenHeight - 17 - float64(p.staticSize.y)
+	}
+}
+
+// Updates health, energy, maybe etc
+func (p *Player) updateLevels() {
+	if p.health < 0 {
+		p.health = 0
+	}
+	if p.health > p.maxHealth {
+		p.health = p.maxHealth
+	}
+	if p.energy < 0 {
+		p.energy = 0
+	}
+	if p.energy > p.maxEnergy {
+		p.energy = p.maxEnergy
 	}
 }

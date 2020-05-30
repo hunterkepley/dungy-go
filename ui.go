@@ -37,7 +37,8 @@ func generateUI(image *ebiten.Image) []UI {
 	return []UI{
 		createStaticImage(newVec2i(4, screenHeight-14), UIHealthBar, image),
 		createStaticImage(newVec2i(52, screenHeight-14), UIEnergyBar, image),
-		createMeterImage(newVec2i(4, screenHeight-14), UIHealthMeter, image),
+		createMeterImage(newVec2i(20, screenHeight-12), UIHealthMeter, image),
+		createMeterImage(newVec2i(68, screenHeight-12), UIEnergyMeter, image),
 	}
 }
 
@@ -56,9 +57,9 @@ func getUIRect(ui UIImage) image.Rectangle {
 	case (UIEnergyBar):
 		return image.Rect(0, 71, 45, 81)
 	case (UIHealthMeter):
-		return image.Rect(17, 64, 43, 70)
+		return image.Rect(16, 64, 43, 70)
 	case (UIEnergyMeter):
-		return image.Rect(17, 82, 43, 88)
+		return image.Rect(16, 82, 43, 88)
 	}
 	// Default, empty
 	return image.Rectangle{}
@@ -134,7 +135,7 @@ func (m MeterImage) render(screen *ebiten.Image) {
 	screen.DrawImage(m.image.SubImage(image.Rect(
 		subRect.Min.X,
 		subRect.Min.Y,
-		int(float64(subRect.Max.X)*(float64(m.meterSize.x)/float64(m.meterSize.y))),
+		subRect.Min.X+int(float64(subRect.Max.X-subRect.Min.X)*(float64(m.meterSize.x)/float64(m.meterSize.y))),
 		subRect.Max.Y,
 	)).(*ebiten.Image), op)
 }

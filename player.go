@@ -72,8 +72,8 @@ func createPlayer(position Vec2f) Player {
 	canBlinkTimer := 0
 	endBlinkTimer := 0
 
-	walkSpeed := 1.
-	runSpeed := 1.5
+	walkSpeed := 0.8
+	runSpeed := 1.6
 	image := iplayerSpritesheet
 	// Idle
 	idleFrontSpritesheet := createSpritesheet(newVec2i(0, 0), newVec2i(60, 26), 5, image)
@@ -127,8 +127,8 @@ func createPlayer(position Vec2f) Player {
 		},
 		PlayerAnimationSpeeds{ // All animation speeds
 			1,   // idle
-			1.6, // walking
-			2.3, // running
+			1.3, // walking
+			2.5, // running
 		},
 
 		image, // Entire spritesheet

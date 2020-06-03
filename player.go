@@ -52,13 +52,15 @@ type PlayerAnimations struct {
 	runningBack  Animation
 	runningLeft  Animation
 	runningRight Animation
+	blinkTrail   Animation
 }
 
 // PlayerAnimationSpeeds is the animation speeds for the player
 type PlayerAnimationSpeeds struct {
-	idle    float64
-	walking float64
-	running float64
+	idle       float64
+	walking    float64
+	running    float64
+	blinkTrail float64
 }
 
 func createPlayer(position Vec2f) Player {
@@ -85,6 +87,8 @@ func createPlayer(position Vec2f) Player {
 	runningBackSpritesheet := createSpritesheet(newVec2i(0, 129), newVec2i(84, 154), 6, image)
 	runningLeftSpritesheet := createSpritesheet(newVec2i(0, 154), newVec2i(90, 180), 6, image)
 	runningRightSpritesheet := createSpritesheet(newVec2i(0, 180), newVec2i(90, 206), 6, image)
+	// Blink trail
+	blinkTrailSpritesheet := createSpritesheet(newVec2i(0, 207), newVec2i(39, 230), 3, image)
 	return Player{
 		position,
 		walkSpeed,
@@ -124,11 +128,14 @@ func createPlayer(position Vec2f) Player {
 			createAnimation(runningBackSpritesheet, image),
 			createAnimation(runningLeftSpritesheet, image),
 			createAnimation(runningRightSpritesheet, image),
+			// Blink Trail
+			createAnimation(blinkTrailSpritesheet, image),
 		},
 		PlayerAnimationSpeeds{ // All animation speeds
 			1,   // idle
 			1.3, // walking
 			2.5, // running
+			3,   // blink trail
 		},
 
 		image, // Entire spritesheet
@@ -164,7 +171,11 @@ func (p *Player) render(screen *ebiten.Image) {
 		p.spritesheet.sprites[p.animation.currentFrame].endPosition.x,
 		p.spritesheet.sprites[p.animation.currentFrame].endPosition.y,
 	)
+	p.renderBlinkTrail(screen)
 	screen.DrawImage(p.image.SubImage(subImageRect).(*ebiten.Image), op)
+}
+
+func (p *Player) renderBlinkTrail(screen *ebiten.Image) {
 }
 
 func (p *Player) input() {
@@ -175,7 +186,7 @@ func (p *Player) input() {
 	directionDecided := false
 
 	// Blink
-	p.blink()
+	p.blinkHandler()
 
 	// TEMPORARY
 	if ebiten.IsKeyPressed(ebiten.KeyY) {
@@ -340,10 +351,10 @@ func (p *Player) changeRight() {
 // ^ DIRECTION CHANGES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // BLINK
-func (p *Player) blink() {
+func (p *Player) blinkHandler() {
 	betweenBlinkTime := 200
-	blinkSpeed := p.runSpeed * 2
 	blinkTime := 15
+
 	if p.canBlinkTimer >= betweenBlinkTime && ebiten.IsKeyPressed(ebiten.KeyControl) && !p.blinking {
 		p.energy-- // Use one energy!
 		p.blinking = true
@@ -354,35 +365,42 @@ func (p *Player) blink() {
 
 	// If actually blinking
 	if p.endBlinkTimer <= blinkTime && p.blinking {
-		p.endBlinkTimer++
-		p.animation.pause()
-		switch p.direction {
-		case (Right):
-			p.position.x += blinkSpeed
-		case (Left):
-			p.position.x -= blinkSpeed
-		case (Up):
-			p.position.y -= blinkSpeed
-		case (Down):
-			p.position.y += blinkSpeed
-		case (UpRight):
-			p.position.x += blinkSpeed
-			p.position.y -= blinkSpeed
-		case (UpLeft):
-			p.position.x -= blinkSpeed
-			p.position.y -= blinkSpeed
-		case (DownRight):
-			p.position.x += blinkSpeed
-			p.position.y += blinkSpeed
-		case (DownLeft):
-			p.position.x -= blinkSpeed
-			p.position.y += blinkSpeed
-		}
+		p.blink()
 	} else {
 		p.blinking = false
 		p.animation.startForwards()
 		p.endBlinkTimer = 0
 	}
+}
+
+func (p *Player) blink() {
+	blinkSpeed := p.runSpeed * 2
+
+	p.endBlinkTimer++
+	p.animation.pause()
+	switch p.direction {
+	case (Right):
+		p.position.x += blinkSpeed
+	case (Left):
+		p.position.x -= blinkSpeed
+	case (Up):
+		p.position.y -= blinkSpeed
+	case (Down):
+		p.position.y += blinkSpeed
+	case (UpRight):
+		p.position.x += blinkSpeed
+		p.position.y -= blinkSpeed
+	case (UpLeft):
+		p.position.x -= blinkSpeed
+		p.position.y -= blinkSpeed
+	case (DownRight):
+		p.position.x += blinkSpeed
+		p.position.y += blinkSpeed
+	case (DownLeft):
+		p.position.x -= blinkSpeed
+		p.position.y += blinkSpeed
+	}
+
 }
 
 func (p *Player) changeAnimation(animation Animation) {

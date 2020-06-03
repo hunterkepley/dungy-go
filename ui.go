@@ -132,6 +132,7 @@ func (m MeterImage) render(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(m.position.x), float64(m.position.y))
 	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+	//op.ColorM.Translate(0, 255, 0, 0.5)
 	screen.DrawImage(m.image.SubImage(image.Rect(
 		subRect.Min.X,
 		subRect.Min.Y,

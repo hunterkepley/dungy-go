@@ -30,9 +30,10 @@ type Player struct {
 	movement  Movement  // Walking? Running?
 	isMoving  bool      // Is currently moving due to input?
 
-	canBlinkTimer int  // Timer between blinks
-	endBlinkTimer int  // Timer for each blink
-	blinking      bool // If blinking
+	canBlinkTimer int        // Timer between blinks
+	endBlinkTimer int        // Timer for each blink
+	blinking      bool       // If blinking
+	blinkTrail    BlinkTrail // The animated blue trail
 
 	spritesheet     Spritesheet           // Current spritesheet
 	animation       Animation             // Current Animation
@@ -52,7 +53,6 @@ type PlayerAnimations struct {
 	runningBack  Animation
 	runningLeft  Animation
 	runningRight Animation
-	blinkTrail   Animation
 }
 
 // PlayerAnimationSpeeds is the animation speeds for the player
@@ -87,8 +87,7 @@ func createPlayer(position Vec2f) Player {
 	runningBackSpritesheet := createSpritesheet(newVec2i(0, 129), newVec2i(84, 154), 6, image)
 	runningLeftSpritesheet := createSpritesheet(newVec2i(0, 154), newVec2i(90, 180), 6, image)
 	runningRightSpritesheet := createSpritesheet(newVec2i(0, 180), newVec2i(90, 206), 6, image)
-	// Blink trail
-	blinkTrailSpritesheet := createSpritesheet(newVec2i(0, 207), newVec2i(39, 230), 3, image)
+
 	return Player{
 		position,
 		walkSpeed,
@@ -114,6 +113,7 @@ func createPlayer(position Vec2f) Player {
 		canBlinkTimer, // Time between blinks
 		endBlinkTimer, // Time for each blink
 		false,
+		createBlinkTrail(0.5),
 
 		idleFrontSpritesheet,                         // Current animation spritesheet
 		createAnimation(idleFrontSpritesheet, image), // Current animation
@@ -128,8 +128,6 @@ func createPlayer(position Vec2f) Player {
 			createAnimation(runningBackSpritesheet, image),
 			createAnimation(runningLeftSpritesheet, image),
 			createAnimation(runningRightSpritesheet, image),
-			// Blink Trail
-			createAnimation(blinkTrailSpritesheet, image),
 		},
 		PlayerAnimationSpeeds{ // All animation speeds
 			1,   // idle
@@ -153,15 +151,21 @@ func (p *Player) update() {
 	}
 	p.input()
 	go p.updateLevels()
+
+	// Blink update
+	p.blinkTrail.update()
 	if p.movement != Running && !p.blinking {
 		go p.energyRegeneration()
 	}
+
 	// Set size
 	p.dynamicSize = p.animation.spritesheet.sprites[0].size
 	p.wallCollisions()
 }
 
 func (p *Player) render(screen *ebiten.Image) {
+	p.blinkTrail.render(screen)
+
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(p.position.x, p.position.y)
 	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
@@ -375,6 +379,8 @@ func (p *Player) blinkHandler() {
 
 func (p *Player) blink() {
 	blinkSpeed := p.runSpeed * 2
+
+	p.blinkTrail.spawnUpdate(p.position)
 
 	p.endBlinkTimer++
 	p.animation.pause()

@@ -85,7 +85,7 @@ func createBlinkTrailSection(position Vec2f, direction Direction) BlinkTrailSect
 func (b *BlinkTrailSection) render(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(0, 0)
-	if b.direction == Left {
+	if b.direction == Left || b.direction == DownLeft || b.direction == UpLeft {
 		op.GeoM.Scale(-1, 1)
 		b.position.x += float64(b.spritesheet.sprites[0].size.x)
 	}

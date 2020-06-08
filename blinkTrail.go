@@ -21,6 +21,10 @@ type BlinkTrailSection struct {
 	spritesheet Spritesheet
 	animation   *Animation
 
+	timeToLive int // cya loser lol
+	delete     bool
+	direction  Direction
+
 	image *ebiten.Image
 }
 
@@ -41,17 +45,17 @@ func (b *BlinkTrail) render(screen *ebiten.Image) {
 }
 
 func (b *BlinkTrail) update() {
-	for _, s := range b.sections {
-		s.update()
+	for i := 0; i < len(b.sections); i++ {
+		b.sections[i].update()
 	}
 }
 
-func (b *BlinkTrail) spawnUpdate(position Vec2f) {
+func (b *BlinkTrail) spawnUpdate(position Vec2f, direction Direction) {
 	// Add new section every few ticks
 	if b.speed >= 0 {
 		b.speed--
 	} else {
-		t := createBlinkTrailSection(position)
+		t := createBlinkTrailSection(position, direction)
 		b.sections = append(b.sections, t)
 		b.speed = b.speedMax
 		t.animation.startForwards()
@@ -60,15 +64,19 @@ func (b *BlinkTrail) spawnUpdate(position Vec2f) {
 
 // BlinkTrailSection
 
-func createBlinkTrailSection(position Vec2f) BlinkTrailSection {
+func createBlinkTrailSection(position Vec2f, direction Direction) BlinkTrailSection {
 	image := iplayerSpritesheet
 	blinkSpritesheet := createSpritesheet(newVec2i(0, 207), newVec2i(39, 230), 3, image)
 	animation := createAnimation(blinkSpritesheet, image)
+
 	return BlinkTrailSection{
 		position: position,
 
 		spritesheet: blinkSpritesheet,
 		animation:   &animation,
+		direction:   direction,
+
+		timeToLive: 20,
 
 		image: image,
 	}
@@ -76,6 +84,11 @@ func createBlinkTrailSection(position Vec2f) BlinkTrailSection {
 
 func (b *BlinkTrailSection) render(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(0, 0)
+	if b.direction == Left {
+		op.GeoM.Scale(-1, 1)
+		b.position.x += float64(b.spritesheet.sprites[0].size.x)
+	}
 	op.GeoM.Translate(b.position.x, b.position.y)
 	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
 	subImageRect := image.Rect(
@@ -88,5 +101,9 @@ func (b *BlinkTrailSection) render(screen *ebiten.Image) {
 }
 
 func (b *BlinkTrailSection) update() {
+	if b.timeToLive <= 0 {
+		b.delete = true // Delete the boy
+	}
+	b.timeToLive--
 	b.animation.update(1.5)
 }

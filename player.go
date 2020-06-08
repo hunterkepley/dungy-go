@@ -153,10 +153,8 @@ func (p *Player) update() {
 	go p.updateLevels()
 
 	// Blink update
+	p.updateBlinkTrail()
 	p.blinkTrail.update()
-	if p.movement != Running && !p.blinking {
-		go p.energyRegeneration()
-	}
 
 	// Set size
 	p.dynamicSize = p.animation.spritesheet.sprites[0].size
@@ -180,6 +178,17 @@ func (p *Player) render(screen *ebiten.Image) {
 }
 
 func (p *Player) renderBlinkTrail(screen *ebiten.Image) {
+}
+
+func (p *Player) updateBlinkTrail() {
+	if p.movement != Running && !p.blinking {
+		go p.energyRegeneration()
+	}
+	for i, s := range p.blinkTrail.sections {
+		if s.delete {
+			p.blinkTrail.sections = append(p.blinkTrail.sections[:i], p.blinkTrail.sections[i+1:]...)
+		}
+	}
 }
 
 func (p *Player) input() {
@@ -356,11 +365,15 @@ func (p *Player) changeRight() {
 
 // BLINK
 func (p *Player) blinkHandler() {
-	betweenBlinkTime := 200
+	betweenBlinkTime := 20
 	blinkTime := 15
 
-	if p.canBlinkTimer >= betweenBlinkTime && ebiten.IsKeyPressed(ebiten.KeyControl) && !p.blinking {
-		p.energy-- // Use one energy!
+	blinkEnergyDepleter := 3
+	// FIX THIS MONSTROSITY AT SOME POINT JESUS CHRIST
+	if p.canBlinkTimer >= betweenBlinkTime &&
+		ebiten.IsKeyPressed(ebiten.KeyControl) &&
+		!p.blinking && p.energy >= blinkEnergyDepleter {
+		p.energy -= blinkEnergyDepleter // Get rid of some energy and blink!
 		p.blinking = true
 		p.canBlinkTimer = 0
 	} else {
@@ -380,7 +393,7 @@ func (p *Player) blinkHandler() {
 func (p *Player) blink() {
 	blinkSpeed := p.runSpeed * 2
 
-	p.blinkTrail.spawnUpdate(p.position)
+	p.blinkTrail.spawnUpdate(p.position, p.direction)
 
 	p.endBlinkTimer++
 	p.animation.pause()

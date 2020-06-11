@@ -58,7 +58,7 @@ func (b *BlinkTrail) spawnUpdate(position Vec2f, direction Direction) {
 		t := createBlinkTrailSection(position, direction)
 		b.sections = append(b.sections, t)
 		b.speed = b.speedMax
-		t.animation.startForwards()
+		t.animation.startBackwards()
 	}
 }
 

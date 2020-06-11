@@ -53,18 +53,30 @@ func (a *Animation) startForwards() {
 	a.state = AnimationPlayingForwards
 }
 
+func (a *Animation) startBackwards() {
+	a.state = AnimationPlayingBackwards
+	a.currentFrame = a.spritesheet.numberOfSprites - 1 // Set to end!
+}
+
 func (a *Animation) update(speed float64) {
-	if a.state == AnimationPlayingForwards {
-		if a.timer >= a.maxTimer {
-			a.timer = 0
+	if a.timer >= a.maxTimer {
+		a.timer = 0
+		switch a.state {
+		case AnimationPlayingForwards: // Forwards
 			a.currentFrame++
 			if a.currentFrame == a.spritesheet.numberOfSprites {
 				// Reached the end!
 				a.currentFrame = 0
 			}
-		} else {
-			a.timer += 1 * speed
+
+		case AnimationPlayingBackwards: // Backwards
+			a.currentFrame--
+			if a.currentFrame == -1 {
+				a.currentFrame = a.spritesheet.numberOfSprites - 1 // Set to end again!
+			}
 		}
+	} else {
+		a.timer += 1 * speed
 	}
 }
 

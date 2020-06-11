@@ -32,13 +32,14 @@ type Player struct {
 
 	canBlinkTimer int        // Timer between blinks
 	endBlinkTimer int        // Timer for each blink
-	blinking      bool       // If blinking
+	isBlinking    bool       // If blinking
 	blinkTrail    BlinkTrail // The animated blue trail
 
 	spritesheet     Spritesheet           // Current spritesheet
 	animation       Animation             // Current Animation
 	animations      PlayerAnimations      // All animations
 	animationSpeeds PlayerAnimationSpeeds // All animation speeds
+	isDrawable      bool                  // Is able to be drawn on the screen?
 
 	image *ebiten.Image
 }
@@ -135,6 +136,7 @@ func createPlayer(position Vec2f) Player {
 			2.5, // running
 			3,   // blink trail
 		},
+		true,
 
 		image, // Entire spritesheet
 	}
@@ -159,29 +161,39 @@ func (p *Player) update() {
 	// Set size
 	p.dynamicSize = p.animation.spritesheet.sprites[0].size
 	p.wallCollisions()
+
+	// Check if drawable
+	if p.isDrawable != p.isBlinking {
+		p.isDrawable = !p.isDrawable
+	}
 }
 
 func (p *Player) render(screen *ebiten.Image) {
-	p.blinkTrail.render(screen)
 
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(p.position.x, p.position.y)
-	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
-	subImageRect := image.Rect(
-		p.spritesheet.sprites[p.animation.currentFrame].startPosition.x,
-		p.spritesheet.sprites[p.animation.currentFrame].startPosition.y,
-		p.spritesheet.sprites[p.animation.currentFrame].endPosition.x,
-		p.spritesheet.sprites[p.animation.currentFrame].endPosition.y,
-	)
+	// Before player:
+	if !p.isDrawable {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(p.position.x, p.position.y)
+		op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+		subImageRect := image.Rect(
+			p.spritesheet.sprites[p.animation.currentFrame].startPosition.x,
+			p.spritesheet.sprites[p.animation.currentFrame].startPosition.y,
+			p.spritesheet.sprites[p.animation.currentFrame].endPosition.x,
+			p.spritesheet.sprites[p.animation.currentFrame].endPosition.y,
+		)
+		screen.DrawImage(p.image.SubImage(subImageRect).(*ebiten.Image), op)
+	}
+
+	// After player:
 	p.renderBlinkTrail(screen)
-	screen.DrawImage(p.image.SubImage(subImageRect).(*ebiten.Image), op)
 }
 
 func (p *Player) renderBlinkTrail(screen *ebiten.Image) {
+	p.blinkTrail.render(screen)
 }
 
 func (p *Player) updateBlinkTrail() {
-	if p.movement != Running && !p.blinking {
+	if p.movement != Running && !p.isBlinking {
 		go p.energyRegeneration()
 	}
 	for i, s := range p.blinkTrail.sections {
@@ -212,7 +224,7 @@ func (p *Player) input() {
 	}
 	// TEMPORARY
 
-	if !p.blinking {
+	if !p.isBlinking {
 		// Deplete energy!
 		if p.movement == Running {
 			if p.sprintEnergyTimer <= 0 {
@@ -372,19 +384,19 @@ func (p *Player) blinkHandler() {
 	// FIX THIS MONSTROSITY AT SOME POINT JESUS CHRIST
 	if p.canBlinkTimer >= betweenBlinkTime &&
 		ebiten.IsKeyPressed(ebiten.KeyControl) &&
-		!p.blinking && p.energy >= blinkEnergyDepleter {
+		!p.isBlinking && p.energy >= blinkEnergyDepleter {
 		p.energy -= blinkEnergyDepleter // Get rid of some energy and blink!
-		p.blinking = true
+		p.isBlinking = true
 		p.canBlinkTimer = 0
 	} else {
 		p.canBlinkTimer++
 	}
 
 	// If actually blinking
-	if p.endBlinkTimer <= blinkTime && p.blinking {
+	if p.endBlinkTimer <= blinkTime && p.isBlinking {
 		p.blink()
 	} else {
-		p.blinking = false
+		p.isBlinking = false
 		p.animation.startForwards()
 		p.endBlinkTimer = 0
 	}

@@ -4,6 +4,18 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-type gun struct {
+// Gun is the player's gun
+type Gun struct {
+	position Vec2f
+	size     Vec2i
+
 	image *ebiten.Image
+}
+
+func (g *Gun) render(screen *ebiten.Image) {
+
+}
+
+func (g *Gun) update() {
+
 }

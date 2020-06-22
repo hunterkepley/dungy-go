@@ -138,4 +138,5 @@ func loadPregameResources() {
 	loadPlayerImages()
 	loadUIImages()
 	loadTileImages()
+	loadItemsImages()
 }

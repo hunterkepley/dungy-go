@@ -41,6 +41,8 @@ type Player struct {
 	animationSpeeds PlayerAnimationSpeeds // All animation speeds
 	isDrawable      bool                  // Is able to be drawn on the screen?
 
+	gun Gun // The players gun
+
 	image *ebiten.Image
 }
 
@@ -138,6 +140,11 @@ func createPlayer(position Vec2f) Player {
 		},
 		true,
 
+		Gun{
+			position: position,
+			image:    iitemsSpritesheet,
+		},
+
 		image, // Entire spritesheet
 	}
 }
@@ -157,6 +164,9 @@ func (p *Player) update() {
 	// Blink update
 	p.updateBlinkTrail()
 	p.blinkTrail.update()
+
+	// Gun update
+	p.gun.update(p.position)
 
 	// Set size
 	p.dynamicSize = p.animation.spritesheet.sprites[0].size
@@ -181,11 +191,12 @@ func (p *Player) render(screen *ebiten.Image) {
 			p.spritesheet.sprites[p.animation.currentFrame].endPosition.x,
 			p.spritesheet.sprites[p.animation.currentFrame].endPosition.y,
 		)
-		screen.DrawImage(p.image.SubImage(subImageRect).(*ebiten.Image), op)
+		screen.DrawImage(p.image.SubImage(subImageRect).(*ebiten.Image), op) // Draw player
 	}
 
 	// After player:
-	p.renderBlinkTrail(screen)
+	p.gun.render(screen)       // Draw gun
+	p.renderBlinkTrail(screen) // Draw blink trail
 }
 
 func (p *Player) renderBlinkTrail(screen *ebiten.Image) {

@@ -9,6 +9,7 @@ var (
 	itileSpritesheet   *ebiten.Image
 	iUISpritesheet     *ebiten.Image
 	icursor            *ebiten.Image
+	iitemsSpritesheet  *ebiten.Image
 )
 
 func loadPlayerImages() {
@@ -21,4 +22,8 @@ func loadUIImages() {
 
 func loadTileImages() {
 	itileSpritesheet, _ = loadImage("./Assets/Art/Tiles/spritesheet.png")
+}
+
+func loadItemsImages() {
+	iitemsSpritesheet, _ = loadImage("./Assets/Art/Items/spritesheet.png")
 }

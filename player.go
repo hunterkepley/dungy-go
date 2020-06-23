@@ -143,6 +143,7 @@ func createPlayer(position Vec2f) Player {
 		Gun{
 			position: position,
 			image:    iitemsSpritesheet,
+			sprite:   createSprite(newVec2i(0, 0), newVec2i(18, 13), newVec2i(18, 13), iitemsSpritesheet),
 		},
 
 		image, // Entire spritesheet
@@ -166,22 +167,21 @@ func (p *Player) update() {
 	p.blinkTrail.update()
 
 	// Gun update
-	p.gun.update(p.position)
+	p.gun.update(newVec2f(p.position.x+float64(p.dynamicSize.x)/2, p.position.y+float64(p.dynamicSize.y)/2))
 
 	// Set size
 	p.dynamicSize = p.animation.spritesheet.sprites[0].size
 	p.wallCollisions()
 
 	// Check if drawable
-	if p.isDrawable != p.isBlinking {
+	if p.isDrawable == p.isBlinking {
 		p.isDrawable = !p.isDrawable
 	}
 }
 
 func (p *Player) render(screen *ebiten.Image) {
 
-	// Before player:
-	if !p.isDrawable {
+	if p.isDrawable {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(p.position.x, p.position.y)
 		op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
@@ -192,11 +192,12 @@ func (p *Player) render(screen *ebiten.Image) {
 			p.spritesheet.sprites[p.animation.currentFrame].endPosition.y,
 		)
 		screen.DrawImage(p.image.SubImage(subImageRect).(*ebiten.Image), op) // Draw player
-	}
 
-	// After player:
-	p.gun.render(screen)       // Draw gun
-	p.renderBlinkTrail(screen) // Draw blink trail
+		// After player:
+		p.gun.render(screen) // Draw gun
+	} else {
+		p.renderBlinkTrail(screen) // Draw blink trail
+	}
 }
 
 func (p *Player) renderBlinkTrail(screen *ebiten.Image) {

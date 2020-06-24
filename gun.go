@@ -80,7 +80,7 @@ func (g *Gun) update(playerPosition Vec2f) {
 		fmt.Println(angle)
 	}
 
-	// TODO: Make the gun go to other side once it flips
+	// TODO: Maybe make the gun more angled towards mouse, but wait for new gun art
 
 	// Make always face the mouse
 	g.rotation = angle + 135

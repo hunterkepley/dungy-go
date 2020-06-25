@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"math"
 
@@ -12,8 +11,9 @@ import (
 type Gun struct {
 	position Vec2f
 
-	rotation float64
-	flipped  bool
+	rotation    float64
+	storedAngle float64
+	flipped     bool
 
 	sprite Sprite
 	image  *ebiten.Image
@@ -48,7 +48,7 @@ func (g *Gun) update(playerPosition Vec2f) {
 	cursorPosition.x, cursorPosition.y = ebiten.CursorPosition()
 
 	// Placement offset [circle]
-	radius := 15.
+	radius := 12.
 	angle := math.Atan2(playerPosition.y-float64(cursorPosition.y), playerPosition.x-float64(cursorPosition.x))
 
 	// Flip gun image
@@ -73,15 +73,18 @@ func (g *Gun) update(playerPosition Vec2f) {
 	}
 
 	// This if statement only allows it to move on the sides of the body
-	if !(angle > Pi/3 && angle < Pi/3+Pi/3) && !(angle < Pi/-3 && angle > Pi/-3-Pi/3) {
+	if !(angle > Pi/2.5 && angle < Pi/3+Pi/3) && !(angle < Pi/-3 && angle > Pi/-3-Pi/3) {
 		g.position.x = playerPosition.x - radius*math.Cos(angle) // Starting position x
 		g.position.y = playerPosition.y - radius*math.Sin(angle) // Starting position y
 
-		fmt.Println(angle)
+		g.storedAngle = angle
+	} else {
+		g.position.x = playerPosition.x - radius*math.Cos(g.storedAngle) // Starting position x
+		g.position.y = playerPosition.y - radius*math.Sin(g.storedAngle) // Starting position y
 	}
 
 	// TODO: Maybe make the gun more angled towards mouse, but wait for new gun art
 
 	// Make always face the mouse
-	g.rotation = angle + 135
+	g.rotation = angle + Pi
 }

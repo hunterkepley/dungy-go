@@ -7,6 +7,8 @@ type Bullet struct {
 	position Vec2f
 	size     Vec2i
 
+	velocity Vec2f
+
 	image *ebiten.Image
 }
 

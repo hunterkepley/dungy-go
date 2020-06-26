@@ -42,10 +42,7 @@ func (g *Gun) render(screen *ebiten.Image) {
 	screen.DrawImage(g.image.SubImage(subImageRect).(*ebiten.Image), op)
 }
 
-func (g *Gun) update(playerPosition Vec2f) {
-
-	cursorPosition := Vec2i{}
-	cursorPosition.x, cursorPosition.y = ebiten.CursorPosition()
+func (g *Gun) update(playerPosition Vec2f, cursorPosition Vec2i) {
 
 	// Placement offset [circle]
 	radius := 12.
@@ -82,8 +79,6 @@ func (g *Gun) update(playerPosition Vec2f) {
 		g.position.x = playerPosition.x - radius*math.Cos(g.storedAngle) // Starting position x
 		g.position.y = playerPosition.y - radius*math.Sin(g.storedAngle) // Starting position y
 	}
-
-	// TODO: Maybe make the gun more angled towards mouse, but wait for new gun art
 
 	// Make always face the mouse
 	g.rotation = angle + Pi

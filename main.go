@@ -62,7 +62,7 @@ func (g *Game) Update(screen *ebiten.Image) error {
 	g.cursor.update()
 
 	// Update player
-	g.player.update()
+	g.player.update(g.cursor)
 
 	// Game info update/check
 	go checkChangeDisplayInfo()

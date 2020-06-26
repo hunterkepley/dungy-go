@@ -150,7 +150,7 @@ func createPlayer(position Vec2f) Player {
 	}
 }
 
-func (p *Player) update() {
+func (p *Player) update(cursor Cursor) {
 	switch p.movement {
 	case (Idle):
 		p.animation.update(p.animationSpeeds.idle)
@@ -167,7 +167,11 @@ func (p *Player) update() {
 	p.blinkTrail.update()
 
 	// Gun update
-	p.gun.update(newVec2f(p.position.x+float64(p.dynamicSize.x)/2, p.position.y+float64(p.dynamicSize.y)/2))
+	p.gun.update(
+		newVec2f(p.position.x+float64(p.dynamicSize.x)/2, p.position.y+float64(p.dynamicSize.y)/2),
+		// +3 to make the gun actually face center of mouse
+		newVec2i(cursor.position.x+cursor.size.x/2, cursor.position.y+cursor.size.y/2+3),
+	)
 
 	// Set size
 	p.dynamicSize = p.animation.spritesheet.sprites[0].size
@@ -227,12 +231,10 @@ func (p *Player) input() {
 
 	// TEMPORARY
 	if ebiten.IsKeyPressed(ebiten.KeyY) {
-		p.health--
 		p.energy++
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyU) {
 		p.health++
-		p.energy--
 	}
 	// TEMPORARY
 

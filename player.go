@@ -199,9 +199,9 @@ func (p *Player) render(screen *ebiten.Image) {
 
 		// After player:
 		p.gun.render(screen) // Draw gun
-	} else {
-		p.renderBlinkTrail(screen) // Draw blink trail
 	}
+	p.renderBlinkTrail(screen) // Draw blink trail
+
 }
 
 func (p *Player) renderBlinkTrail(screen *ebiten.Image) {

@@ -63,6 +63,7 @@ func (g *Game) Update(screen *ebiten.Image) error {
 
 	// Update player
 	g.player.update(g.cursor)
+	g.player.gun.updateBullets()
 
 	// Game info update/check
 	go checkChangeDisplayInfo()
@@ -91,6 +92,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	// Render player
 	g.player.render(screen)
+	g.player.gun.renderBullets(screen)
 
 	// Basic text render calls
 	if displayInfo {

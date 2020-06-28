@@ -15,6 +15,8 @@ type Gun struct {
 	storedAngle float64
 	flipped     bool
 
+	bullets []Bullet
+
 	sprite Sprite
 	image  *ebiten.Image
 }
@@ -82,4 +84,21 @@ func (g *Gun) update(playerPosition Vec2f, cursorPosition Vec2i) {
 
 	// Make always face the mouse
 	g.rotation = angle + Pi
+}
+
+// Creates the bullets n stuff
+func (g *Gun) fire() {
+	g.bullets = append(g.bullets, createBullet(g.position, g.rotation))
+}
+
+func (g *Gun) renderBullets(screen *ebiten.Image) {
+	for i := 0; i < len(g.bullets); i++ {
+		g.bullets[i].render(screen)
+	}
+}
+
+func (g *Gun) updateBullets() {
+	for i := 0; i < len(g.bullets); i++ {
+		g.bullets[i].update()
+	}
 }

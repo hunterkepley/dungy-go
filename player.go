@@ -26,9 +26,10 @@ type Player struct {
 	dynamicSize Vec2i // This is the player's dynamic size
 	staticSize  Vec2i // This value is the player's largest size for wall collisions
 
-	direction Direction // Up? Down?
-	movement  Movement  // Walking? Running?
-	isMoving  bool      // Is currently moving due to input?
+	direction   Direction // Up? Down?
+	movement    Movement  // Walking? Running?
+	isMoving    bool      // Is currently moving due to input?
+	isConscious bool      // Is player conscious? [Can use input?]
 
 	canBlinkTimer int        // Timer between blinks
 	endBlinkTimer int        // Timer for each blink
@@ -112,6 +113,7 @@ func createPlayer(position Vec2f) Player {
 		Down,    // Direction
 		Walking, // Movement
 		false,
+		true,
 
 		canBlinkTimer, // Time between blinks
 		endBlinkTimer, // Time for each blink
@@ -180,6 +182,7 @@ func (p *Player) update(cursor Cursor) {
 	// Check if drawable
 	if p.isDrawable == p.isBlinking {
 		p.isDrawable = !p.isDrawable
+		p.isConscious = !p.isConscious // No shoot or move while blink
 	}
 }
 
@@ -237,6 +240,9 @@ func (p *Player) input() {
 		p.health++
 	}
 	// TEMPORARY
+
+	// Mouse button input
+	p.mouseButtonInput()
 
 	if !p.isBlinking {
 		// Deplete energy!
@@ -347,6 +353,18 @@ func (p *Player) input() {
 					p.movement = Running
 				}
 			}
+		}
+	}
+}
+
+// Mouse input!
+func (p *Player) mouseButtonInput() {
+	if p.isConscious {
+		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+			p.gun.fire()
+		}
+		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
+			// Maybe a charge shot or special ability?
 		}
 	}
 }

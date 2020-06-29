@@ -93,6 +93,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Render player
 	g.player.render(screen)
 	g.player.gun.renderBullets(screen)
+	g.player.gun.render(screen)
 
 	// Basic text render calls
 	if displayInfo {

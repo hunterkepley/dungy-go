@@ -10,6 +10,7 @@ import (
 type Cursor struct {
 	position Vec2i
 	size     Vec2i
+	center   Vec2i
 
 	currentCursor int
 	cursors       []Sprite
@@ -19,6 +20,7 @@ type Cursor struct {
 
 func createCursor(image *ebiten.Image) Cursor {
 	return Cursor{
+		newVec2i(0, 0),
 		newVec2i(0, 0),
 		newVec2i(0, 0),
 
@@ -51,6 +53,7 @@ func (c *Cursor) update() {
 		c.position = newVec2i(x-c.size.x/2, y-c.size.y/2)
 	}
 	c.size = newVec2i(c.cursors[c.currentCursor].size.x, c.cursors[c.currentCursor].size.y)
+	c.center = newVec2i(c.position.x+c.size.x/2, c.position.y+c.size.y/2)
 }
 
 // Checks if the mouse is in the screen

@@ -145,7 +145,7 @@ func createPlayer(position Vec2f) Player {
 		Gun{
 			position: position,
 			image:    iitemsSpritesheet,
-			sprite:   createSprite(newVec2i(0, 0), newVec2i(18, 13), newVec2i(18, 13), iitemsSpritesheet),
+			sprite:   createSprite(newVec2i(0, 0), newVec2i(25, 13), newVec2i(25, 13), iitemsSpritesheet),
 		},
 
 		image, // Entire spritesheet
@@ -172,7 +172,7 @@ func (p *Player) update(cursor Cursor) {
 	p.gun.update(
 		newVec2f(p.position.x+float64(p.dynamicSize.x)/2, p.position.y+float64(p.dynamicSize.y)/2),
 		// +3 to make the gun actually face center of mouse
-		newVec2i(cursor.position.x+cursor.size.x/2, cursor.position.y+cursor.size.y/2+3),
+		newVec2i(cursor.center.x, cursor.center.y),
 	)
 
 	// Set size
@@ -199,9 +199,6 @@ func (p *Player) render(screen *ebiten.Image) {
 			p.spritesheet.sprites[p.animation.currentFrame].endPosition.y,
 		)
 		screen.DrawImage(p.image.SubImage(subImageRect).(*ebiten.Image), op) // Draw player
-
-		// After player:
-		p.gun.render(screen) // Draw gun
 	}
 	p.renderBlinkTrail(screen) // Draw blink trail
 

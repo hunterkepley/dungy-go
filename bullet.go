@@ -24,7 +24,7 @@ type Bullet struct {
 
 func createBullet(position Vec2f, rotation float64) Bullet {
 
-	speed := 0.1
+	speed := 4.
 
 	velocity := newVec2f(speed*math.Cos(rotation), speed*math.Sin(rotation))
 

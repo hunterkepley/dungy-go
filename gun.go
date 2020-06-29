@@ -88,7 +88,10 @@ func (g *Gun) update(playerPosition Vec2f, cursorPosition Vec2i) {
 
 // Creates the bullets n stuff
 func (g *Gun) fire() {
-	g.bullets = append(g.bullets, createBullet(g.position, g.rotation))
+	g.bullets = append(
+		g.bullets,
+		createBullet(g.position, g.rotation),
+	)
 }
 
 func (g *Gun) renderBullets(screen *ebiten.Image) {

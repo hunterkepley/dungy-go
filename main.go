@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	screenWidth  = 1366 / 3 // Multiplied by 2 later to scale images
+	screenWidth  = 1366 / 3 // Multiplied by 3 later to scale images
 	screenHeight = 768 / 3  // ^
 )
 
@@ -27,6 +27,7 @@ type Game struct {
 	player Player
 	cursor Cursor
 
+	enemies []Enemy
 	walls   []Tile
 	tiles   [][]Tile
 	borders []Border
@@ -65,6 +66,9 @@ func (g *Game) Update(screen *ebiten.Image) error {
 	g.player.update(g.cursor)
 	g.player.gun.updateBullets()
 
+	// Update enemies
+	updateEnemies(g)
+
 	// Game info update/check
 	go checkChangeDisplayInfo()
 
@@ -85,10 +89,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	// Render game walls/tiles
 	renderTiles(g, screen)
+
 	// Render borders
 	for _, b := range g.borders {
 		b.render(screen)
 	}
+
+	// Render enemies behind player
+	renderEnemies(g, screen)
 
 	// Render player
 	g.player.render(screen)
@@ -142,4 +150,5 @@ func loadPregameResources() {
 	loadUIImages()
 	loadTileImages()
 	loadItemsImages()
+	loadEnemiesImages()
 }

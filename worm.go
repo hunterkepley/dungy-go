@@ -20,6 +20,9 @@ type WormAnimationSpeeds struct {
 type Worm struct {
 	position Vec2f
 
+	health    int
+	maxHealth int
+
 	spritesheet     Spritesheet
 	animation       Animation
 	animations      WormAnimations
@@ -33,6 +36,9 @@ func createWorm(position Vec2f) *Worm {
 
 	return &Worm{
 		position: position,
+
+		health:    10,
+		maxHealth: 10,
 
 		spritesheet: idleFrontSpritesheet,
 		animations: WormAnimations{
@@ -68,6 +74,30 @@ func (w *Worm) update(bullets []Bullet) {
 	w.animation.update(w.animationSpeeds.idle)
 
 	for _, b := range bullets {
-
+		size := newVec2i(
+			w.spritesheet.sprites[w.animation.currentFrame].size.x,
+			w.spritesheet.sprites[w.animation.currentFrame].size.y,
+		)
+		endPosition := newVec2i(
+			int(w.position.x)+size.x,
+			int(w.position.y)+size.y,
+		)
+		bulletRect := image.Rect(int(b.position.x), int(b.position.y), int(b.position.x)+b.size.x, int(b.position.y)+b.size.y)
+		wormRect := image.Rect(int(w.position.x), int(w.position.y), endPosition.x, endPosition.y)
+		if isAABBCollision(bulletRect, wormRect) {
+			w.health--
+		}
 	}
+
+}
+
+func (w *Worm) isDead() bool {
+	if w.health <= 0 {
+		return true
+	}
+	return false
+}
+
+func (w *Worm) kill() {
+	// explode
 }

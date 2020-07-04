@@ -81,3 +81,11 @@ type Vec2b struct {
 func newVec2b(x bool, y bool) Vec2b {
 	return Vec2b{x, y}
 }
+
+func vec2i(x Vec2i) Vec2f {
+	return newVec2f(float64(x.x), float64(x.y))
+}
+
+func vec2f(x Vec2f) Vec2i {
+	return newVec2i(int(x.x), int(x.y))
+}

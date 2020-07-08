@@ -22,11 +22,16 @@ type Worm struct {
 
 	health    int
 	maxHealth int
+	dead      bool
+
+	subImageRect image.Rectangle
 
 	spritesheet     Spritesheet
 	animation       Animation
 	animations      WormAnimations
 	animationSpeeds WormAnimationSpeeds
+
+	gibHandler GibHandler
 
 	image *ebiten.Image
 }
@@ -39,6 +44,7 @@ func createWorm(position Vec2f) *Worm {
 
 		health:    10,
 		maxHealth: 10,
+		dead:      false,
 
 		spritesheet: idleFrontSpritesheet,
 		animations: WormAnimations{
@@ -56,13 +62,16 @@ func (w *Worm) render(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(w.position.x, w.position.y)
 	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
-	subImageRect := image.Rect(
+	w.subImageRect = image.Rect(
 		w.spritesheet.sprites[w.animation.currentFrame].startPosition.x,
 		w.spritesheet.sprites[w.animation.currentFrame].startPosition.y,
 		w.spritesheet.sprites[w.animation.currentFrame].endPosition.x,
 		w.spritesheet.sprites[w.animation.currentFrame].endPosition.y,
 	)
-	screen.DrawImage(w.image.SubImage(subImageRect).(*ebiten.Image), op) // Draw player
+	// Draw gibs
+	w.gibHandler.render(screen)
+
+	screen.DrawImage(w.image.SubImage(w.subImageRect).(*ebiten.Image), op) // Draw worm
 }
 
 func (w *Worm) update(bullets []Bullet) {
@@ -73,6 +82,9 @@ func (w *Worm) update(bullets []Bullet) {
 	}
 	w.animation.update(w.animationSpeeds.idle)
 
+	w.gibHandler.update()
+
+	//
 	for _, b := range bullets {
 		size := newVec2i(
 			w.spritesheet.sprites[w.animation.currentFrame].size.x,
@@ -82,8 +94,8 @@ func (w *Worm) update(bullets []Bullet) {
 			int(w.position.x)+size.x,
 			int(w.position.y)+size.y,
 		)
-		bulletRect := image.Rect(int(b.position.x), int(b.position.y), int(b.position.x)+b.size.x, int(b.position.y)+b.size.y)
 		wormRect := image.Rect(int(w.position.x), int(w.position.y), endPosition.x, endPosition.y)
+		bulletRect := image.Rect(int(b.position.x), int(b.position.y), int(b.position.x)+b.size.x, int(b.position.y)+b.size.y)
 		if isAABBCollision(bulletRect, wormRect) {
 			w.health--
 		}
@@ -93,11 +105,15 @@ func (w *Worm) update(bullets []Bullet) {
 
 func (w *Worm) isDead() bool {
 	if w.health <= 0 {
+		if !w.dead {
+			w.dead = true
+			w.kill()
+		}
 		return true
 	}
 	return false
 }
 
-func (w *Worm) kill() {
-	// explode
+func (w *Worm) kill() { // TODO: Separate gibhandlers from enemies, make them just create one upon death
+	w.gibHandler.explode(10, w.subImageRect, w.image)
 }

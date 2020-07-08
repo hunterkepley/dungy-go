@@ -27,7 +27,7 @@ func updateEnemies(g *Game) {
 		}
 
 		if e.isDead() {
-			g.enemies = remove(g.enemies, i)
+			//g.enemies = remove(g.enemies, i)
 			continue
 		}
 		e.update(g.player.gun.bullets)

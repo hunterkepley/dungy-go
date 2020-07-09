@@ -65,7 +65,7 @@ func (g *GibHandler) render(screen *ebiten.Image) {
 	}
 }
 
-func (g *GibHandler) explode(numberOfGibs int, subImage image.Rectangle, image *ebiten.Image) {
+func (g *GibHandler) explode(numberOfGibs int, originPosition Vec2f, subImage image.Rectangle, image *ebiten.Image) {
 	randomPosition := newVec2f(float64(rand.Intn(100)), float64(rand.Intn(100)))
 	randomRotation := float64(rand.Intn(100))
 

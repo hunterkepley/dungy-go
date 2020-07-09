@@ -11,6 +11,9 @@ import (
 type Gib struct {
 	position Vec2f
 	size     Vec2i
+	velocity Vec2i
+
+	distanceAllowed int
 
 	rotation float64
 
@@ -19,6 +22,26 @@ type Gib struct {
 }
 
 func (g *Gib) update() {
+	if g.distanceAllowed >= 0 {
+		// If positive, subtract until 0
+		if g.velocity.x != 0 {
+			if g.velocity.x > 0 {
+				g.velocity.x--
+			} else if g.velocity.x < 0 { // Negative
+				g.velocity.y++
+			}
+		}
+		if g.velocity.y != 0 {
+			if g.velocity.y > 0 {
+				g.velocity.y--
+			} else if g.velocity.y < 0 { // Negative
+				g.velocity.y++
+			}
+		}
+		g.position.x += float64(g.velocity.x)
+		g.position.y += float64(g.velocity.y)
+		g.distanceAllowed--
+	}
 }
 
 func (g *Gib) render(screen *ebiten.Image) {
@@ -42,11 +65,19 @@ func createGibHandler() GibHandler {
 	}
 }
 
-func createGib(position Vec2f, rotation float64, subImage image.Rectangle, image *ebiten.Image) Gib {
+func createGib(position Vec2f,
+	rotation float64,
+	distanceAllowed int,
+	randomVelocity Vec2i,
+	subImage image.Rectangle,
+	image *ebiten.Image) Gib {
+
 	size := newVec2i(subImage.Max.X-subImage.Min.X, subImage.Max.Y-subImage.Min.Y)
 	return Gib{
 		position,
 		size,
+		randomVelocity,
+		distanceAllowed,
 		rotation,
 		subImage,
 		image,
@@ -54,22 +85,61 @@ func createGib(position Vec2f, rotation float64, subImage image.Rectangle, image
 }
 
 func (g *GibHandler) update() {
-	for _, gib := range g.gibs {
-		gib.update()
+	for i := 0; i < len(g.gibs); i++ {
+		g.gibs[i].update()
 	}
 }
 
 func (g *GibHandler) render(screen *ebiten.Image) {
-	for _, gib := range g.gibs {
-		gib.render(screen)
+	for i := 0; i < len(g.gibs); i++ {
+		g.gibs[i].render(screen)
 	}
 }
 
-func (g *GibHandler) explode(numberOfGibs int, originPosition Vec2f, subImage image.Rectangle, image *ebiten.Image) {
-	randomPosition := newVec2f(float64(rand.Intn(100)), float64(rand.Intn(100)))
-	randomRotation := float64(rand.Intn(100))
+func (g *GibHandler) explode(numberOfGibs int,
+	gibSize int,
+	originPosition Vec2f,
+	subImage image.Rectangle,
+	gibImage *ebiten.Image) {
 
 	for i := 0; i < numberOfGibs; i++ {
-		g.gibs = append(g.gibs, createGib(randomPosition, randomRotation, subImage, image))
+		randomDistanceAllowed := 10 + rand.Intn(10)
+		randomRotation := float64(rand.Intn(5))
+		randomVelocity := newVec2i(int(float64(rand.Intn(10))-2.5), int(float64(rand.Intn(10))-2.5)) // Random velocity
+
+		// Get the subimage size and position for random gibs
+		subImageSize := newVec2i(subImage.Max.X-subImage.Min.X, subImage.Max.Y-subImage.Min.Y)
+		subImagePosition := newVec2i(
+			subImage.Min.X+rand.Intn(subImageSize.x-gibSize),
+			subImage.Min.Y+rand.Intn(subImageSize.y-gibSize),
+		)
+
+		newSubImage := image.Rect(
+			subImagePosition.x,
+			subImagePosition.y,
+			subImagePosition.x+gibSize,
+			subImagePosition.y+gibSize,
+		)
+
+		g.gibs = append(g.gibs, createGib(
+			originPosition,
+			randomRotation,
+			randomDistanceAllowed,
+			randomVelocity,
+			newSubImage,
+			gibImage,
+		))
+	}
+}
+
+func updateGibHandlers(g *Game) {
+	for i := 0; i < len(g.gibHandlers); i++ {
+		g.gibHandlers[i].update()
+	}
+}
+
+func renderGibHandlers(g *Game, screen *ebiten.Image) {
+	for i := 0; i < len(g.gibHandlers); i++ {
+		g.gibHandlers[i].render(screen)
 	}
 }

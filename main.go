@@ -27,11 +27,12 @@ type Game struct {
 	player Player
 	cursor Cursor
 
-	enemies []Enemy
-	walls   []Tile
-	tiles   [][]Tile
-	borders []Border
-	ui      []UI
+	enemies     []Enemy
+	gibHandlers []GibHandler
+	walls       []Tile
+	tiles       [][]Tile
+	borders     []Border
+	ui          []UI
 }
 
 // Init initializes the game
@@ -69,6 +70,9 @@ func (g *Game) Update(screen *ebiten.Image) error {
 	// Update enemies
 	updateEnemies(g)
 
+	// Update gib handlers
+	updateGibHandlers(g)
+
 	// Game info update/check
 	go checkChangeDisplayInfo()
 
@@ -94,6 +98,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, b := range g.borders {
 		b.render(screen)
 	}
+
+	// Render gibHandlers
+	renderGibHandlers(g, screen)
 
 	// Render enemies behind player
 	renderEnemies(g, screen)

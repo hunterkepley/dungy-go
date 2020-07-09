@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"image"
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten"
@@ -12,7 +12,9 @@ type Enemy interface {
 	render(screen *ebiten.Image)
 	update(bullets []Bullet)
 	isDead() bool
-	kill()
+	getCenter() Vec2f
+	getCurrentSubImageRect() image.Rectangle
+	getImage() *ebiten.Image
 }
 
 func updateEnemies(g *Game) {
@@ -20,14 +22,17 @@ func updateEnemies(g *Game) {
 	if ebiten.IsKeyPressed(ebiten.KeyM) {
 		g.enemies = append(g.enemies, Enemy(createWorm(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))))))
 	}
-	fmt.Println(len(g.enemies))
+	//fmt.Println(len(g.enemies))
 	for i, e := range g.enemies {
 		if i >= len(g.enemies) {
 			break
 		}
 
 		if e.isDead() {
-			//g.enemies = remove(g.enemies, i)
+			gibHandler := createGibHandler()
+			gibHandler.explode(5, 7, e.getCenter(), e.getCurrentSubImageRect(), e.getImage())
+			g.gibHandlers = append(g.gibHandlers, gibHandler)
+			g.enemies = remove(g.enemies, i)
 			continue
 		}
 		e.update(g.player.gun.bullets)

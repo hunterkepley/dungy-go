@@ -25,6 +25,7 @@ type Worm struct {
 	health    int
 	maxHealth int
 	dead      bool
+	remove    bool
 
 	subImageRect image.Rectangle
 
@@ -32,8 +33,6 @@ type Worm struct {
 	animation       Animation
 	animations      WormAnimations
 	animationSpeeds WormAnimationSpeeds
-
-	gibHandler GibHandler
 
 	image *ebiten.Image
 }
@@ -70,8 +69,6 @@ func (w *Worm) render(screen *ebiten.Image) {
 		w.spritesheet.sprites[w.animation.currentFrame].endPosition.x,
 		w.spritesheet.sprites[w.animation.currentFrame].endPosition.y,
 	)
-	// Draw gibs
-	w.gibHandler.render(screen)
 
 	screen.DrawImage(w.image.SubImage(w.subImageRect).(*ebiten.Image), op) // Draw worm
 }
@@ -83,8 +80,6 @@ func (w *Worm) update(bullets []Bullet) {
 		w.animation.startForwards()
 	}
 	w.animation.update(w.animationSpeeds.idle)
-
-	w.gibHandler.update()
 
 	w.size = newVec2i(
 		w.spritesheet.sprites[w.animation.currentFrame].size.x,
@@ -101,6 +96,7 @@ func (w *Worm) update(bullets []Bullet) {
 	for _, b := range bullets {
 		bulletRect := image.Rect(int(b.position.x), int(b.position.y), int(b.position.x)+b.size.x, int(b.position.y)+b.size.y)
 		if isAABBCollision(bulletRect, wormRect) {
+			// TODO: remove bullet after hitting worm, move bullet stuff to enemy.go probably?
 			w.health--
 		}
 	}
@@ -111,13 +107,20 @@ func (w *Worm) isDead() bool {
 	if w.health <= 0 {
 		if !w.dead {
 			w.dead = true
-			w.kill()
 		}
 		return true
 	}
 	return false
 }
 
-func (w *Worm) kill() { // TODO: Separate gibhandlers from enemies, make them just create one upon death
-	w.gibHandler.explode(10, w.center, w.subImageRect, w.image)
+func (w *Worm) getCenter() Vec2f {
+	return w.center
+}
+
+func (w *Worm) getCurrentSubImageRect() image.Rectangle {
+	return w.subImageRect
+}
+
+func (w *Worm) getImage() *ebiten.Image {
+	return w.image
 }

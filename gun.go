@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"math"
 
@@ -97,7 +96,7 @@ func (g *Gun) update(playerPosition Vec2f, cursorCenter Vec2i) {
 // Creates the bullets n stuff
 func (g *Gun) fire(playerPosition Vec2f, cursorCenter Vec2i) {
 	if g.fireSpeed <= 0 {
-		bulletSpeed := 3.
+		bulletSpeed := 0.2
 		g.fireSpeed = g.firespeedMax
 		g.bullets = append(
 			g.bullets,
@@ -114,14 +113,15 @@ func (g *Gun) renderBullets(screen *ebiten.Image) {
 
 func (g *Gun) updateBullets() {
 	for i := 0; i < len(g.bullets); i++ {
+		// Break if some bullets were removed and for loop is too big
 		if i-1 >= len(g.bullets) {
 			break
 		}
 		g.bullets[i].update()
+
+		// Destroy bullet if needed
 		if g.bullets[i].destroy {
-			fmt.Println("?")
 			g.bullets = removeBullet(g.bullets, i)
-			//continue
 		}
 	}
 }

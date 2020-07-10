@@ -89,6 +89,7 @@ func (w *Worm) update() {
 		int(w.position.x)+w.size.x,
 		int(w.position.y)+w.size.y,
 	)
+
 	w.subImageRect = image.Rect(int(w.position.x), int(w.position.y), endPosition.x, endPosition.y)
 	w.center = newVec2f(w.position.x+float64(w.size.x)/2, w.position.y+float64(w.size.y)/2)
 

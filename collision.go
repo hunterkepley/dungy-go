@@ -7,10 +7,10 @@ import (
 
 // isAABBCollision checks whether or not a collides with b using rectangles
 func isAABBCollision(a image.Rectangle, b image.Rectangle) bool {
-	if a.Min.X < b.Min.X+b.Size().X &&
-		a.Min.X+a.Size().X > b.Min.X &&
-		a.Min.Y < b.Min.Y+b.Size().Y &&
-		a.Min.Y+a.Size().Y > b.Min.Y {
+	if a.Min.X < b.Max.X &&
+		a.Max.X > b.Min.X &&
+		a.Min.Y < b.Max.Y &&
+		a.Max.Y > b.Min.Y {
 
 		return true
 	}

@@ -11,9 +11,9 @@ import (
 
 var (
 	displayInfo          bool = false
-	canChangeDisplayInfo bool = true    // If you can press f5 again
-	version                   = "0.1.5" // Game version
-	title                     = "UNRAY" // Game title
+	canChangeDisplayInfo bool = true          // If you can press f5 again
+	version                   = "0.1.5"       // Game version
+	title                     = "UNRAY ALPHA" // Game title
 )
 
 func displayGameInfo(screen *ebiten.Image, player Player) {

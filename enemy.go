@@ -10,7 +10,7 @@ import (
 // Enemy is the interface for all enemies in the game
 type Enemy interface {
 	render(screen *ebiten.Image)
-	update()
+	update(game *Game)
 	isDead() bool
 	getCenter() Vec2f
 	getCurrentSubImageRect() image.Rectangle
@@ -30,7 +30,6 @@ func updateEnemies(g *Game) {
 			break
 		}
 
-		
 		if g.enemies[e].isDead() {
 			gibHandler := createGibHandler()
 			gibHandler.explode(
@@ -44,7 +43,7 @@ func updateEnemies(g *Game) {
 			g.enemies = removeEnemy(g.enemies, e)
 			continue
 		}
-		g.enemies[e].update()
+		g.enemies[e].update(g)
 		// Bullet collisions
 		for b := 0; b < len(g.player.gun.bullets); b++ {
 			if isAABBCollision(g.enemies[e].getCurrentSubImageRect(), g.player.gun.bullets[b].collisionRect) {

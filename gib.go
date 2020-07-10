@@ -26,9 +26,15 @@ func (g *Gib) update(game *Game) {
 	notInWall := true
 	if g.distanceAllowed >= 0 {
 		if g.position.x <= 17+float64(g.size.x) ||
-			g.position.y <= 29 ||
+			g.position.y <= 27 ||
 			g.position.x+float64(g.size.x) >= screenWidth-17-float64(g.size.x) ||
 			g.position.y+float64(g.size.y) >= screenHeight-17-float64(g.size.y) {
+
+			/*
+						if b.position.x <= 17+float64(b.size.x) ||
+				b.position.y <= 14 ||
+				b.position.x+float64(b.size.x) >= screenWidth-17 ||
+				b.position.y+float64(b.size.y) >= screenHeight-17 {*/
 
 			notInWall = false
 			if notInWall {
@@ -121,7 +127,16 @@ func (g *GibHandler) explode(numberOfGibs int,
 	for i := 0; i < numberOfGibs; i++ {
 		randomDistanceAllowed := 10 + rand.Intn(5)
 		randomRotation := float64(rand.Intn(5))
-		randomVelocity := newVec2i(int(float64(rand.Intn(10))-2.5), int(float64(rand.Intn(10))-2.5)) // Random velocity
+		randomVelocity := newVec2i(int(float64(rand.Intn(10))+2), int(float64(rand.Intn(10))+2)) // Random velocity
+		switch rand.Intn(3) {
+		case (0):
+			randomVelocity.x *= -1
+		case (1):
+			randomVelocity.y *= -1
+		case (2):
+			randomVelocity.x *= -1
+			randomVelocity.y *= -1
+		}
 
 		// Get the subimage size and position for random gibs
 		subImageSize := newVec2i(subImage.Max.X-subImage.Min.X, subImage.Max.Y-subImage.Min.Y)

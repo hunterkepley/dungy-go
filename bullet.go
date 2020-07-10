@@ -17,6 +17,8 @@ type Bullet struct {
 	storedAngle float64
 	speed       float64
 
+	destroy bool
+
 	sprite Sprite
 
 	image *ebiten.Image
@@ -57,6 +59,14 @@ func (b *Bullet) render(screen *ebiten.Image) {
 }
 
 func (b *Bullet) update() {
+	if b.position.x <= 30 ||
+		b.position.y <= 29 ||
+		b.position.x+float64(b.size.x) >= screenWidth-30 ||
+		b.position.y+float64(b.size.y) >= screenHeight-30 {
+
+		b.destroy = true
+	}
+
 	b.position.x += b.velocity.x
 	b.position.y += b.velocity.y
 }

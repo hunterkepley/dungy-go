@@ -32,7 +32,7 @@ func updateEnemies(g *Game) {
 			gibHandler := createGibHandler()
 			gibHandler.explode(5, 7, e.getCenter(), e.getCurrentSubImageRect(), e.getImage())
 			g.gibHandlers = append(g.gibHandlers, gibHandler)
-			g.enemies = remove(g.enemies, i)
+			g.enemies = removeEnemy(g.enemies, i)
 			continue
 		}
 		e.update(g.player.gun.bullets)
@@ -46,6 +46,6 @@ func renderEnemies(g *Game, screen *ebiten.Image) {
 	}
 }
 
-func remove(slice []Enemy, e int) []Enemy {
+func removeEnemy(slice []Enemy, e int) []Enemy {
 	return append(slice[:e], slice[e+1:]...)
 }

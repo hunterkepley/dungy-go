@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"math"
 
@@ -101,7 +102,19 @@ func (g *Gun) renderBullets(screen *ebiten.Image) {
 }
 
 func (g *Gun) updateBullets() {
+	fmt.Println(len(g.bullets))
 	for i := 0; i < len(g.bullets); i++ {
+		if g.bullets[i].destroy {
+			removeBullet(g.bullets, i)
+			//continue
+		}
 		g.bullets[i].update()
+		if i-1 > len(g.bullets) {
+			break
+		}
 	}
+}
+
+func removeBullet(slice []Bullet, e int) []Bullet {
+	return append(slice[:e], slice[e+1:]...)
 }

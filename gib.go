@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"math/rand"
 
@@ -21,26 +22,42 @@ type Gib struct {
 	image    *ebiten.Image
 }
 
-func (g *Gib) update() {
+func (g *Gib) update(game *Game) {
+	notInWall := true
 	if g.distanceAllowed >= 0 {
-		// If positive, subtract until 0
-		if g.velocity.x != 0 {
-			if g.velocity.x > 0 {
-				g.velocity.x--
-			} else if g.velocity.x < 0 { // Negative
-				g.velocity.y++
+		if g.position.x <= 17 ||
+			g.position.y <= 29 ||
+			g.position.x+float64(g.size.x) >= screenWidth-17 ||
+			g.position.y+float64(g.size.y) >= screenHeight-17 {
+
+			fmt.Println(game.cursor.center.x, ", ", game.cursor.center.y)
+
+			notInWall = false
+			if notInWall {
+				g.velocity.x *= -1
+				g.velocity.y *= -1
 			}
 		}
-		if g.velocity.y != 0 {
-			if g.velocity.y > 0 {
-				g.velocity.y--
-			} else if g.velocity.y < 0 { // Negative
-				g.velocity.y++
+		if notInWall {
+			// If positive, subtract until 0
+			if g.velocity.x != 0 {
+				if g.velocity.x > 0 {
+					g.velocity.x--
+				} else if g.velocity.x < 0 { // Negative
+					g.velocity.y++
+				}
 			}
+			if g.velocity.y != 0 {
+				if g.velocity.y > 0 {
+					g.velocity.y--
+				} else if g.velocity.y < 0 { // Negative
+					g.velocity.y++
+				}
+			}
+			g.position.x += float64(g.velocity.x)
+			g.position.y += float64(g.velocity.y)
+			g.distanceAllowed--
 		}
-		g.position.x += float64(g.velocity.x)
-		g.position.y += float64(g.velocity.y)
-		g.distanceAllowed--
 	}
 }
 
@@ -84,9 +101,9 @@ func createGib(position Vec2f,
 	}
 }
 
-func (g *GibHandler) update() {
+func (g *GibHandler) update(game *Game) {
 	for i := 0; i < len(g.gibs); i++ {
-		g.gibs[i].update()
+		g.gibs[i].update(game)
 	}
 }
 
@@ -103,7 +120,7 @@ func (g *GibHandler) explode(numberOfGibs int,
 	gibImage *ebiten.Image) {
 
 	for i := 0; i < numberOfGibs; i++ {
-		randomDistanceAllowed := 10 + rand.Intn(10)
+		randomDistanceAllowed := 10 + rand.Intn(5)
 		randomRotation := float64(rand.Intn(5))
 		randomVelocity := newVec2i(int(float64(rand.Intn(10))-2.5), int(float64(rand.Intn(10))-2.5)) // Random velocity
 
@@ -134,7 +151,7 @@ func (g *GibHandler) explode(numberOfGibs int,
 
 func updateGibHandlers(g *Game) {
 	for i := 0; i < len(g.gibHandlers); i++ {
-		g.gibHandlers[i].update()
+		g.gibHandlers[i].update(g)
 	}
 }
 

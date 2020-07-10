@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"math"
 
@@ -15,6 +14,9 @@ type Gun struct {
 	rotation    float64
 	storedAngle float64
 	flipped     bool
+
+	fireSpeed    int
+	firespeedMax int
 
 	bullets []Bullet
 
@@ -83,16 +85,24 @@ func (g *Gun) update(playerPosition Vec2f, cursorPosition Vec2i) {
 		g.position.y = playerPosition.y - radius*math.Sin(g.storedAngle) // Starting position y
 	}
 
+	if g.fireSpeed > 0 {
+		g.fireSpeed--
+	}
+
 	// Make always face the mouse
 	g.rotation = angle + Pi
 }
 
 // Creates the bullets n stuff
 func (g *Gun) fire() {
-	g.bullets = append(
-		g.bullets,
-		createBullet(g.position, g.rotation),
-	)
+	if g.fireSpeed <= 0 {
+		bulletSpeed := 4.
+		g.fireSpeed = g.firespeedMax
+		g.bullets = append(
+			g.bullets,
+			createBullet(g.position, g.rotation, bulletSpeed),
+		)
+	}
 }
 
 func (g *Gun) renderBullets(screen *ebiten.Image) {
@@ -102,15 +112,14 @@ func (g *Gun) renderBullets(screen *ebiten.Image) {
 }
 
 func (g *Gun) updateBullets() {
-	fmt.Println(len(g.bullets))
 	for i := 0; i < len(g.bullets); i++ {
-		if g.bullets[i].destroy {
-			removeBullet(g.bullets, i)
-			//continue
+		if i-1 >= len(g.bullets) {
+			break
 		}
 		g.bullets[i].update()
-		if i-1 > len(g.bullets) {
-			break
+		if g.bullets[i].destroy {
+			g.bullets = removeBullet(g.bullets, i)
+			//continue
 		}
 	}
 }

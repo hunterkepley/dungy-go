@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"math/rand"
 
@@ -15,6 +14,7 @@ type Gib struct {
 	velocity Vec2i
 
 	distanceAllowed int
+	canMove         bool
 
 	rotation float64
 
@@ -25,12 +25,10 @@ type Gib struct {
 func (g *Gib) update(game *Game) {
 	notInWall := true
 	if g.distanceAllowed >= 0 {
-		if g.position.x <= 17 ||
+		if g.position.x <= 17+float64(g.size.x) ||
 			g.position.y <= 29 ||
-			g.position.x+float64(g.size.x) >= screenWidth-17 ||
-			g.position.y+float64(g.size.y) >= screenHeight-17 {
-
-			fmt.Println(game.cursor.center.x, ", ", game.cursor.center.y)
+			g.position.x+float64(g.size.x) >= screenWidth-17-float64(g.size.x) ||
+			g.position.y+float64(g.size.y) >= screenHeight-17-float64(g.size.y) {
 
 			notInWall = false
 			if notInWall {
@@ -95,6 +93,7 @@ func createGib(position Vec2f,
 		size,
 		randomVelocity,
 		distanceAllowed,
+		true,
 		rotation,
 		subImage,
 		image,

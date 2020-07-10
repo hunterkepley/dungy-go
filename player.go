@@ -143,9 +143,11 @@ func createPlayer(position Vec2f) Player {
 		true,
 
 		Gun{
-			position: position,
-			image:    iitemsSpritesheet,
-			sprite:   createSprite(newVec2i(0, 0), newVec2i(25, 13), newVec2i(25, 13), iitemsSpritesheet),
+			position:     position,
+			image:        iitemsSpritesheet,
+			sprite:       createSprite(newVec2i(0, 45), newVec2i(21, 59), newVec2i(21, 14), iitemsSpritesheet),
+			fireSpeed:    0,
+			firespeedMax: 60,
 		},
 
 		image, // Entire spritesheet

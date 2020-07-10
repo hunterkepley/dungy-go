@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"math"
 
@@ -47,11 +48,11 @@ func (g *Gun) render(screen *ebiten.Image) {
 	screen.DrawImage(g.image.SubImage(subImageRect).(*ebiten.Image), op)
 }
 
-func (g *Gun) update(playerPosition Vec2f, cursorPosition Vec2i) {
+func (g *Gun) update(playerPosition Vec2f, cursorCenter Vec2i) {
 
 	// Placement offset [circle]
 	radius := 12.
-	angle := math.Atan2(playerPosition.y-float64(cursorPosition.y), playerPosition.x-float64(cursorPosition.x))
+	angle := math.Atan2(playerPosition.y-float64(cursorCenter.y), playerPosition.x-float64(cursorCenter.x))
 
 	// Flip gun image
 	if angle < Pi/2 && angle > Pi/-2 {
@@ -94,9 +95,9 @@ func (g *Gun) update(playerPosition Vec2f, cursorPosition Vec2i) {
 }
 
 // Creates the bullets n stuff
-func (g *Gun) fire() {
+func (g *Gun) fire(playerPosition Vec2f, cursorCenter Vec2i) {
 	if g.fireSpeed <= 0 {
-		bulletSpeed := 4.
+		bulletSpeed := 3.
 		g.fireSpeed = g.firespeedMax
 		g.bullets = append(
 			g.bullets,
@@ -118,6 +119,7 @@ func (g *Gun) updateBullets() {
 		}
 		g.bullets[i].update()
 		if g.bullets[i].destroy {
+			fmt.Println("?")
 			g.bullets = removeBullet(g.bullets, i)
 			//continue
 		}

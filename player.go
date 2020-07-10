@@ -145,7 +145,7 @@ func createPlayer(position Vec2f) Player {
 		Gun{
 			position:     position,
 			image:        iitemsSpritesheet,
-			sprite:       createSprite(newVec2i(0, 45), newVec2i(21, 59), newVec2i(21, 14), iitemsSpritesheet),
+			sprite:       createSprite(newVec2i(0, 46), newVec2i(21, 59), newVec2i(21, 13), iitemsSpritesheet),
 			fireSpeed:    0,
 			firespeedMax: 60,
 		},
@@ -163,7 +163,7 @@ func (p *Player) update(cursor Cursor) {
 	case (Running):
 		p.animation.update(p.animationSpeeds.running)
 	}
-	p.input()
+	p.input(cursor)
 	go p.updateLevels()
 
 	// Blink update
@@ -173,7 +173,6 @@ func (p *Player) update(cursor Cursor) {
 	// Gun update
 	p.gun.update(
 		newVec2f(p.position.x+float64(p.dynamicSize.x)/2, p.position.y+float64(p.dynamicSize.y)/2),
-		// +3 to make the gun actually face center of mouse
 		newVec2i(cursor.center.x, cursor.center.y),
 	)
 
@@ -221,7 +220,7 @@ func (p *Player) updateBlinkTrail() {
 	}
 }
 
-func (p *Player) input() {
+func (p *Player) input(cursor Cursor) {
 	// Reset moving
 	p.isMoving = false
 
@@ -241,7 +240,7 @@ func (p *Player) input() {
 	// TEMPORARY
 
 	// Mouse button input
-	p.mouseButtonInput()
+	p.mouseButtonInput(cursor)
 
 	if !p.isBlinking {
 		// Deplete energy!
@@ -357,10 +356,10 @@ func (p *Player) input() {
 }
 
 // Mouse input!
-func (p *Player) mouseButtonInput() {
+func (p *Player) mouseButtonInput(cursor Cursor) {
 	if p.isConscious {
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-			p.gun.fire()
+			p.gun.fire(p.position, cursor.center)
 		}
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
 			// Maybe a charge shot or special ability?

@@ -73,7 +73,7 @@ func (w *Worm) render(screen *ebiten.Image) {
 	screen.DrawImage(w.image.SubImage(w.subImageRect).(*ebiten.Image), op) // Draw worm
 }
 
-func (w *Worm) update(bullets []Bullet) {
+func (w *Worm) update() {
 	// Start the animation if it's not playing
 	if w.animation.state != AnimationPlayingForwards {
 		w.animation = w.animations.idleFront
@@ -89,17 +89,8 @@ func (w *Worm) update(bullets []Bullet) {
 		int(w.position.x)+w.size.x,
 		int(w.position.y)+w.size.y,
 	)
-	wormRect := image.Rect(int(w.position.x), int(w.position.y), endPosition.x, endPosition.y)
+	w.subImageRect = image.Rect(int(w.position.x), int(w.position.y), endPosition.x, endPosition.y)
 	w.center = newVec2f(w.position.x+float64(w.size.x)/2, w.position.y+float64(w.size.y)/2)
-
-	// Bullet collisions
-	for _, b := range bullets {
-		bulletRect := image.Rect(int(b.position.x), int(b.position.y), int(b.position.x)+b.size.x, int(b.position.y)+b.size.y)
-		if isAABBCollision(bulletRect, wormRect) {
-			// TODO: remove bullet after hitting worm, move bullet stuff to enemy.go probably?
-			w.health--
-		}
-	}
 
 }
 
@@ -123,4 +114,8 @@ func (w *Worm) getCurrentSubImageRect() image.Rectangle {
 
 func (w *Worm) getImage() *ebiten.Image {
 	return w.image
+}
+
+func (w *Worm) damage() {
+	w.health--
 }

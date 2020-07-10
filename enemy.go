@@ -10,11 +10,12 @@ import (
 // Enemy is the interface for all enemies in the game
 type Enemy interface {
 	render(screen *ebiten.Image)
-	update(bullets []Bullet)
+	update()
 	isDead() bool
 	getCenter() Vec2f
 	getCurrentSubImageRect() image.Rectangle
 	getImage() *ebiten.Image
+	damage()
 }
 
 func updateEnemies(g *Game) {
@@ -22,20 +23,35 @@ func updateEnemies(g *Game) {
 	if ebiten.IsKeyPressed(ebiten.KeyM) {
 		g.enemies = append(g.enemies, Enemy(createWorm(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))))))
 	}
-	//fmt.Println(len(g.enemies))
-	for i, e := range g.enemies {
-		if i >= len(g.enemies) {
+
+	for e := 0; e < len(g.enemies); e++ {
+		if e >= len(g.enemies) {
 			break
 		}
 
-		if e.isDead() {
+		// Bullet collisions
+		for i := 0; i < len(g.player.gun.bullets); i++ {
+
+			if isAABBCollision(g.player.gun.bullets[i].collisionRect, g.enemies[e].getCurrentSubImageRect()) {
+				g.enemies[e].damage()
+				g.player.gun.bullets[i].destroy = true
+			}
+		}
+
+		if g.enemies[e].isDead() {
 			gibHandler := createGibHandler()
-			gibHandler.explode(5, 7, e.getCenter(), e.getCurrentSubImageRect(), e.getImage())
+			gibHandler.explode(
+				5,
+				7,
+				g.enemies[e].getCenter(),
+				g.enemies[e].getCurrentSubImageRect(),
+				g.enemies[e].getImage(),
+			)
 			g.gibHandlers = append(g.gibHandlers, gibHandler)
-			g.enemies = removeEnemy(g.enemies, i)
+			g.enemies = removeEnemy(g.enemies, e)
 			continue
 		}
-		e.update(g.player.gun.bullets)
+		g.enemies[e].update()
 
 	}
 }

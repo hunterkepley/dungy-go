@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"math"
 
@@ -27,8 +26,6 @@ func (b *BulletGlow) render(screen *ebiten.Image, glowSprite *Sprite) {
 	op.GeoM.Rotate(b.rotation)
 	op.GeoM.Translate(b.position.x, b.position.y)
 	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
-
-	fmt.Println("pos: ", b.position, "\nrot:", b.rotation, "\nsize:", b.size.x, ", ", b.size.y)
 
 	subImageRect := image.Rect(
 		b.sprite.startPosition.x,
@@ -56,6 +53,8 @@ type Bullet struct {
 	storedAngle float64
 	speed       float64
 
+	collisionRect image.Rectangle
+
 	destroy bool
 
 	glow       BulletGlow
@@ -72,10 +71,13 @@ func createBullet(position Vec2f, rotation float64, speed float64) Bullet {
 
 	glowSprite := createSprite(newVec2i(27, 46), newVec2i(34, 53), newVec2i(7, 7), iitemsSpritesheet)
 
+	size := newVec2i(5, 5)
+
 	return Bullet{
 		position:   position,
 		rotation:   rotation,
-		sprite:     createSprite(newVec2i(22, 47), newVec2i(27, 52), newVec2i(5, 5), iitemsSpritesheet),
+		sprite:     createSprite(newVec2i(22, 47), newVec2i(27, 52), size, iitemsSpritesheet),
+		size:       size,
 		image:      iitemsSpritesheet,
 		velocity:   velocity,
 		speed:      speed,
@@ -106,22 +108,29 @@ func (b *Bullet) render(screen *ebiten.Image) {
 }
 
 func (b *Bullet) update() {
-	if b.position.x <= 20+float64(b.size.x) ||
-		b.position.y <= 14 ||
-		b.position.x+float64(b.size.x) >= screenWidth-20-float64(b.size.x) ||
-		b.position.y+float64(b.size.y) >= screenHeight-20-float64(b.size.y) {
-
-		b.destroy = true
-	}
+	b.borderCollision()
 
 	b.position.x += b.velocity.x
 	b.position.y += b.velocity.y
 
 	// Move glow
 	b.glow.update(b.position, b.rotation)
+
+	b.collisionRect = image.Rect(
+		int(b.position.x),
+		int(b.position.y),
+		int(b.position.x)+b.size.x,
+		int(b.position.y)+b.size.y,
+	)
 }
 
 // Checks if bullets collide with border, deletes if so
 func (b *Bullet) borderCollision() {
+	if b.position.x <= 17+float64(b.size.x) ||
+		b.position.y <= 14 ||
+		b.position.x+float64(b.size.x) >= screenWidth-17 ||
+		b.position.y+float64(b.size.y) >= screenHeight-17 {
 
+		b.destroy = true
+	}
 }

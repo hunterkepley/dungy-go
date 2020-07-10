@@ -43,8 +43,8 @@ func createWorm(position Vec2f) *Worm {
 	return &Worm{
 		position: position,
 
-		health:    10,
-		maxHealth: 10,
+		health:    3,
+		maxHealth: 3,
 		dead:      false,
 
 		spritesheet: idleFrontSpritesheet,

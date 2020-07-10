@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"math/rand"
 
@@ -31,17 +30,7 @@ func updateEnemies(g *Game) {
 			break
 		}
 
-		// Bullet collisions
-		for b := 0; b < len(g.player.gun.bullets); b++ {
-
-			if isAABBCollision(g.enemies[e].getCurrentSubImageRect(), g.player.gun.bullets[b].collisionRect) {
-				fmt.Println("!")
-				g.enemies[e].damage()
-				g.player.gun.bullets[b].destroy = true
-				break
-			}
-		}
-
+		
 		if g.enemies[e].isDead() {
 			gibHandler := createGibHandler()
 			gibHandler.explode(
@@ -56,6 +45,14 @@ func updateEnemies(g *Game) {
 			continue
 		}
 		g.enemies[e].update()
+		// Bullet collisions
+		for b := 0; b < len(g.player.gun.bullets); b++ {
+			if isAABBCollision(g.enemies[e].getCurrentSubImageRect(), g.player.gun.bullets[b].collisionRect) {
+				g.enemies[e].damage()
+				g.player.gun.bullets[b].destroy = true
+				break
+			}
+		}
 
 	}
 }

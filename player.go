@@ -16,12 +16,12 @@ type Player struct {
 	health    int
 	maxHealth int
 
-	energy               int
-	maxEnergy            int
-	energyRegenTimer     int
-	energyRegenTimerMax  int
-	sprintEnergyTimer    int
-	sprintEnergyTimerMax int
+	energy               int // Energy!
+	maxEnergy            int // How much energy he can have max
+	energyRegenTimer     int // Regeneration timer
+	energyRegenTimerMax  int // Regeneration timer tick rate
+	sprintEnergyTimer    int // Keeps track of how fast sprint is depleting energy
+	sprintEnergyTimerMax int // Sprint energy depletion tick rate
 
 	dynamicSize Vec2i // This is the player's dynamic size
 	staticSize  Vec2i // This value is the player's largest size for wall collisions
@@ -35,6 +35,8 @@ type Player struct {
 	endBlinkTimer int        // Timer for each blink
 	isBlinking    bool       // If blinking
 	blinkTrail    BlinkTrail // The animated blue trail
+
+	shadow Shadow // The shadow below the player :)
 
 	spritesheet     Spritesheet           // Current spritesheet
 	animation       Animation             // Current Animation
@@ -80,6 +82,9 @@ func createPlayer(position Vec2f) Player {
 
 	walkSpeed := 0.8
 	runSpeed := 1.6
+
+	shadowRect := image.Rect(0, 231, 13, 237)
+
 	image := iplayerSpritesheet
 	// Idle
 	idleFrontSpritesheet := createSpritesheet(newVec2i(0, 0), newVec2i(60, 26), 5, image)
@@ -119,6 +124,8 @@ func createPlayer(position Vec2f) Player {
 		endBlinkTimer, // Time for each blink
 		false,
 		createBlinkTrail(0.5),
+
+		createShadow(shadowRect, iplayerSpritesheet),
 
 		idleFrontSpritesheet,                         // Current animation spritesheet
 		createAnimation(idleFrontSpritesheet, image), // Current animation
@@ -185,6 +192,8 @@ func (p *Player) update(cursor Cursor) {
 		p.isDrawable = !p.isDrawable
 		p.isConscious = !p.isConscious // No shoot or move while blink
 	}
+
+	p.shadow.update(p.position, p.dynamicSize)
 }
 
 func (p *Player) render(screen *ebiten.Image) {
@@ -199,6 +208,10 @@ func (p *Player) render(screen *ebiten.Image) {
 			p.spritesheet.sprites[p.animation.currentFrame].endPosition.x,
 			p.spritesheet.sprites[p.animation.currentFrame].endPosition.y,
 		)
+
+		// Draw shadow
+		p.shadow.render(screen)
+
 		screen.DrawImage(p.image.SubImage(subImageRect).(*ebiten.Image), op) // Draw player
 	}
 	p.renderBlinkTrail(screen) // Draw blink trail

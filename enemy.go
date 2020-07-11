@@ -33,7 +33,7 @@ func updateEnemies(g *Game) {
 		if g.enemies[e].isDead() {
 			gibHandler := createGibHandler()
 			gibHandler.explode(
-				6,
+				10,
 				8,
 				g.enemies[e].getCenter(),
 				g.enemies[e].getCurrentSubImageRect(),

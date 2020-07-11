@@ -147,8 +147,6 @@ func main() {
 	// Hide cursor
 	ebiten.SetCursorMode(ebiten.CursorModeHidden)
 
-	//ebiten.SetFullscreen(true)
-
 	if err := ebiten.RunGame(&Game{}); err != nil {
 		log.Fatal(err)
 	}
@@ -160,4 +158,5 @@ func loadPregameResources() {
 	loadTileImages()
 	loadItemsImages()
 	loadEnemiesImages()
+	loadParticlesImages()
 }

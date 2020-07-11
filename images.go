@@ -11,6 +11,7 @@ var (
 	icursor             *ebiten.Image
 	iitemsSpritesheet   *ebiten.Image
 	ienemiesSpritesheet *ebiten.Image
+	ibloodSpritesheet   *ebiten.Image
 )
 
 func loadPlayerImages() {
@@ -31,4 +32,8 @@ func loadItemsImages() {
 
 func loadEnemiesImages() {
 	ienemiesSpritesheet, _ = loadImage("./Assets/Art/Enemies/spritesheet.png")
+}
+
+func loadParticlesImages() {
+	ibloodSpritesheet, _ = loadImage("./Assets/Art/Particles/blood.png")
 }

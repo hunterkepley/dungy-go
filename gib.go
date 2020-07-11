@@ -127,8 +127,8 @@ func (g *GibHandler) explode(numberOfGibs int,
 	for i := 0; i < numberOfGibs; i++ {
 		randomDistanceAllowed := 10 + rand.Intn(5)
 		randomRotation := float64(rand.Intn(5))
-		randomVelocity := newVec2i(int(float64(rand.Intn(10))+2), int(float64(rand.Intn(10))+2)) // Random velocity
-		switch rand.Intn(3) {
+		randomVelocity := newVec2i(int(float64(rand.Intn(8))+2), int(float64(rand.Intn(8))+2)) // Random velocity
+		switch rand.Intn(8) {
 		case (0):
 			randomVelocity.x *= -1
 		case (1):
@@ -136,6 +136,9 @@ func (g *GibHandler) explode(numberOfGibs int,
 		case (2):
 			randomVelocity.x *= -1
 			randomVelocity.y *= -1
+		case (3):
+			randomVelocity.x = 0
+			randomVelocity.y = 0
 		}
 
 		// Get the subimage size and position for random gibs

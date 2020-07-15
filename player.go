@@ -83,7 +83,7 @@ func createPlayer(position Vec2f) Player {
 	walkSpeed := 0.8
 	runSpeed := 1.6
 
-	shadowRect := image.Rect(0, 231, 13, 237)
+	shadowRect := image.Rect(0, 231, 14, 237)
 
 	image := iplayerSpritesheet
 	// Idle

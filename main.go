@@ -27,12 +27,13 @@ type Game struct {
 	player Player
 	cursor Cursor
 
-	enemies     []Enemy
-	gibHandlers []GibHandler
-	walls       []Tile
-	tiles       [][]Tile
-	borders     []Border
-	ui          []UI
+	enemies       []Enemy
+	gibHandlers   []GibHandler
+	bloodEmitters []BloodEmitter
+	walls         []Tile
+	tiles         [][]Tile
+	borders       []Border
+	ui            []UI
 }
 
 // Init initializes the game

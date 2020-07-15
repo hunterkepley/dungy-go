@@ -35,7 +35,7 @@ func (s *Shadow) update(itemPosition Vec2f, itemSize Vec2i) {
 		s.subImageRect.Max.Y,
 	)
 	s.position = newVec2f(
-		itemPosition.x+float64(itemSize.x)/2-1,
+		itemPosition.x+float64(itemSize.x)/2,
 		itemPosition.y+float64(itemSize.y)-float64(s.size.y/4),
 	)
 }

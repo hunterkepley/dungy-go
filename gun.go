@@ -111,7 +111,7 @@ func (g *Gun) renderBullets(screen *ebiten.Image) {
 	}
 }
 
-func (g *Gun) updateBullets() {
+func (g *Gun) updateBullets(game *Game) {
 	for i := 0; i < len(g.bullets); i++ {
 		// Break if some bullets were removed and for loop is too big
 		if i-1 >= len(g.bullets) {
@@ -121,6 +121,7 @@ func (g *Gun) updateBullets() {
 
 		// Destroy bullet if needed
 		if g.bullets[i].destroy {
+			game.bulletExplosions = append(game.bulletExplosions, createBulletExplosion(g.bullets[i].position, iitemsSpritesheet))
 			g.bullets = removeBullet(g.bullets, i)
 		}
 	}

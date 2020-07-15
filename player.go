@@ -154,7 +154,7 @@ func createPlayer(position Vec2f) Player {
 			image:        iitemsSpritesheet,
 			sprite:       createSprite(newVec2i(0, 46), newVec2i(21, 59), newVec2i(21, 13), iitemsSpritesheet),
 			fireSpeed:    0,
-			firespeedMax: 60,
+			firespeedMax: 50,
 		},
 
 		image, // Entire spritesheet
@@ -202,11 +202,14 @@ func (p *Player) render(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(p.position.x, p.position.y)
 		op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+
+		currentFrame := p.spritesheet.sprites[p.animation.currentFrame]
+
 		subImageRect := image.Rect(
-			p.spritesheet.sprites[p.animation.currentFrame].startPosition.x,
-			p.spritesheet.sprites[p.animation.currentFrame].startPosition.y,
-			p.spritesheet.sprites[p.animation.currentFrame].endPosition.x,
-			p.spritesheet.sprites[p.animation.currentFrame].endPosition.y,
+			currentFrame.startPosition.x,
+			currentFrame.startPosition.y,
+			currentFrame.endPosition.x,
+			currentFrame.endPosition.y,
 		)
 
 		// Draw shadow

@@ -27,13 +27,14 @@ type Game struct {
 	player Player
 	cursor Cursor
 
-	enemies       []Enemy
-	gibHandlers   []GibHandler
-	bloodEmitters []BloodEmitter
-	walls         []Tile
-	tiles         [][]Tile
-	borders       []Border
-	ui            []UI
+	enemies          []Enemy
+	gibHandlers      []GibHandler
+	bloodEmitters    []BloodEmitter
+	bulletExplosions []BulletExplosion
+	walls            []Tile
+	tiles            [][]Tile
+	borders          []Border
+	ui               []UI
 }
 
 // Init initializes the game
@@ -66,7 +67,8 @@ func (g *Game) Update(screen *ebiten.Image) error {
 
 	// Update player
 	g.player.update(g.cursor)
-	g.player.gun.updateBullets()
+	g.player.gun.updateBullets(g)
+	updateBulletExplosions(g)
 
 	// Update enemies
 	updateEnemies(g)
@@ -112,6 +114,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	if g.player.isDrawable {
 		g.player.gun.render(screen)
 	}
+	renderBulletExplosions(g, screen)
 
 	// Basic text render calls
 	if displayInfo {

@@ -7,6 +7,115 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
+// BulletExplosion is the animation that plays when a bullet hits something
+type BulletExplosion struct {
+	position Vec2f
+	size     Vec2i
+
+	animation         Animation
+	animationSpeed    float64
+	animationStarted  bool
+	animationFinished bool
+
+	sprite *Sprite
+
+	image *ebiten.Image
+}
+
+func createBulletExplosion(position Vec2f, image *ebiten.Image) BulletExplosion {
+	spritesheet := createSpritesheet(
+		newVec2i(0, 60),
+		newVec2i(112, 76),
+		7,
+		iitemsSpritesheet,
+	)
+	size := spritesheet.sprites[0].size
+	sprite := createSprite(newVec2i(0, 60), newVec2i(112, 76), size, image)
+	position.x -= float64(size.x) / 2
+	position.y -= float64(size.y) / 2
+	animation := createAnimation(
+		spritesheet,
+		image,
+	)
+
+	return BulletExplosion{
+		position: position,
+		size:     size,
+
+		animation:         animation,
+		animationSpeed:    5.,
+		animationStarted:  false,
+		animationFinished: false,
+
+		sprite: &sprite,
+
+		image: image,
+	}
+}
+
+func (b *BulletExplosion) update(g *Game) {
+	if !b.animationStarted {
+		b.animation.startForwards()
+		b.animationStarted = true
+	}
+	if b.animation.currentFrame == b.animation.spritesheet.numberOfSprites-1 {
+		b.animationFinished = true
+	}
+	b.animation.update(b.animationSpeed)
+}
+
+func (b *BulletExplosion) render(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(b.position.x, b.position.y)
+	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+
+	currentFrame := b.animation.spritesheet.sprites[b.animation.currentFrame]
+
+	subImageRect := image.Rect(
+		currentFrame.startPosition.x,
+		currentFrame.startPosition.y,
+		currentFrame.endPosition.x,
+		currentFrame.endPosition.y,
+	)
+
+	screen.DrawImage(b.image.SubImage(subImageRect).(*ebiten.Image), op)
+}
+
+func updateBulletExplosions(game *Game) {
+	for i := 0; i < len(game.bulletExplosions); i++ {
+		/*
+			// Break if some bullets were removed and for loop is too big
+			if i-1 >= len(g.bullets) {
+				break
+			}
+			g.bullets[i].update()
+
+			// Destroy bullet if needed
+			if g.bullets[i].destroy {
+				game.bulletExplosions = append(game.bulletExplosions, createBulletExplosion(g.bullets[i].position, iitemsSpritesheet))
+				g.bullets = removeBullet(g.bullets, i)
+			}*/
+		if i-1 > len(game.bulletExplosions) {
+			break
+		}
+		game.bulletExplosions[i].update(game)
+		if game.bulletExplosions[i].animationFinished {
+
+			game.bulletExplosions = removeBulletExplosion(game.bulletExplosions, i)
+		}
+	}
+}
+
+func renderBulletExplosions(game *Game, screen *ebiten.Image) {
+	for i := 0; i < len(game.bulletExplosions); i++ {
+		game.bulletExplosions[i].render(screen)
+	}
+}
+
+func removeBulletExplosion(slice []BulletExplosion, e int) []BulletExplosion {
+	return append(slice[:e], slice[e+1:]...)
+}
+
 // BulletGlow is the glow around the laser bullets, just an image
 type BulletGlow struct {
 	position Vec2f

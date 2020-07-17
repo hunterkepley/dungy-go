@@ -83,18 +83,6 @@ func (b *BulletExplosion) render(screen *ebiten.Image) {
 
 func updateBulletExplosions(game *Game) {
 	for i := 0; i < len(game.bulletExplosions); i++ {
-		/*
-			// Break if some bullets were removed and for loop is too big
-			if i-1 >= len(g.bullets) {
-				break
-			}
-			g.bullets[i].update()
-
-			// Destroy bullet if needed
-			if g.bullets[i].destroy {
-				game.bulletExplosions = append(game.bulletExplosions, createBulletExplosion(g.bullets[i].position, iitemsSpritesheet))
-				g.bullets = removeBullet(g.bullets, i)
-			}*/
 		if i-1 > len(game.bulletExplosions) {
 			break
 		}

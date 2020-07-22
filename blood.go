@@ -2,11 +2,12 @@ package main
 
 import (
 	"image"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten"
 )
 
-// Blood is a blood drop
+// Blood is a drop of blood :)
 type Blood struct {
 	position Vec2f
 	rotation float64
@@ -25,14 +26,7 @@ func (b *Blood) render(screen *ebiten.Image) {
 	op.GeoM.Translate(b.position.x, b.position.y)
 	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
 
-	subImageRect := image.Rect(
-		b.sprite.startPosition.x,
-		b.sprite.startPosition.y,
-		b.sprite.endPosition.x,
-		b.sprite.endPosition.y,
-	)
-
-	screen.DrawImage(b.image.SubImage(subImageRect).(*ebiten.Image), op)
+	screen.DrawImage(b.image.SubImage(b.subImage).(*ebiten.Image), op)
 }
 
 func (b *Blood) update() {
@@ -42,6 +36,63 @@ func (b *Blood) update() {
 // BloodEmitter sprays out blood onto the ground!
 type BloodEmitter struct {
 	position Vec2f
+	rotation float64
+
+	spawnTimer    float64
+	spawnTimerMax float64
+
+	blood             []Blood
+	bloodSize         Vec2i
+	bloodSizeOriginal Vec2i
 
 	image *ebiten.Image
+}
+
+func createBloodEmitter(position Vec2f, spawnTimerMax float64, bloodSizeOriginal Vec2i, image *ebiten.Image) BloodEmitter {
+	return BloodEmitter{
+		position:          position,
+		spawnTimer:        0,
+		spawnTimerMax:     spawnTimerMax,
+		bloodSize:         bloodSizeOriginal,
+		bloodSizeOriginal: bloodSizeOriginal,
+		image:             image,
+	}
+}
+
+func (b *BloodEmitter) render(screen *ebiten.Image) {
+	for i := 0; i < len(b.blood); i++ {
+		b.blood[i].render(screen)
+	}
+}
+
+func (b *BloodEmitter) update(position Vec2f) {
+	if b.spawnTimer > 0 {
+		b.spawnTimer--
+	} else { // Spawn blood
+		b.spawn(position, b.bloodSize)
+		b.spawnTimer = b.spawnTimerMax
+	}
+	for i := 0; i < len(b.blood); i++ {
+		b.blood[i].update()
+	}
+}
+
+// spawn spawns a drop of blood
+func (b *BloodEmitter) spawn(position Vec2f, size Vec2i) {
+	min := newVec2i(
+		rand.Intn(ibloodSpritesheet.Bounds().Max.Y+size.x)-size.x,
+		rand.Intn(ibloodSpritesheet.Bounds().Max.X+size.y)-size.y,
+	)
+
+	subImage := image.Rect(min.x, min.y, min.x+size.x, min.y+size.y)
+	rotation := rand.Float64() * Pi
+	b.blood = append(
+		b.blood,
+		Blood{
+			position: position,
+			rotation: rotation,
+			subImage: subImage,
+			image:    b.image,
+		},
+	)
 }

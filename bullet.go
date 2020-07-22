@@ -43,7 +43,7 @@ func createBulletExplosion(position Vec2f, image *ebiten.Image) BulletExplosion 
 		size:     size,
 
 		animation:         animation,
-		animationSpeed:    5.,
+		animationSpeed:    6.,
 		animationStarted:  false,
 		animationFinished: false,
 
@@ -86,9 +86,10 @@ func updateBulletExplosions(game *Game) {
 		if i-1 > len(game.bulletExplosions) {
 			break
 		}
-		game.bulletExplosions[i].update(game)
-		if game.bulletExplosions[i].animationFinished {
 
+		game.bulletExplosions[i].update(game)
+
+		if game.bulletExplosions[i].animationFinished && game.bulletExplosions[i].animation.currentFrame == 0 {
 			game.bulletExplosions = removeBulletExplosion(game.bulletExplosions, i)
 		}
 	}

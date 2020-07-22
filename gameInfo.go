@@ -12,7 +12,7 @@ import (
 var (
 	displayInfo          bool = false
 	canChangeDisplayInfo bool = true          // If you can press f5 again
-	version                   = "0.1.5"       // Game version
+	version                   = "0.1.7"       // Game version
 	title                     = "UNRAY ALPHA" // Game title
 )
 

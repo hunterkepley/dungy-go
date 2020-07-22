@@ -13,6 +13,8 @@ type Gib struct {
 	size     Vec2i
 	velocity Vec2i
 
+	bloodEmitter BloodEmitter
+
 	distanceAllowed int
 	canMove         bool
 
@@ -30,13 +32,8 @@ func (g *Gib) update(game *Game) {
 			g.position.x+float64(g.size.x) >= screenWidth-17-float64(g.size.x) ||
 			g.position.y+float64(g.size.y) >= screenHeight-17-float64(g.size.y) {
 
-			/*
-						if b.position.x <= 17+float64(b.size.x) ||
-				b.position.y <= 14 ||
-				b.position.x+float64(b.size.x) >= screenWidth-17 ||
-				b.position.y+float64(b.size.y) >= screenHeight-17 {*/
-
 			notInWall = false
+			g.canMove = false
 			if notInWall {
 				g.velocity.x *= -1
 				g.velocity.y *= -1
@@ -62,6 +59,8 @@ func (g *Gib) update(game *Game) {
 			g.position.y += float64(g.velocity.y)
 			g.distanceAllowed--
 		}
+	} else {
+		g.canMove = false
 	}
 }
 
@@ -98,6 +97,7 @@ func createGib(position Vec2f,
 		position,
 		size,
 		randomVelocity,
+		createBloodEmitter(position, 1, size, ibloodSpritesheet),
 		distanceAllowed,
 		true,
 		rotation,
@@ -109,12 +109,16 @@ func createGib(position Vec2f,
 func (g *GibHandler) update(game *Game) {
 	for i := 0; i < len(g.gibs); i++ {
 		g.gibs[i].update(game)
+		if g.gibs[i].canMove {
+			g.gibs[i].bloodEmitter.update(g.gibs[i].position)
+		}
 	}
 }
 
 func (g *GibHandler) render(screen *ebiten.Image) {
 	for i := 0; i < len(g.gibs); i++ {
 		g.gibs[i].render(screen)
+		g.gibs[i].bloodEmitter.render(screen)
 	}
 }
 

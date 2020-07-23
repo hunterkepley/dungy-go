@@ -193,6 +193,7 @@ func (p *Player) update(cursor Cursor) {
 		p.isConscious = !p.isConscious // No shoot or move while blink
 	}
 
+	p.shadow.isDrawable = p.isDrawable
 	p.shadow.update(p.position, p.dynamicSize)
 }
 

@@ -29,6 +29,8 @@ type Worm struct {
 	dead      bool
 	remove    bool
 
+	shadow Shadow // The shadow below the worm
+
 	subImageRect image.Rectangle
 
 	spritesheet     Spritesheet
@@ -39,8 +41,13 @@ type Worm struct {
 	image *ebiten.Image
 }
 
-func createWorm(position Vec2f) *Worm {
+func createWorm(position Vec2f, game *Game) *Worm {
 	idleFrontSpritesheet := createSpritesheet(newVec2i(0, 0), newVec2i(68, 22), 4, ienemiesSpritesheet)
+
+	shadowRect := image.Rect(0, 231, 14, 237)
+	shadow := createShadow(shadowRect, iplayerSpritesheet)
+
+	game.shadows = append(game.shadows, &shadow)
 
 	return &Worm{
 		position:  position,
@@ -50,6 +57,8 @@ func createWorm(position Vec2f) *Worm {
 		health:    3,
 		maxHealth: 3,
 		dead:      false,
+
+		shadow: shadow,
 
 		spritesheet: idleFrontSpritesheet,
 		animations: WormAnimations{
@@ -100,6 +109,9 @@ func (w *Worm) update(game *Game) {
 		int(w.position.x)+w.size.x,
 		int(w.position.y)+w.size.y,
 	)
+
+	// Update shadow
+	w.shadow.update(w.position, w.size)
 
 	w.subImageRect = image.Rect(int(w.position.x), int(w.position.y), endPosition.x, endPosition.y)
 	w.center = newVec2f(w.position.x+float64(w.size.x)/2, w.position.y+float64(w.size.y)/2)

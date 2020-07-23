@@ -79,6 +79,8 @@ func (b *BloodEmitter) update(position Vec2f) {
 
 // spawn spawns a drop of blood
 func (b *BloodEmitter) spawn(position Vec2f, size Vec2i) {
+	size.x = rand.Intn(size.x-1) + 1 // Random size based off of the max
+	size.y = rand.Intn(size.y-1) + 1 // ^
 	min := newVec2i(
 		rand.Intn(ibloodSpritesheet.Bounds().Max.Y+size.x)-size.x,
 		rand.Intn(ibloodSpritesheet.Bounds().Max.X+size.y)-size.y,

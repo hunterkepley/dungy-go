@@ -31,6 +31,7 @@ type Game struct {
 	gibHandlers      []GibHandler
 	bloodEmitters    []BloodEmitter
 	bulletExplosions []BulletExplosion
+	shadows          []*Shadow
 	walls            []Tile
 	tiles            [][]Tile
 	borders          []Border
@@ -41,6 +42,7 @@ type Game struct {
 func (g *Game) Init() {
 	// Player
 	g.player = createPlayer(newVec2f(screenWidth/2, screenHeight/2))
+	g.shadows = append(g.shadows, &g.player.shadow)
 	// Cursor
 	g.cursor = createCursor(iUISpritesheet)
 	// Background image
@@ -97,13 +99,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Render game walls/tiles
 	renderTiles(g, screen)
 
-	// Render borders
-	for _, b := range g.borders {
-		b.render(screen)
-	}
-
 	// Render gibHandlers
 	renderGibHandlers(g, screen)
+
+	// Render shadows!
+	for i := 0; i < len(g.shadows); i++ {
+		g.shadows[i].render(screen)
+	}
 
 	// Render enemies behind player
 	renderEnemies(g, screen)
@@ -115,6 +117,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		g.player.gun.render(screen)
 	}
 	renderBulletExplosions(g, screen)
+
+	// Render borders
+	for _, b := range g.borders {
+		b.render(screen)
+	}
 
 	// Basic text render calls
 	if displayInfo {

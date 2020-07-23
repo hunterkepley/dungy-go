@@ -212,9 +212,6 @@ func (p *Player) render(screen *ebiten.Image) {
 			currentFrame.endPosition.y,
 		)
 
-		// Draw shadow
-		p.shadow.render(screen)
-
 		screen.DrawImage(p.image.SubImage(subImageRect).(*ebiten.Image), op) // Draw player
 	}
 	p.renderBlinkTrail(screen) // Draw blink trail

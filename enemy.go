@@ -12,6 +12,7 @@ type Enemy interface {
 	render(screen *ebiten.Image)
 	update(game *Game)
 	isDead() bool
+	getShadow() Shadow
 	getCenter() Vec2f
 	getCurrentSubImageRect() image.Rectangle
 	getImage() *ebiten.Image
@@ -32,6 +33,7 @@ func updateEnemies(g *Game) {
 
 		if g.enemies[e].isDead() {
 			gibHandler := createGibHandler()
+			g.shadows = removeShadow((g.shadows), g.enemies[e].getShadow().id)
 			gibHandler.explode(
 				10,
 				8,

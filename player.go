@@ -69,7 +69,7 @@ type PlayerAnimationSpeeds struct {
 	blinkTrail float64
 }
 
-func createPlayer(position Vec2f) Player {
+func createPlayer(position Vec2f, game *Game) Player {
 
 	health := 9
 
@@ -125,7 +125,7 @@ func createPlayer(position Vec2f) Player {
 		false,
 		createBlinkTrail(0.5),
 
-		createShadow(shadowRect, iplayerSpritesheet),
+		createShadow(shadowRect, iplayerSpritesheet, generateUniqueShadowID(game)),
 
 		idleFrontSpritesheet,                         // Current animation spritesheet
 		createAnimation(idleFrontSpritesheet, image), // Current animation

@@ -36,12 +36,14 @@ type Game struct {
 	tiles            [][]Tile
 	borders          []Border
 	ui               []UI
+
+	shadowID int // Shadow IDs, starts at 0 then increments when a shadow is added
 }
 
 // Init initializes the game
 func (g *Game) Init() {
 	// Player
-	g.player = createPlayer(newVec2f(screenWidth/2, screenHeight/2))
+	g.player = createPlayer(newVec2f(screenWidth/2, screenHeight/2), g)
 	g.shadows = append(g.shadows, &g.player.shadow)
 	// Cursor
 	g.cursor = createCursor(iUISpritesheet)

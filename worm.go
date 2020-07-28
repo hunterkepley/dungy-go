@@ -27,7 +27,8 @@ type Worm struct {
 	health    int
 	maxHealth int
 	dead      bool
-	remove    bool
+	remove    bool // Do we remove this worm?
+	flipped   bool // Is the worm flipped?
 
 	shadow *Shadow // The shadow below the worm
 
@@ -73,6 +74,12 @@ func createWorm(position Vec2f, game *Game) *Worm {
 
 func (w *Worm) render(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(0-float64(w.size.x)/2, 0-float64(w.size.y)/2)
+	if w.flipped {
+		op.GeoM.Scale(1, -1)
+	} else {
+		op.GeoM.Scale(1, 1)
+	}
 	op.GeoM.Translate(w.position.x, w.position.y)
 	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
 	w.subImageRect = image.Rect(

@@ -74,20 +74,25 @@ func createWorm(position Vec2f, game *Game) *Worm {
 
 func (w *Worm) render(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(0-float64(w.size.x)/2, 0-float64(w.size.y)/2)
+	// FLIP DECIDER
+	flip := newVec2f(1, 1)
 	if w.flipped {
-		op.GeoM.Scale(1, -1)
-	} else {
-		op.GeoM.Scale(1, 1)
+		flip.x = -1
 	}
-	op.GeoM.Translate(w.position.x, w.position.y)
-	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+
+	// ROTATE & FLIP
+	op.GeoM.Translate(float64(0-w.size.x)/2, float64(0-w.size.y)/2)
+	op.GeoM.Scale(flip.x, flip.y)
+	op.GeoM.Translate(float64(w.size.x)/2, float64(w.size.y)/2)
 	w.subImageRect = image.Rect(
 		w.spritesheet.sprites[w.animation.currentFrame].startPosition.x,
 		w.spritesheet.sprites[w.animation.currentFrame].startPosition.y,
 		w.spritesheet.sprites[w.animation.currentFrame].endPosition.x,
 		w.spritesheet.sprites[w.animation.currentFrame].endPosition.y,
 	)
+	// POSITION
+	op.GeoM.Translate(float64(w.position.x), float64(w.position.y))
+	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
 
 	screen.DrawImage(w.image.SubImage(w.subImageRect).(*ebiten.Image), op) // Draw worm
 }
@@ -126,8 +131,10 @@ func (w *Worm) update(game *Game) {
 func (w *Worm) followPlayer(game *Game) {
 	if w.position.x < game.player.position.x-w.moveSpeed {
 		w.velocity.x = w.moveSpeed
+		w.flipped = true
 	} else if w.position.x > game.player.position.x+w.moveSpeed {
 		w.velocity.x = -w.moveSpeed
+		w.flipped = false
 	} else {
 		w.velocity.x = 0
 	}

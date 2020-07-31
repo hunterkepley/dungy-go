@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"image"
-	"image/color"
 
 	"github.com/hajimehoshi/ebiten"
 )
@@ -16,7 +15,7 @@ type LightImages struct {
 // this returns a LightImages struct to init the one in the Game struct
 func initLightImages() LightImages {
 	return LightImages{
-		playerLight: image.Rect(0, 0, 33, 37),
+		playerLight: image.Rect(0, 0, 88, 81),
 	}
 }
 
@@ -62,8 +61,9 @@ func createLight(lightRect image.Rectangle, id int) Light {
 
 }
 
-func (l *Light) update(position Vec2f) {
-	l.position = position
+func (l *Light) update(center Vec2f) {
+	size := newVec2i(l.subImage.Max.X-l.subImage.Min.X, l.subImage.Max.Y-l.subImage.Min.Y)
+	l.position = newVec2f(center.x-float64(size.x/2), center.y-float64(size.y/2))
 }
 
 // LightHandler controls all lights in the game
@@ -107,7 +107,7 @@ func (h *LightHandler) render(screen *ebiten.Image) {
 	op.CompositeMode = ebiten.CompositeModeSourceIn
 	h.maskedFgImage.DrawImage(screen, op)
 
-	screen.Fill(color.RGBA{0x00, 0x00, 0x00, 0xff})
+	//screen.Fill(color.RGBA{0x00, 0x00, 0x00, 0xff})
 	screen.DrawImage(h.bg.image, &ebiten.DrawImageOptions{})
 	screen.DrawImage(h.maskedFgImage, &ebiten.DrawImageOptions{})
 }

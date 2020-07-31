@@ -198,7 +198,7 @@ func (p *Player) update(cursor Cursor) {
 
 	p.shadow.isDrawable = p.isDrawable
 	p.shadow.update(p.position, p.dynamicSize)
-	p.light.update(p.position)
+	p.light.update(newVec2f(p.position.x+float64(p.staticSize.x/2), p.position.y+float64(p.staticSize.y/2)))
 }
 
 func (p *Player) render(screen *ebiten.Image) {

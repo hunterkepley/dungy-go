@@ -46,15 +46,28 @@ type Game struct {
 
 // Init initializes the game
 func (g *Game) Init() {
+
+	// Init lightHandler
+	g.lightHandler = initLightHandler()
+	g.lightHandler.addLight(g.lightHandler.lightImages.playerLight)
+
 	// Player
-	g.player = createPlayer(newVec2f(screenWidth/2, screenHeight/2), g)
+	g.player = createPlayer(
+		newVec2f(screenWidth/2, screenHeight/2),
+		g,
+		&g.lightHandler.lights[0],
+	)
 	g.shadows = append(g.shadows, &g.player.shadow)
+
 	// Cursor
 	g.cursor = createCursor(iUISpritesheet)
+
 	// Background image
 	testBackgroundImage, _ = loadImage("./Assets/Art/background.png")
+
 	// Fonts
 	g.InitFonts()
+
 	// Generate starting walls
 	g.walls = generateWalls(itileSpritesheet)
 	g.tiles = generateTiles(itileSpritesheet)
@@ -62,8 +75,8 @@ func (g *Game) Init() {
 	g.borders = generateBorders(itileSpritesheet)
 	g.ui = generateUI(iUISpritesheet)
 
-	// Init lightHandler
-	g.lightHandler = initLightHandler()
+	// State starts in game [temporary]
+	g.state = 1
 }
 
 // Update updates the game
@@ -200,4 +213,5 @@ func loadPregameResources() {
 	loadItemsImages()
 	loadEnemiesImages()
 	loadParticlesImages()
+	loadLightingImages()
 }

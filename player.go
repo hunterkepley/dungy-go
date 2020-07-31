@@ -37,6 +37,7 @@ type Player struct {
 	blinkTrail    BlinkTrail // The animated blue trail
 
 	shadow Shadow // The shadow below the player :)
+	light  *Light // The light that follows the player
 
 	spritesheet     Spritesheet           // Current spritesheet
 	animation       Animation             // Current Animation
@@ -69,7 +70,7 @@ type PlayerAnimationSpeeds struct {
 	blinkTrail float64
 }
 
-func createPlayer(position Vec2f, game *Game) Player {
+func createPlayer(position Vec2f, game *Game, light *Light) Player {
 
 	health := 9
 
@@ -98,38 +99,40 @@ func createPlayer(position Vec2f, game *Game) Player {
 	runningRightSpritesheet := createSpritesheet(newVec2i(0, 180), newVec2i(90, 206), 6, image)
 
 	return Player{
-		position,
-		walkSpeed,
-		runSpeed,
+		position:  position,
+		walkSpeed: walkSpeed,
+		runSpeed:  runSpeed,
 
-		health,
-		health,
+		health:    health,
+		maxHealth: health,
 
-		energy,
-		energy,
-		energyTimer,
-		energyTimer,
-		sprintEnergyTimer,
-		sprintEnergyTimer,
+		energy:               energy,
+		maxEnergy:            energy,
+		energyRegenTimer:     energyTimer,
+		energyRegenTimerMax:  energyTimer,
+		sprintEnergyTimer:    sprintEnergyTimer,
+		sprintEnergyTimerMax: sprintEnergyTimer,
 
-		newVec2i(0, 0),                          // Dynamic size
-		runningRightSpritesheet.sprites[0].size, // Static size
+		dynamicSize: newVec2i(0, 0),                          // Dynamic size
+		staticSize:  runningRightSpritesheet.sprites[0].size, // Static size
 
-		Down,    // Direction
-		Walking, // Movement
-		false,
-		true,
+		direction:   Down,    // Direction
+		movement:    Walking, // Movement
+		isMoving:    false,
+		isConscious: true,
 
-		canBlinkTimer, // Time between blinks
-		endBlinkTimer, // Time for each blink
-		false,
-		createBlinkTrail(0.5),
+		canBlinkTimer: canBlinkTimer, // Time between blinks
+		endBlinkTimer: endBlinkTimer, // Time for each blink
+		isBlinking:    false,
+		blinkTrail:    createBlinkTrail(0.5),
 
-		createShadow(shadowRect, iplayerSpritesheet, generateUniqueShadowID(game)),
+		shadow: createShadow(shadowRect, iplayerSpritesheet, generateUniqueShadowID(game)),
 
-		idleFrontSpritesheet,                         // Current animation spritesheet
-		createAnimation(idleFrontSpritesheet, image), // Current animation
-		PlayerAnimations{ // All animations
+		light: light,
+
+		spritesheet: idleFrontSpritesheet,                         // Current animation spritesheet
+		animation:   createAnimation(idleFrontSpritesheet, image), // Current animation
+		animations: PlayerAnimations{ // All animations
 			// Idle
 			createAnimation(idleFrontSpritesheet, image),
 			createAnimation(idleBackSpritesheet, image),
@@ -141,15 +144,15 @@ func createPlayer(position Vec2f, game *Game) Player {
 			createAnimation(runningLeftSpritesheet, image),
 			createAnimation(runningRightSpritesheet, image),
 		},
-		PlayerAnimationSpeeds{ // All animation speeds
+		animationSpeeds: PlayerAnimationSpeeds{ // All animation speeds
 			1,   // idle
 			1.3, // walking
 			2.5, // running
 			3,   // blink trail
 		},
-		true,
+		isDrawable: true,
 
-		Gun{
+		gun: Gun{
 			position:     position,
 			image:        iitemsSpritesheet,
 			sprite:       createSprite(newVec2i(0, 46), newVec2i(21, 59), newVec2i(21, 13), iitemsSpritesheet),
@@ -157,7 +160,7 @@ func createPlayer(position Vec2f, game *Game) Player {
 			firespeedMax: 50,
 		},
 
-		image, // Entire spritesheet
+		image: image, // Entire spritesheet
 	}
 }
 
@@ -195,6 +198,7 @@ func (p *Player) update(cursor Cursor) {
 
 	p.shadow.isDrawable = p.isDrawable
 	p.shadow.update(p.position, p.dynamicSize)
+	p.light.update(p.position)
 }
 
 func (p *Player) render(screen *ebiten.Image) {

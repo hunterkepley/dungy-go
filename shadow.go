@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 
 	"github.com/hajimehoshi/ebiten"
@@ -76,7 +75,6 @@ func removeShadow(slice []*Shadow, id int) []*Shadow {
 			s = i
 		}
 	}
-	fmt.Print("\nRemoving shadow with ID ", id)
 	return append(slice[:s], slice[s+1:]...)
 }
 

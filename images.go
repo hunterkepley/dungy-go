@@ -4,14 +4,20 @@ import "github.com/hajimehoshi/ebiten"
 
 var (
 	// i prefix is for images
-	iplayerSpritesheet  *ebiten.Image
-	iinformationBox     *ebiten.Image
-	itileSpritesheet    *ebiten.Image
-	iUISpritesheet      *ebiten.Image
-	icursor             *ebiten.Image
-	iitemsSpritesheet   *ebiten.Image
+	iplayerSpritesheet *ebiten.Image
+
+	itileSpritesheet *ebiten.Image
+
+	iUISpritesheet *ebiten.Image
+
+	iitemsSpritesheet *ebiten.Image
+
 	ienemiesSpritesheet *ebiten.Image
-	ibloodSpritesheet   *ebiten.Image
+
+	ibloodSpritesheet *ebiten.Image
+
+	ilightingSpritesheet *ebiten.Image
+	ilightingBackground  *ebiten.Image
 )
 
 func loadPlayerImages() {
@@ -36,4 +42,9 @@ func loadEnemiesImages() {
 
 func loadParticlesImages() {
 	ibloodSpritesheet, _ = loadImage("./Assets/Art/Particles/blood.png")
+}
+
+func loadLightingImages() {
+	ilightingSpritesheet, _ = loadImage("./Assets/Art/Lighting/spritesheet.png")
+	ilightingBackground, _ = loadImage("./Assets/Art/Lighting/bg.png")
 }

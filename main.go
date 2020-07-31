@@ -37,7 +37,11 @@ type Game struct {
 	borders          []Border
 	ui               []UI
 
+	lightHandler LightHandler
+
 	shadowID int // Shadow IDs, starts at 0 then increments when a shadow is added
+
+	state int // The game state, 0 is in main menu, 1 is in game, 2 is paused
 }
 
 // Init initializes the game
@@ -57,6 +61,9 @@ func (g *Game) Init() {
 	generateBigTiles(g.tiles, itileSpritesheet)
 	g.borders = generateBorders(itileSpritesheet)
 	g.ui = generateUI(iUISpritesheet)
+
+	// Init lightHandler
+	g.lightHandler = initLightHandler()
 }
 
 // Update updates the game
@@ -66,6 +73,19 @@ func (g *Game) Update(screen *ebiten.Image) error {
 		gameInitialized = true
 	}
 
+	// Update game
+	if g.state == 1 {
+		updateGame(screen, g)
+	}
+
+	// Temporary
+	if ebiten.IsKeyPressed(ebiten.KeyF) {
+		ebiten.SetFullscreen(true)
+	}
+	return nil
+}
+
+func updateGame(screen *ebiten.Image, g *Game) {
 	// Update cursor
 	g.cursor.update()
 
@@ -80,24 +100,29 @@ func (g *Game) Update(screen *ebiten.Image) error {
 	// Update gib handlers
 	updateGibHandlers(g)
 
+	// Update light
+	g.lightHandler.update()
+
 	// Game info update/check
 	go checkChangeDisplayInfo()
 
 	// Update UI
 	updateUI(g)
-
-	// Temporary
-	if ebiten.IsKeyPressed(ebiten.KeyF) {
-		ebiten.SetFullscreen(true)
-	}
-	return nil
 }
 
-// Draw renders the game
+// Draw renders everything!
 func (g *Game) Draw(screen *ebiten.Image) {
 	bgop := &ebiten.DrawImageOptions{}
 	screen.DrawImage(testBackgroundImage, bgop)
 
+	// Draw game
+	if g.state == 1 { // inGame
+		drawGame(screen, g)
+	}
+
+}
+
+func drawGame(screen *ebiten.Image, g *Game) {
 	// Render game walls/tiles
 	renderTiles(g, screen)
 
@@ -124,6 +149,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, b := range g.borders {
 		b.render(screen)
 	}
+
+	// Render light
+	g.lightHandler.render(screen)
 
 	// Basic text render calls
 	if displayInfo {

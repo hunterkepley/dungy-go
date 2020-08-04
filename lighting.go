@@ -10,12 +10,14 @@ import (
 // LightImages is a struct of Rectangles of all the light images
 type LightImages struct {
 	playerLight image.Rectangle
+	bulletLight image.Rectangle
 }
 
 // this returns a LightImages struct to init the one in the Game struct
 func initLightImages() LightImages {
 	return LightImages{
 		playerLight: image.Rect(0, 0, 88, 81),
+		bulletLight: image.Rect(88, 0, 139, 50),
 	}
 }
 
@@ -101,7 +103,7 @@ func (h *LightHandler) render(screen *ebiten.Image) {
 		op.CompositeMode = ebiten.CompositeModeCopy
 
 		op.GeoM.Translate(float64(h.lights[i].position.x), float64(h.lights[i].position.y))
-		h.maskedFgImage.DrawImage(h.lights[i].image, op)
+		h.maskedFgImage.DrawImage(h.lights[i].image.SubImage(h.lights[i].subImage).(*ebiten.Image), op)
 	}
 	op = &ebiten.DrawImageOptions{}
 	op.CompositeMode = ebiten.CompositeModeSourceIn
@@ -116,11 +118,13 @@ func (h *LightHandler) update() {
 
 }
 
-func (h *LightHandler) addLight(subImage image.Rectangle) {
-	h.lights = append(h.lights, createLight(subImage, h.generateUniqueLightID()))
+func (h *LightHandler) addLight(subImage image.Rectangle) int {
+	id := h.generateUniqueLightID()
+	h.lights = append(h.lights, createLight(subImage, id))
+	return id
 }
 
-func removeLight(slice []*Light, id int) []*Light { // Removes a light given the ID
+func removeLight(slice []Light, id int) []Light { // Removes a light given the ID
 	l := -1
 	for i := 0; i < len(slice); i++ {
 		if slice[i].id == id {
@@ -128,10 +132,22 @@ func removeLight(slice []*Light, id int) []*Light { // Removes a light given the
 		}
 	}
 	fmt.Print("\nRemoving light with ID ", id)
-	return append(slice[:l], slice[l+1:]...)
+	if l != -1 {
+		return append(slice[:l], slice[l+1:]...)
+	}
+	return slice
 }
 
 func (h *LightHandler) generateUniqueLightID() int { // Generates a new ID for a light
 	h.lightID++
 	return h.lightID
+}
+
+func (h *LightHandler) getLightIndex(id int) int {
+	for i := 0; i < len(h.lights); i++ {
+		if h.lights[i].id == id {
+			return i
+		}
+	}
+	return -1
 }

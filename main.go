@@ -103,7 +103,7 @@ func updateGame(screen *ebiten.Image, g *Game) {
 	g.cursor.update()
 
 	// Update player
-	g.player.update(g.cursor)
+	g.player.update(g)
 	g.player.gun.updateBullets(g)
 	updateBulletExplosions(g)
 

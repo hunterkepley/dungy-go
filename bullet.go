@@ -158,12 +158,14 @@ type Bullet struct {
 	glow       BulletGlow
 	glowSprite *Sprite
 
+	light *Light // The light that follows the bullet
+
 	sprite Sprite
 
 	image *ebiten.Image
 }
 
-func createBullet(position Vec2f, rotation float64, speed float64) Bullet {
+func createBullet(position Vec2f, rotation float64, speed float64, light *Light) Bullet {
 
 	velocity := newVec2f(speed*math.Cos(rotation), speed*math.Sin(rotation))
 
@@ -181,6 +183,7 @@ func createBullet(position Vec2f, rotation float64, speed float64) Bullet {
 		speed:      speed,
 		glow:       BulletGlow{image: iitemsSpritesheet, sprite: &glowSprite},
 		glowSprite: &glowSprite,
+		light:      light,
 	}
 }
 
@@ -208,6 +211,8 @@ func (b *Bullet) render(screen *ebiten.Image) {
 func (b *Bullet) update() {
 	b.borderCollision()
 
+	b.light.update(newVec2f(b.position.x, b.position.y))
+
 	b.position.x += b.velocity.x
 	b.position.y += b.velocity.y
 
@@ -220,6 +225,7 @@ func (b *Bullet) update() {
 		int(b.position.x)+b.size.x,
 		int(b.position.y)+b.size.y,
 	)
+
 }
 
 // Checks if bullets collide with border, deletes if so

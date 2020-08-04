@@ -81,8 +81,8 @@ func createPlayer(position Vec2f, game *Game, light *Light) Player {
 	canBlinkTimer := 0
 	endBlinkTimer := 0
 
-	walkSpeed := 0.8
-	runSpeed := 1.6
+	walkSpeed := 0.5
+	runSpeed := 0.9
 
 	shadowRect := image.Rect(0, 231, 14, 237)
 
@@ -146,8 +146,8 @@ func createPlayer(position Vec2f, game *Game, light *Light) Player {
 		},
 		animationSpeeds: PlayerAnimationSpeeds{ // All animation speeds
 			1,   // idle
-			1.3, // walking
-			2.5, // running
+			1.,  // walking
+			1.5, // running
 			3,   // blink trail
 		},
 		isDrawable: true,
@@ -164,7 +164,7 @@ func createPlayer(position Vec2f, game *Game, light *Light) Player {
 	}
 }
 
-func (p *Player) update(cursor Cursor) {
+func (p *Player) update(g *Game) {
 	switch p.movement {
 	case (Idle):
 		p.animation.update(p.animationSpeeds.idle)
@@ -173,7 +173,7 @@ func (p *Player) update(cursor Cursor) {
 	case (Running):
 		p.animation.update(p.animationSpeeds.running)
 	}
-	p.input(cursor)
+	p.input(g)
 	go p.updateLevels()
 
 	// Blink update
@@ -183,7 +183,7 @@ func (p *Player) update(cursor Cursor) {
 	// Gun update
 	p.gun.update(
 		newVec2f(p.position.x+float64(p.dynamicSize.x)/2, p.position.y+float64(p.dynamicSize.y)/2),
-		newVec2i(cursor.center.x, cursor.center.y),
+		newVec2i(g.cursor.center.x, g.cursor.center.y),
 	)
 
 	// Set size
@@ -238,7 +238,7 @@ func (p *Player) updateBlinkTrail() {
 	}
 }
 
-func (p *Player) input(cursor Cursor) {
+func (p *Player) input(g *Game) {
 	// Reset moving
 	p.isMoving = false
 
@@ -258,7 +258,7 @@ func (p *Player) input(cursor Cursor) {
 	// TEMPORARY
 
 	// Mouse button input
-	p.mouseButtonInput(cursor)
+	p.mouseButtonInput(g)
 
 	if !p.isBlinking {
 		// Deplete energy!
@@ -374,10 +374,10 @@ func (p *Player) input(cursor Cursor) {
 }
 
 // Mouse input!
-func (p *Player) mouseButtonInput(cursor Cursor) {
+func (p *Player) mouseButtonInput(g *Game) {
 	if p.isConscious {
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-			p.gun.fire(p.position, cursor.center)
+			p.gun.fire(p.position, g.cursor.center, g)
 		}
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
 			// Maybe a charge shot or special ability?

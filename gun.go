@@ -94,13 +94,18 @@ func (g *Gun) update(playerPosition Vec2f, cursorCenter Vec2i) {
 }
 
 // Creates the bullets n stuff
-func (g *Gun) fire(playerPosition Vec2f, cursorCenter Vec2i) {
+func (g *Gun) fire(playerPosition Vec2f, cursorCenter Vec2i, game *Game) {
 	if g.fireSpeed <= 0 {
 		bulletSpeed := 3.
 		g.fireSpeed = g.firespeedMax
+		lightID := game.lightHandler.addLight(game.lightHandler.lightImages.bulletLight)
 		g.bullets = append(
 			g.bullets,
-			createBullet(g.position, g.rotation, bulletSpeed),
+			createBullet(g.position,
+				g.rotation,
+				bulletSpeed,
+				&game.lightHandler.lights[game.lightHandler.getLightIndex(lightID)],
+			),
 		)
 	}
 }
@@ -121,7 +126,16 @@ func (g *Gun) updateBullets(game *Game) {
 
 		// Destroy bullet if needed
 		if g.bullets[i].destroy {
-			game.bulletExplosions = append(game.bulletExplosions, createBulletExplosion(g.bullets[i].position, iitemsSpritesheet))
+			game.lightHandler.lights = removeLight(
+				game.lightHandler.lights,
+				g.bullets[i].light.id,
+			)
+
+			game.bulletExplosions = append(
+				game.bulletExplosions,
+				createBulletExplosion(g.bullets[i].position, iitemsSpritesheet),
+			)
+
 			g.bullets = removeBullet(g.bullets, i)
 		}
 	}

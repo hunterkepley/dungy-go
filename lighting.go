@@ -100,7 +100,7 @@ func (h *LightHandler) render(screen *ebiten.Image) {
 	h.maskedFgImage.Clear()
 	op := &ebiten.DrawImageOptions{}
 	for i := 0; i < len(h.lights); i++ {
-		op.CompositeMode = ebiten.CompositeModeCopy
+		op.CompositeMode = ebiten.CompositeModeSourceOver
 
 		op.GeoM.Translate(float64(h.lights[i].position.x), float64(h.lights[i].position.y))
 		h.maskedFgImage.DrawImage(h.lights[i].image.SubImage(h.lights[i].subImage).(*ebiten.Image), op)

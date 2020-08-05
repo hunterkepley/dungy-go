@@ -36,8 +36,8 @@ type Player struct {
 	isBlinking    bool       // If blinking
 	blinkTrail    BlinkTrail // The animated blue trail
 
-	shadow Shadow // The shadow below the player :)
-	light  *Light // The light that follows the player
+	shadow  Shadow // The shadow below the player :)
+	lightID int    // The ID of the light that follows the player
 
 	spritesheet     Spritesheet           // Current spritesheet
 	animation       Animation             // Current Animation
@@ -70,7 +70,7 @@ type PlayerAnimationSpeeds struct {
 	blinkTrail float64
 }
 
-func createPlayer(position Vec2f, game *Game, light *Light) Player {
+func createPlayer(position Vec2f, game *Game, lightID int) Player {
 
 	health := 9
 
@@ -128,7 +128,7 @@ func createPlayer(position Vec2f, game *Game, light *Light) Player {
 
 		shadow: createShadow(shadowRect, iplayerSpritesheet, generateUniqueShadowID(game)),
 
-		light: light,
+		lightID: lightID,
 
 		spritesheet: idleFrontSpritesheet,                         // Current animation spritesheet
 		animation:   createAnimation(idleFrontSpritesheet, image), // Current animation
@@ -198,7 +198,11 @@ func (p *Player) update(g *Game) {
 
 	p.shadow.isDrawable = p.isDrawable
 	p.shadow.update(p.position, p.dynamicSize)
-	p.light.update(newVec2f(p.position.x+float64(p.staticSize.x/2), p.position.y+float64(p.staticSize.y/2)))
+	g.lightHandler.lights[g.lightHandler.getLightIndex(p.lightID)].update(
+		newVec2f(
+			p.position.x+float64(p.staticSize.x/2),
+			p.position.y+float64(p.staticSize.y/2),
+		))
 }
 
 func (p *Player) render(screen *ebiten.Image) {

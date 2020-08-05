@@ -48,13 +48,14 @@ func (b *LightBackground) update() {
 type Light struct {
 	position Vec2f
 
-	id int
+	id       int
+	rotation float64
 
 	subImage image.Rectangle
 	image    *ebiten.Image
 }
 
-func createLight(lightRect image.Rectangle, id int) Light {
+func createLight(lightRect image.Rectangle, id int, rotation float64) Light {
 	return Light{
 		subImage: lightRect,
 		image:    ilightingSpritesheet,
@@ -95,21 +96,30 @@ func initLightHandler() LightHandler {
 }
 
 func (h *LightHandler) render(screen *ebiten.Image) {
-	// Reset the bg.
-	//h.maskedFgImage.Fill(color.White)
 	h.maskedFgImage.Clear()
 	op := &ebiten.DrawImageOptions{}
+
+	// Add lights
 	for i := 0; i < len(h.lights); i++ {
 		op.CompositeMode = ebiten.CompositeModeSourceOver
 
+		lightSize := newVec2i(h.lights[i].subImage.Max.X-h.lights[i].subImage.Min.X, h.lights[i].subImage.Max.Y-h.lights[i].subImage.Min.Y)
+		// Rotate light
+		op.GeoM.Translate(0-float64(lightSize.x)/2, 0-float64(lightSize.y)/2)
+		op.GeoM.Rotate(h.lights[i].rotation)
+		op.GeoM.Translate(float64(lightSize.x)/2, float64(lightSize.y)/2)
+
+		// Move light
 		op.GeoM.Translate(float64(h.lights[i].position.x), float64(h.lights[i].position.y))
 		h.maskedFgImage.DrawImage(h.lights[i].image.SubImage(h.lights[i].subImage).(*ebiten.Image), op)
 	}
+
+	// Draw lights
 	op = &ebiten.DrawImageOptions{}
 	op.CompositeMode = ebiten.CompositeModeSourceIn
 	h.maskedFgImage.DrawImage(screen, op)
 
-	//screen.Fill(color.RGBA{0x00, 0x00, 0x00, 0xff})
+	// Draw background image and composite blend [in] with the light image [mask]
 	screen.DrawImage(h.bg.image, &ebiten.DrawImageOptions{})
 	screen.DrawImage(h.maskedFgImage, &ebiten.DrawImageOptions{})
 }
@@ -118,9 +128,9 @@ func (h *LightHandler) update() {
 
 }
 
-func (h *LightHandler) addLight(subImage image.Rectangle) int {
+func (h *LightHandler) addLight(subImage image.Rectangle, rotation float64) int {
 	id := h.generateUniqueLightID()
-	h.lights = append(h.lights, createLight(subImage, id))
+	h.lights = append(h.lights, createLight(subImage, id, rotation))
 	return id
 }
 
@@ -143,7 +153,7 @@ func (h *LightHandler) generateUniqueLightID() int { // Generates a new ID for a
 	return h.lightID
 }
 
-func (h *LightHandler) getLightIndex(id int) int {
+func (h *LightHandler) getLightIndex(id int) int { // Get the light index from its ID
 	for i := 0; i < len(h.lights); i++ {
 		if h.lights[i].id == id {
 			return i

@@ -49,13 +49,13 @@ func (g *Game) Init() {
 
 	// Init lightHandler
 	g.lightHandler = initLightHandler()
-	g.lightHandler.addLight(g.lightHandler.lightImages.playerLight)
+	playerLightID := g.lightHandler.addLight(g.lightHandler.lightImages.playerLight, 0)
 
 	// Player
 	g.player = createPlayer(
 		newVec2f(screenWidth/2, screenHeight/2),
 		g,
-		&g.lightHandler.lights[0],
+		playerLightID,
 	)
 	g.shadows = append(g.shadows, &g.player.shadow)
 

@@ -158,14 +158,14 @@ type Bullet struct {
 	glow       BulletGlow
 	glowSprite *Sprite
 
-	light *Light // The light that follows the bullet
+	lightID int // The ID of the light that follows the bullet
 
 	sprite Sprite
 
 	image *ebiten.Image
 }
 
-func createBullet(position Vec2f, rotation float64, speed float64, light *Light) Bullet {
+func createBullet(position Vec2f, rotation float64, speed float64, lightID int) Bullet {
 
 	velocity := newVec2f(speed*math.Cos(rotation), speed*math.Sin(rotation))
 
@@ -183,7 +183,7 @@ func createBullet(position Vec2f, rotation float64, speed float64, light *Light)
 		speed:      speed,
 		glow:       BulletGlow{image: iitemsSpritesheet, sprite: &glowSprite},
 		glowSprite: &glowSprite,
-		light:      light,
+		lightID:    lightID,
 	}
 }
 
@@ -208,10 +208,13 @@ func (b *Bullet) render(screen *ebiten.Image) {
 	b.glow.render(screen, b.glowSprite)
 }
 
-func (b *Bullet) update() {
+func (b *Bullet) update(game *Game) {
 	b.borderCollision()
 
-	b.light.update(newVec2f(b.position.x, b.position.y))
+	game.lightHandler.lights[game.lightHandler.getLightIndex(b.lightID)].
+		update(
+			newVec2f(b.position.x-float64(b.size.x/2), b.position.y-float64(b.size.y/2)),
+		)
 
 	b.position.x += b.velocity.x
 	b.position.y += b.velocity.y

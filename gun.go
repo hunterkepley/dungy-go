@@ -98,13 +98,13 @@ func (g *Gun) fire(playerPosition Vec2f, cursorCenter Vec2i, game *Game) {
 	if g.fireSpeed <= 0 {
 		bulletSpeed := 3.
 		g.fireSpeed = g.firespeedMax
-		lightID := game.lightHandler.addLight(game.lightHandler.lightImages.bulletLight)
+		lightID := game.lightHandler.addLight(game.lightHandler.lightImages.bulletLight, g.rotation)
 		g.bullets = append(
 			g.bullets,
 			createBullet(g.position,
 				g.rotation,
 				bulletSpeed,
-				&game.lightHandler.lights[game.lightHandler.getLightIndex(lightID)],
+				lightID,
 			),
 		)
 	}
@@ -122,13 +122,13 @@ func (g *Gun) updateBullets(game *Game) {
 		if i-1 >= len(g.bullets) {
 			break
 		}
-		g.bullets[i].update()
+		g.bullets[i].update(game)
 
 		// Destroy bullet if needed
 		if g.bullets[i].destroy {
 			game.lightHandler.lights = removeLight(
 				game.lightHandler.lights,
-				g.bullets[i].light.id,
+				g.bullets[i].lightID,
 			)
 
 			game.bulletExplosions = append(

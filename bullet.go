@@ -213,7 +213,8 @@ func (b *Bullet) update(game *Game) {
 
 	game.lightHandler.lights[game.lightHandler.getLightIndex(b.lightID)].
 		update(
-			newVec2f(b.position.x-float64(b.size.x/2), b.position.y-float64(b.size.y/2)),
+			newVec2f(b.position.x+float64(b.size.x/2), b.position.y+float64(b.size.y/2)),
+			b.rotation,
 		)
 
 	b.position.x += b.velocity.x

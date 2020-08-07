@@ -36,8 +36,9 @@ type Player struct {
 	isBlinking    bool       // If blinking
 	blinkTrail    BlinkTrail // The animated blue trail
 
-	shadow  Shadow // The shadow below the player :)
-	lightID int    // The ID of the light that follows the player
+	shadow           Shadow           // The shadow below the player :)
+	lightID          int              // The ID of the light that follows the player
+	walkSmokeEmitter WalkSmokeEmitter // Emits smoke behind player when he walks
 
 	spritesheet     Spritesheet           // Current spritesheet
 	animation       Animation             // Current Animation
@@ -126,9 +127,9 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 		isBlinking:    false,
 		blinkTrail:    createBlinkTrail(0.5),
 
-		shadow: createShadow(shadowRect, iplayerSpritesheet, generateUniqueShadowID(game)),
-
-		lightID: lightID,
+		shadow:           createShadow(shadowRect, iplayerSpritesheet, generateUniqueShadowID(game)),
+		lightID:          lightID,
+		walkSmokeEmitter: createWalkSmokeEmitter(2., iwalkSmokeSpritesheet),
 
 		spritesheet: idleFrontSpritesheet,                         // Current animation spritesheet
 		animation:   createAnimation(idleFrontSpritesheet, image), // Current animation
@@ -202,10 +203,21 @@ func (p *Player) update(g *Game) {
 		newVec2f(
 			p.position.x+float64(p.staticSize.x/2),
 			p.position.y+float64(p.staticSize.y/2),
-		))
+		),
+		0,
+	)
+
+	spawnWalkSmoke := false
+	if p.movement == Running && p.isMoving {
+		spawnWalkSmoke = true
+	}
+
+	p.walkSmokeEmitter.update(p.position, p.dynamicSize, p.direction, spawnWalkSmoke)
 }
 
 func (p *Player) render(screen *ebiten.Image) {
+
+	p.renderWalkSmoke(screen)
 
 	if p.isDrawable {
 		op := &ebiten.DrawImageOptions{}
@@ -240,6 +252,10 @@ func (p *Player) updateBlinkTrail() {
 			p.blinkTrail.sections = append(p.blinkTrail.sections[:i], p.blinkTrail.sections[i+1:]...)
 		}
 	}
+}
+
+func (p *Player) renderWalkSmoke(screen *ebiten.Image) {
+	p.walkSmokeEmitter.render(screen)
 }
 
 func (p *Player) input(g *Game) {

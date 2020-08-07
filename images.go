@@ -14,7 +14,8 @@ var (
 
 	ienemiesSpritesheet *ebiten.Image
 
-	ibloodSpritesheet *ebiten.Image
+	ibloodSpritesheet     *ebiten.Image
+	iwalkSmokeSpritesheet *ebiten.Image
 
 	ilightingSpritesheet *ebiten.Image
 	ilightingBackground  *ebiten.Image
@@ -42,6 +43,7 @@ func loadEnemiesImages() {
 
 func loadParticlesImages() {
 	ibloodSpritesheet, _ = loadImage("./Assets/Art/Particles/blood.png")
+	iwalkSmokeSpritesheet, _ = loadImage("./Assets/Art/Particles/walkSmoke.png")
 }
 
 func loadLightingImages() {

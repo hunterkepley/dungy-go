@@ -60,11 +60,12 @@ func createLight(lightRect image.Rectangle, id int, rotation float64) Light {
 		subImage: lightRect,
 		image:    ilightingSpritesheet,
 		id:       id,
+		rotation: rotation,
 	}
 
 }
 
-func (l *Light) update(center Vec2f) {
+func (l *Light) update(center Vec2f, rotation float64) {
 	size := newVec2i(l.subImage.Max.X-l.subImage.Min.X, l.subImage.Max.Y-l.subImage.Min.Y)
 	l.position = newVec2f(center.x-float64(size.x/2), center.y-float64(size.y/2))
 }
@@ -98,15 +99,15 @@ func initLightHandler() LightHandler {
 func (h *LightHandler) render(screen *ebiten.Image) {
 	h.maskedFgImage.Clear()
 	op := &ebiten.DrawImageOptions{}
+	op.CompositeMode = ebiten.CompositeModeSourceOver
 
 	// Add lights
 	for i := 0; i < len(h.lights); i++ {
-		op.CompositeMode = ebiten.CompositeModeSourceOver
 
 		lightSize := newVec2i(h.lights[i].subImage.Max.X-h.lights[i].subImage.Min.X, h.lights[i].subImage.Max.Y-h.lights[i].subImage.Min.Y)
 		// Rotate light
 		op.GeoM.Translate(0-float64(lightSize.x)/2, 0-float64(lightSize.y)/2)
-		op.GeoM.Rotate(h.lights[i].rotation)
+		//op.GeoM.Rotate(h.lights[i].rotation)
 		op.GeoM.Translate(float64(lightSize.x)/2, float64(lightSize.y)/2)
 
 		// Move light
@@ -119,7 +120,7 @@ func (h *LightHandler) render(screen *ebiten.Image) {
 	op.CompositeMode = ebiten.CompositeModeSourceIn
 	h.maskedFgImage.DrawImage(screen, op)
 
-	// Draw background image and composite blend [in] with the light image [mask]
+	// Draw background image with the light image [mask]
 	screen.DrawImage(h.bg.image, &ebiten.DrawImageOptions{})
 	screen.DrawImage(h.maskedFgImage, &ebiten.DrawImageOptions{})
 }

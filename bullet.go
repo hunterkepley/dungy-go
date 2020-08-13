@@ -101,6 +101,7 @@ func updateBulletExplosions(game *Game) {
 
 		game.bulletExplosions[i].update(game)
 
+		// Should we delete the explosion?
 		if game.bulletExplosions[i].animationFinished && game.bulletExplosions[i].animation.currentFrame == 0 {
 			game.lightHandler.lights = removeLight(game.lightHandler.lights, // Destroy light
 				game.bulletExplosions[i].lightID)

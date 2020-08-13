@@ -17,12 +17,14 @@ type BulletExplosion struct {
 	animationStarted  bool
 	animationFinished bool
 
+	lightID int // The ID of the light that follows the explosion
+
 	sprite *Sprite
 
 	image *ebiten.Image
 }
 
-func createBulletExplosion(position Vec2f, image *ebiten.Image) BulletExplosion {
+func createBulletExplosion(position Vec2f, image *ebiten.Image, lightID int) BulletExplosion {
 	spritesheet := createSpritesheet(
 		newVec2i(0, 60),
 		newVec2i(112, 76),
@@ -47,21 +49,31 @@ func createBulletExplosion(position Vec2f, image *ebiten.Image) BulletExplosion 
 		animationStarted:  false,
 		animationFinished: false,
 
+		lightID: lightID,
+
 		sprite: &sprite,
 
 		image: image,
 	}
 }
 
-func (b *BulletExplosion) update(g *Game) {
+func (b *BulletExplosion) update(game *Game) {
+	game.lightHandler.lights[game.lightHandler.getLightIndex(b.lightID)].
+		update(
+			newVec2f(b.position.x+float64(b.size.x/2), b.position.y+float64(b.size.y/2)),
+			0,
+		)
+
 	if !b.animationStarted {
 		b.animation.startForwards()
 		b.animationStarted = true
 	}
+
 	if b.animation.currentFrame == b.animation.spritesheet.numberOfSprites-1 {
 		b.animationFinished = true
 	}
 	b.animation.update(b.animationSpeed)
+
 }
 
 func (b *BulletExplosion) render(screen *ebiten.Image) {
@@ -90,7 +102,9 @@ func updateBulletExplosions(game *Game) {
 		game.bulletExplosions[i].update(game)
 
 		if game.bulletExplosions[i].animationFinished && game.bulletExplosions[i].animation.currentFrame == 0 {
-			game.bulletExplosions = removeBulletExplosion(game.bulletExplosions, i)
+			game.lightHandler.lights = removeLight(game.lightHandler.lights, // Destroy light
+				game.bulletExplosions[i].lightID)
+			game.bulletExplosions = removeBulletExplosion(game.bulletExplosions, i) // Destroy explosion
 		}
 	}
 }

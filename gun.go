@@ -131,9 +131,11 @@ func (g *Gun) updateBullets(game *Game) {
 				g.bullets[i].lightID,
 			)
 
+			lightID := game.lightHandler.addLight(game.lightHandler.lightImages.bulletLight, g.rotation)
+
 			game.bulletExplosions = append(
 				game.bulletExplosions,
-				createBulletExplosion(g.bullets[i].position, iitemsSpritesheet),
+				createBulletExplosion(g.bullets[i].position, iitemsSpritesheet, lightID),
 			)
 
 			g.bullets = removeBullet(g.bullets, i)

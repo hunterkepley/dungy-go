@@ -131,7 +131,7 @@ func (g *Gun) updateBullets(game *Game) {
 				g.bullets[i].lightID,
 			)
 
-			lightID := game.lightHandler.addLight(game.lightHandler.lightImages.bulletLight, g.rotation)
+			lightID := game.lightHandler.addLight(game.lightHandler.lightImages.bulletExplosionLight, g.rotation)
 
 			game.bulletExplosions = append(
 				game.bulletExplosions,

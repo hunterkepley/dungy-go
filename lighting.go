@@ -9,15 +9,17 @@ import (
 
 // LightImages is a struct of Rectangles of all the light images
 type LightImages struct {
-	playerLight image.Rectangle
-	bulletLight image.Rectangle
+	playerLight          image.Rectangle
+	bulletLight          image.Rectangle
+	bulletExplosionLight image.Rectangle
 }
 
 // this returns a LightImages struct to init the one in the Game struct
 func initLightImages() LightImages {
 	return LightImages{
-		playerLight: image.Rect(0, 0, 88, 81),
-		bulletLight: image.Rect(88, 0, 139, 50),
+		playerLight:          image.Rect(0, 0, 88, 81),
+		bulletLight:          image.Rect(88, 0, 139, 50),
+		bulletExplosionLight: image.Rect(140, 0, 180, 38),
 	}
 }
 

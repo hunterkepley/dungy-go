@@ -74,6 +74,7 @@ func createWalkSmoke(position Vec2f, size Vec2i, direction Direction, image *ebi
 
 	velocity := newVec2f(moveSpeed.x, moveSpeed.y)
 
+	// Decides velocity based on movement direction
 	switch {
 	case direction == Left || direction == DownLeft || direction == UpLeft:
 		startingPosition.x += float64(size.x)
@@ -88,6 +89,7 @@ func createWalkSmoke(position Vec2f, size Vec2i, direction Direction, image *ebi
 		velocity.x = rand.Float64()/2 - 0.25
 	}
 
+	// Offsets to the proper position under the player
 	startingPosition.x -= 2
 	startingPosition.y -= 4
 

@@ -49,9 +49,7 @@ type BeefEye struct {
 
 	image *ebiten.Image
 
-	astarChannelID         int
 	astarNodes             []pathfinding.Node
-	pathChan               *chan paths.Path
 	path                   paths.Path
 	pathfindingTickRate    int
 	pathfindingTickRateMax int
@@ -70,7 +68,7 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 	b := &BeefEye{
 		position:  position,
 		velocity:  newVec2f(0, 0),
-		moveSpeed: 0.4,
+		moveSpeed: 0.6,
 
 		health:    6,
 		maxHealth: 6,
@@ -96,12 +94,6 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 
 		image: ienemiesSpritesheet,
 	}
-
-	// Pathfinding stuff
-	b.astarChannelID = len(astarChannels) - 1
-
-	astarChannels = append(astarChannels, make(chan paths.Path, 2000))
-	b.pathChan = &astarChannels[b.astarChannelID]
 
 	return b
 }
@@ -173,9 +165,13 @@ func (b *BeefEye) followPlayer(game *Game) {
 		)
 
 		// Make a path concurrently
-		go calculatePath(b.astarChannelID, game.currentMap.mapNodes, start, end)
+		wg.Add(1)
+		go calculatePath(astarChannel, game.currentMap.mapNodes, start, end)
+
+		wg.Wait()
+
 		// Get the path if it's finished
-		b.path = <-*b.pathChan
+		b.path = *<-astarChannel
 		b.canPathfind = false
 	} else if !b.pathFinding && !b.canPathfind {
 
@@ -189,17 +185,17 @@ func (b *BeefEye) followPlayer(game *Game) {
 
 				finished := newVec2b(false, false)
 				if len(b.path.Cells) > 0 {
-					if int(b.position.x) < b.path.Current().X-ease {
+					if int(b.position.x) < (b.path.Current().X*smallTileSize.x - ease) {
 						b.position.x += b.moveSpeed
-					} else if int(b.position.x) > b.path.Current().X+ease {
+					} else if int(b.position.x) > (b.path.Current().X*smallTileSize.x + ease) {
 						b.position.x -= b.moveSpeed
 					} else {
 						finished.x = true
 					}
 
-					if int(b.position.y) < b.path.Current().Y-ease {
+					if int(b.position.y) < (b.path.Current().Y*smallTileSize.y - ease) {
 						b.position.y += b.moveSpeed
-					} else if int(b.position.y) > b.path.Current().Y+ease {
+					} else if int(b.position.y) > (b.path.Current().Y*smallTileSize.y + ease) {
 						b.position.y -= b.moveSpeed
 					} else {
 						finished.y = true

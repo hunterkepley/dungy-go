@@ -25,8 +25,6 @@ var (
 	mversionFont font.Face
 
 	gameReference *Game
-
-	astarChannels []chan paths.Path // Stores all channels for astar paths
 )
 
 // Game is the info for the game
@@ -76,10 +74,6 @@ func (g *Game) Init() {
 	)
 	g.shadows = append(g.shadows, &g.player.shadow)
 
-	// Path channel
-	c := make(chan paths.Path, 3000)
-	astarChannels = append(astarChannels, c)
-
 	// Test items! ============================
 	// TODO: REMOVE THIS                      v
 	testItem := createItem(
@@ -124,6 +118,10 @@ func (g *Game) Init() {
 	defer L.Close()
 	initLuaFunctions(L)
 
+	// Make the astar path channel
+	astarChannel = make(chan *paths.Path, 2)
+
+	g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
 	g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
 
 	// State starts in game [temporary]

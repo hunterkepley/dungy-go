@@ -2,17 +2,26 @@ package main
 
 import (
 	"fmt"
+	"sync"
 
 	paths "github.com/SolarLune/paths"
 )
 
-func calculatePath(id int, mapNodes []string, start Rolumn, end Rolumn) {
+var (
+	wg sync.WaitGroup
+
+	astarChannel chan *paths.Path // Stores all channels for astar paths
+)
+
+func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, end Rolumn) {
 	// This line creates a new Grid, comprised of Cells. The size is 10x10. By default, all Cells are
 	// walkable and have a cost of 1, and a blank character of ' '.
 	//firstMap := paths.NewGrid(10, 10)
 
-	start = newRolumn(start.column/(len(mapNodes[0])-1), start.row/(len(mapNodes)-2))
-	end = newRolumn(end.column/(len(mapNodes[0])-1), end.row/(len(mapNodes)-2))
+	defer wg.Done()
+
+	start = newRolumn(start.column/smallTileSize.x, start.row/smallTileSize.y)
+	end = newRolumn(end.column/smallTileSize.x, end.row/smallTileSize.y)
 	fmt.Println("s: ", start.column, ", ", start.row)
 	fmt.Println("e: ", end.column, ", ", end.row)
 
@@ -30,7 +39,8 @@ func calculatePath(id int, mapNodes []string, start Rolumn, end Rolumn) {
 
 	// This gets a new Path (a slice of Cells) from the starting Cell to the destination Cell. If the path's length
 	// is greater than 0, then it was successful.
-
-	fmt.Println(len(astarChannels[id]))
-	astarChannels[id] <- *mapLayout.GetPath(mapLayout.Get(start.column, start.row), mapLayout.Get(end.column, end.row), true)
+	p := mapLayout.GetPath(mapLayout.Get(start.column, start.row), mapLayout.Get(end.column, end.row), false)
+	if p != nil {
+		channel <- p
+	}
 }

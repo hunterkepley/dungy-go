@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"image"
 
+	paths "github.com/SolarLune/paths"
 	"github.com/hajimehoshi/ebiten"
-	"github.com/nickdavies/go-astar/astar"
+	pathfinding "github.com/xarg/gopathfinding"
 )
 
 // TODO: Make it so animations store if they play forwards or backwards in themselves
@@ -48,11 +49,13 @@ type BeefEye struct {
 
 	image *ebiten.Image
 
-	findPath       bool
-	astarContextID int
-	astarNodes     []Node
-	pathChan       *chan astar.PathPoint
-	path           astar.PathPoint
+	astarChannelID         int
+	astarNodes             []pathfinding.Node
+	pathChan               *chan *paths.Path
+	path                   *paths.Path
+	pathfindingTickRate    int
+	pathfindingTickRateMax int
+	pathfindingIndex       paths.Cell
 }
 
 func createBeefEye(position Vec2f, game *Game) *BeefEye {
@@ -84,22 +87,18 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 			die:  1.2,
 		},
 
-		findPath:   false,
-		astarNodes: []Node{},
+		astarNodes:             []pathfinding.Node{},
+		pathfindingTickRate:    5,
+		pathfindingTickRateMax: 5,
 
 		image: ienemiesSpritesheet,
 	}
 
 	// Pathfinding stuff
-	astarContext := createAStarContext(getNumberOfTilesPossible().x, getNumberOfTilesPossible().y)
-	game.astarContexts = append(game.astarContexts, astarContext)
-	b.astarContextID = len(game.astarContexts) - 1
+	b.astarChannelID = len(game.astarChannels) - 1
 
-	initAStar(game, &game.astarContexts[b.astarContextID], b.astarNodes)
-
-	game.astarChannels = append(game.astarChannels, make(chan astar.PathPoint, 2000))
-	b.pathChan = &game.astarChannels[b.astarContextID]
-	game.astarContexts[b.astarContextID].pathChan = b.pathChan
+	game.astarChannels = append(game.astarChannels, make(chan *paths.Path, 2000))
+	b.pathChan = &game.astarChannels[b.astarChannelID]
 
 	return b
 }
@@ -158,48 +157,64 @@ func (b *BeefEye) update(game *Game) {
 }
 
 func (b *BeefEye) followPlayer(game *Game) {
-	numTiles := newVec2i(getNumberOfTilesPossible().x, getNumberOfTilesPossible().y)
-	if !b.findPath {
 
+	if b.path != nil && b.path.AtEnd() {
+		numTiles := newVec2i(getNumberOfTilesPossible().x, getNumberOfTilesPossible().y)
 		start := newRolumn(
-			int(b.position.x)/numTiles.x,
-			int(b.position.y)/numTiles.y,
+			int(b.position.x)/(numTiles.x-2),
+			int(b.position.y)/(numTiles.y-2),
 		)
 		end := newRolumn(
-			int(game.player.position.x)/numTiles.x,
-			int(game.player.position.y)/numTiles.y,
+			int(game.player.position.x)/(numTiles.x-2),
+			int(game.player.position.y)/(numTiles.y-2),
 		)
 
-		b.path = calculatePath(game, b.astarContextID, b.astarNodes, start, end)
+		go calculatePath(game, b.astarChannelID, game.currentMap.mapNodes, start, end)
 
-		/*if b.pathChan != nil {
-			select {
-			case b.path = <-*b.pathChan: // Path made
-				fmt.Println("hello")
-				b.findPath = true
-				if &b.path != nil {
-					fmt.Println("Calculated")
-				} else {
-					fmt.Println("FUCK")
-					b.findPath = false
-				}
-			default: // No path made
-			}
-		}*/
-		if &b.path != nil {
-			b.findPath = false
+		select {
+		case b.path = <-*b.pathChan:
+		default:
 		}
 	} else {
-		iterator := b.path
-		for &b.path != nil {
-			b.position = newVec2f(float64(iterator.Col*numTiles.x), float64(iterator.Row*numTiles.y))
-			fmt.Println(b.position.x, ", ", b.position.y)
-			if b.path.Parent != nil {
-				iterator = *b.path.Parent
+
+		if &b.pathfindingIndex == nil && b.path != nil {
+			b.pathfindingIndex = *b.path.Current()
+		}
+
+		if &b.pathfindingIndex != nil {
+
+			ease := 10 // How much give the engine gives to 'reaching' a node
+
+			finished := newVec2b(false, false)
+			if int(b.position.x) < b.pathfindingIndex.X-ease {
+				b.position.x += b.moveSpeed
+			} else if int(b.position.x) > b.pathfindingIndex.X+ease {
+				b.position.x -= b.moveSpeed
 			} else {
-				break
+				finished.x = true
+			}
+
+			if int(b.position.y) < b.pathfindingIndex.Y-ease {
+				b.position.y += b.moveSpeed
+			} else if int(b.position.y) > b.pathfindingIndex.Y+ease {
+				b.position.y -= b.moveSpeed
+			} else {
+				finished.y = true
+			}
+
+			if finished.x && finished.y {
+				fmt.Println("Node complete at: ", b.position.x, ", ", b.position.y)
+				if b.path.Next() == nil {
+					b.path.Next()
+
+				} else {
+					b.pathfindingIndex = *b.path.Next()
+				}
+			} else {
+				fmt.Println("Node unfinished")
 			}
 		}
+
 	}
 }
 

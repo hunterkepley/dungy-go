@@ -14,8 +14,9 @@ type MapData struct {
 type Map struct {
 	data MapData
 
-	tiles  []Tile
-	lights []*Light // Background/level-specific lights
+	tiles    []Tile
+	lights   []*Light // Background/level-specific lights
+	mapNodes []string
 }
 
 // I plan for this to end up loading map files just based off map names.
@@ -43,8 +44,9 @@ func (m *Map) update() {
 func (m *Map) render(screen *ebiten.Image) {
 }
 
-// SpaceShip
+// SpaceShip | INDEX 0
 func initMapSpaceShip(g *Game) {
+	index := 0
 	// Lights
 	for i := 0; i < 12; i++ {
 		offset := 17.
@@ -53,8 +55,23 @@ func initMapSpaceShip(g *Game) {
 		rect := gameReference.lightHandler.lightImages.rectangleLight1
 		id := gameReference.lightHandler.addLightStatic(rect, lightRotation, lightPosition) // Create light
 		// Add it to the map's light reference array
-		gameReference.maps[0].lights = append(gameReference.maps[0].lights,
+		gameReference.maps[index].lights = append(gameReference.maps[index].lights,
 			&gameReference.lightHandler.lights[gameReference.lightHandler.getLightIndex(id)],
 		)
 	}
+
+	// Redo later with a mapNode maker function? Or, manually until editor?
+	gameReference.maps[index].mapNodes = []string{
+		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	}
+	g.currentMap = gameReference.maps[index]
 }

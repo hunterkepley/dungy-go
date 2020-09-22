@@ -1,4 +1,6 @@
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
+github.com/SolarLune/paths v0.0.0-20190106103957-acfca40d365f h1:Yqirp0/PnvPWFPRq9qG+vxVKNzl9aD5y+iX/m/g864o=
+github.com/SolarLune/paths v0.0.0-20190106103957-acfca40d365f/go.mod h1:SubCvn14NRAhU/3fUz3xkoMci5Agf4VKix8sGqlOYMA=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
@@ -26,6 +28,7 @@ github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/nickdavies/go-astar v0.0.0-20140108070343-e72e60e44619 h1:JTISDLDp+wIM3dz09tAk+IWdchct1dh704Hm8C+zdco=
 github.com/nickdavies/go-astar v0.0.0-20140108070343-e72e60e44619/go.mod h1:EZuzuIZu9Oq2D8JX3aKPVwfA3SytDX8oQgmUUpRp4EE=
 github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4/go.mod h1:4OwLy04Bl9Ef3GJJCoec+30X3LQs/0/m4HFRt/2LUSA=
+github.com/veandco/go-sdl2 v0.0.0-20180925095440-75ff82abc4e3/go.mod h1:FB+kTpX9YTE+urhYiClnRzpOXbiWgaU3+5F2AB78DPg=
 github.com/xarg/gopathfinding v0.0.0-20170223193223-aefc81ce6658 h1:qN0kxaVubdGpZpfU9HZebHmo+rDXVqZsEGyur2VTvj0=
 github.com/xarg/gopathfinding v0.0.0-20170223193223-aefc81ce6658/go.mod h1:/JsbaapU3uU7JaV80WYSy5q4tdKQeLWwuQb24IsZgeA=
 github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da h1:NimzV1aGyq29m5ukMK0AMWEhFaL/lrEOaephfuoiARg=

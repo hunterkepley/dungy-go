@@ -4,9 +4,10 @@ import (
 	"image"
 	_ "image/png"
 	"log"
+	"math/rand"
 
+	paths "github.com/SolarLune/paths"
 	"github.com/hajimehoshi/ebiten"
-	"github.com/nickdavies/go-astar/astar"
 	lua "github.com/yuin/gopher-lua"
 	"golang.org/x/image/font"
 )
@@ -24,8 +25,6 @@ var (
 	mversionFont font.Face
 
 	gameReference *Game
-
-	astarContext AStarContext
 )
 
 // Game is the info for the game
@@ -53,8 +52,7 @@ type Game struct {
 
 	state int // The game state, 0 is in main menu, 1 is in game, 2 is paused
 
-	astarChannels []chan astar.PathPoint // Stores all channe for astar paths
-	astarContexts []AStarContext
+	astarChannels []chan *paths.Path // Stores all channe for astar paths
 }
 
 // Init initializes the game
@@ -69,6 +67,7 @@ func (g *Game) Init() {
 
 	// Init maps
 	initMaps(g)
+	initMapSpaceShip(g)
 
 	// Player
 	g.player = createPlayer(
@@ -79,7 +78,7 @@ func (g *Game) Init() {
 	g.shadows = append(g.shadows, &g.player.shadow)
 
 	// Path channel
-	c := make(chan astar.PathPoint, 3000)
+	c := make(chan *paths.Path, 3000)
 	g.astarChannels = append(g.astarChannels, c)
 
 	// Test items! ============================
@@ -126,10 +125,10 @@ func (g *Game) Init() {
 	defer L.Close()
 	initLuaFunctions(L)
 
+	g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
+
 	// State starts in game [temporary]
 	g.state = 1
-
-	astarContext = createAStarContext(getNumberOfTilesPossible().x, getNumberOfTilesPossible().y)
 }
 
 // Update updates the game

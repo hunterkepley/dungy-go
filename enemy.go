@@ -2,7 +2,6 @@ package main
 
 import (
 	"image"
-	"math/rand"
 
 	"github.com/hajimehoshi/ebiten"
 )
@@ -22,10 +21,6 @@ type Enemy interface {
 }
 
 func updateEnemies(g *Game) {
-	// Temporarily spawn a worm
-	if ebiten.IsKeyPressed(ebiten.KeyM) {
-		g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
-	}
 
 	for e := 0; e < len(g.enemies); e++ {
 

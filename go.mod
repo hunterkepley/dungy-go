@@ -3,6 +3,7 @@ module github.com/hunterkepley/dungo-go
 go 1.14
 
 require (
+	github.com/SolarLune/paths v0.0.0-20190106103957-acfca40d365f
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/hajimehoshi/ebiten v1.11.1
 	github.com/nickdavies/go-astar v0.0.0-20140108070343-e72e60e44619

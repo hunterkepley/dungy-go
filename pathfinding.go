@@ -1,92 +1,29 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/nickdavies/go-astar/astar"
-	pathfinding "github.com/xarg/gopathfinding"
+	paths "github.com/SolarLune/paths"
 )
 
-// NodeType is a type for the node struct
-type NodeType int
+func calculatePath(game *Game, id int, mapNodes []string, start Rolumn, end Rolumn) {
+	// This line creates a new Grid, comprised of Cells. The size is 10x10. By default, all Cells are
+	// walkable and have a cost of 1, and a blank character of ' '.
+	//firstMap := paths.NewGrid(10, 10)
 
-const (
-	// Walkable ... NODETYPE ENUM [1]
-	Walkable NodeType = iota + 1
-	// Unwalkable ... NODETYPE ENUM [2]
-	Unwalkable
-)
+	mapLayout := paths.NewGridFromStringArrays(mapNodes)
 
-func (n NodeType) String() string {
-	return [...]string{"Unknown", "Walkable", "Unwalkable"}[n]
-}
-
-// Node is a astar node
-type Node struct {
-	rolumn Rolumn
-	_type  NodeType
-}
-
-// AStarContext holds the different parts of the astar system for scope
-type AStarContext struct {
-	a        astar.AStar
-	p2p      astar.AStarConfig
-	pathChan *chan astar.PathPoint
-}
-
-func createAStarContext(rows int, columns int) AStarContext {
-	// Build AStar object from existing
-	// PointToPoint configuration
-	a := astar.NewAStar(rows, columns)
-	p2p := astar.NewPointToPoint()
-
-	return AStarContext{
-		a:   a,
-		p2p: p2p,
+	// After creating the Grid, you can edit it using the Grid's functions. Note that here, we're using 'x'
+	// to get Cells that have the rune for the lowercase x character 'x', not the string "x".
+	for _, cell := range mapLayout.GetCellsByRune('x') {
+		cell.Walkable = false
 	}
-}
 
-func initAStar(game *Game, context *AStarContext, nodes []Node) {
-	// Unwalkable nodes
-	for i := 0; i < len(nodes); i++ {
-		switch nodes[i]._type {
-		case Unwalkable:
-			x := nodes[i].rolumn.column
-			y := nodes[i].rolumn.row
-			context.a.FillTile(astar.Point{Row: x, Col: y}, -1)
-		case Walkable:
-			// nothin to do here for now
-		}
+	for _, goop := range mapLayout.GetCellsByRune('g') {
+		goop.Cost = 5
 	}
-}
 
-func calculatePath(game *Game, id int, nodes []Node, start Rolumn, end Rolumn) astar.PathPoint {
-	p := astar.PathPoint{}
-	//A pathfinding.MapData containing the
-	//coordinates(x, y) of LAND, WALL, START and STOP of the map.
-	//If your map is something more than 2d matrix then you might want to modify adjacentNodes
+	// This gets a new Path (a slice of Cells) from the starting Cell to the destination Cell. If the path's length
+	// is greater than 0, then it was successful.
+	path := mapLayout.GetPath(mapLayout.Get(start.row, start.column), mapLayout.Get(end.row, end.column), true)
 
-	graph := pathfinding.NewGraph(map_data)
-
-	//Returns a list of nodes from START to STOP avoiding all obstacles if possible
-	shortest_path := pathfinding.Astar(graph)
-	if &game.astarContexts[id] != nil {
-
-		/*go calculatePoints(
-		context,
-		, ,
-		)*/
-
-		a := astarContext
-
-		fmt.Println(a)
-
-		s := []astar.Point{{Row: start.row, Col: start.column}}
-		t := []astar.Point{{Row: end.row, Col: end.column}}
-		p = *a.a.FindPath(a.p2p, s, t)
-
-		//*context.pathChan <- *p
-
-	}
-	return p
+	game.astarChannels[id] <- path
 }

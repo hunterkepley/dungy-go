@@ -25,8 +25,6 @@ github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORN
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
-github.com/nickdavies/go-astar v0.0.0-20140108070343-e72e60e44619 h1:JTISDLDp+wIM3dz09tAk+IWdchct1dh704Hm8C+zdco=
-github.com/nickdavies/go-astar v0.0.0-20140108070343-e72e60e44619/go.mod h1:EZuzuIZu9Oq2D8JX3aKPVwfA3SytDX8oQgmUUpRp4EE=
 github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4/go.mod h1:4OwLy04Bl9Ef3GJJCoec+30X3LQs/0/m4HFRt/2LUSA=
 github.com/veandco/go-sdl2 v0.0.0-20180925095440-75ff82abc4e3/go.mod h1:FB+kTpX9YTE+urhYiClnRzpOXbiWgaU3+5F2AB78DPg=
 github.com/xarg/gopathfinding v0.0.0-20170223193223-aefc81ce6658 h1:qN0kxaVubdGpZpfU9HZebHmo+rDXVqZsEGyur2VTvj0=

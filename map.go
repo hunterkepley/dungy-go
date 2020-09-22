@@ -71,7 +71,14 @@ func initMapSpaceShip(g *Game) {
 		"x                           x",
 		"x                           x",
 		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
 		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 	}
+
 	g.currentMap = gameReference.maps[index]
 }

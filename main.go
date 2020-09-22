@@ -25,6 +25,8 @@ var (
 	mversionFont font.Face
 
 	gameReference *Game
+
+	astarChannels []chan paths.Path // Stores all channels for astar paths
 )
 
 // Game is the info for the game
@@ -51,8 +53,6 @@ type Game struct {
 	shadowID int // Shadow IDs, starts at 0 then increments when a shadow is added
 
 	state int // The game state, 0 is in main menu, 1 is in game, 2 is paused
-
-	astarChannels []chan *paths.Path // Stores all channe for astar paths
 }
 
 // Init initializes the game
@@ -67,7 +67,6 @@ func (g *Game) Init() {
 
 	// Init maps
 	initMaps(g)
-	initMapSpaceShip(g)
 
 	// Player
 	g.player = createPlayer(
@@ -78,8 +77,8 @@ func (g *Game) Init() {
 	g.shadows = append(g.shadows, &g.player.shadow)
 
 	// Path channel
-	c := make(chan *paths.Path, 3000)
-	g.astarChannels = append(g.astarChannels, c)
+	c := make(chan paths.Path, 3000)
+	astarChannels = append(astarChannels, c)
 
 	// Test items! ============================
 	// TODO: REMOVE THIS                      v

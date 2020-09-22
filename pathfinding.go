@@ -1,13 +1,20 @@
 package main
 
 import (
+	"fmt"
+
 	paths "github.com/SolarLune/paths"
 )
 
-func calculatePath(game *Game, id int, mapNodes []string, start Rolumn, end Rolumn) {
+func calculatePath(id int, mapNodes []string, start Rolumn, end Rolumn) {
 	// This line creates a new Grid, comprised of Cells. The size is 10x10. By default, all Cells are
 	// walkable and have a cost of 1, and a blank character of ' '.
 	//firstMap := paths.NewGrid(10, 10)
+
+	start = newRolumn(start.column/(len(mapNodes[0])-1), start.row/(len(mapNodes)-2))
+	end = newRolumn(end.column/(len(mapNodes[0])-1), end.row/(len(mapNodes)-2))
+	fmt.Println("s: ", start.column, ", ", start.row)
+	fmt.Println("e: ", end.column, ", ", end.row)
 
 	mapLayout := paths.NewGridFromStringArrays(mapNodes)
 
@@ -23,7 +30,7 @@ func calculatePath(game *Game, id int, mapNodes []string, start Rolumn, end Rolu
 
 	// This gets a new Path (a slice of Cells) from the starting Cell to the destination Cell. If the path's length
 	// is greater than 0, then it was successful.
-	path := mapLayout.GetPath(mapLayout.Get(start.row, start.column), mapLayout.Get(end.row, end.column), true)
 
-	game.astarChannels[id] <- path
+	fmt.Println(len(astarChannels[id]))
+	astarChannels[id] <- *mapLayout.GetPath(mapLayout.Get(start.column, start.row), mapLayout.Get(end.column, end.row), true)
 }

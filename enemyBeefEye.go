@@ -51,11 +51,12 @@ type BeefEye struct {
 
 	astarChannelID         int
 	astarNodes             []pathfinding.Node
-	pathChan               *chan *paths.Path
-	path                   *paths.Path
+	pathChan               *chan paths.Path
+	path                   paths.Path
 	pathfindingTickRate    int
 	pathfindingTickRateMax int
-	pathfindingIndex       paths.Cell
+	canPathfind            bool
+	pathFinding            bool
 }
 
 func createBeefEye(position Vec2f, game *Game) *BeefEye {
@@ -90,15 +91,17 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 		astarNodes:             []pathfinding.Node{},
 		pathfindingTickRate:    5,
 		pathfindingTickRateMax: 5,
+		canPathfind:            true,
+		pathFinding:            false,
 
 		image: ienemiesSpritesheet,
 	}
 
 	// Pathfinding stuff
-	b.astarChannelID = len(game.astarChannels) - 1
+	b.astarChannelID = len(astarChannels) - 1
 
-	game.astarChannels = append(game.astarChannels, make(chan *paths.Path, 2000))
-	b.pathChan = &game.astarChannels[b.astarChannelID]
+	astarChannels = append(astarChannels, make(chan paths.Path, 2000))
+	b.pathChan = &astarChannels[b.astarChannelID]
 
 	return b
 }
@@ -158,60 +161,65 @@ func (b *BeefEye) update(game *Game) {
 
 func (b *BeefEye) followPlayer(game *Game) {
 
-	if b.path != nil && b.path.AtEnd() {
-		numTiles := newVec2i(getNumberOfTilesPossible().x, getNumberOfTilesPossible().y)
+	if b.canPathfind {
+
 		start := newRolumn(
-			int(b.position.x)/(numTiles.x-2),
-			int(b.position.y)/(numTiles.y-2),
+			int(b.position.x),
+			int(b.position.y),
 		)
 		end := newRolumn(
-			int(game.player.position.x)/(numTiles.x-2),
-			int(game.player.position.y)/(numTiles.y-2),
+			int(game.player.position.x),
+			int(game.player.position.y),
 		)
 
-		go calculatePath(game, b.astarChannelID, game.currentMap.mapNodes, start, end)
+		// Make a path concurrently
+		go calculatePath(b.astarChannelID, game.currentMap.mapNodes, start, end)
+		// Get the path if it's finished
+		b.path = <-*b.pathChan
+		b.canPathfind = false
+	} else if !b.pathFinding && !b.canPathfind {
 
-		select {
-		case b.path = <-*b.pathChan:
-		default:
-		}
-	} else {
+		if &b.path != nil {
 
-		if &b.pathfindingIndex == nil && b.path != nil {
-			b.pathfindingIndex = *b.path.Current()
-		}
-
-		if &b.pathfindingIndex != nil {
-
-			ease := 10 // How much give the engine gives to 'reaching' a node
-
-			finished := newVec2b(false, false)
-			if int(b.position.x) < b.pathfindingIndex.X-ease {
-				b.position.x += b.moveSpeed
-			} else if int(b.position.x) > b.pathfindingIndex.X+ease {
-				b.position.x -= b.moveSpeed
+			if len(b.path.Cells)-1 == b.path.CurrentIndex {
+				b.canPathfind = true
 			} else {
-				finished.x = true
-			}
 
-			if int(b.position.y) < b.pathfindingIndex.Y-ease {
-				b.position.y += b.moveSpeed
-			} else if int(b.position.y) > b.pathfindingIndex.Y+ease {
-				b.position.y -= b.moveSpeed
-			} else {
-				finished.y = true
-			}
+				ease := 20 // How much give the engine gives to 'reaching' a node
 
-			if finished.x && finished.y {
-				fmt.Println("Node complete at: ", b.position.x, ", ", b.position.y)
-				if b.path.Next() == nil {
-					b.path.Next()
+				finished := newVec2b(false, false)
+				if len(b.path.Cells) > 0 {
+					if int(b.position.x) < b.path.Current().X-ease {
+						b.position.x += b.moveSpeed
+					} else if int(b.position.x) > b.path.Current().X+ease {
+						b.position.x -= b.moveSpeed
+					} else {
+						finished.x = true
+					}
 
-				} else {
-					b.pathfindingIndex = *b.path.Next()
+					if int(b.position.y) < b.path.Current().Y-ease {
+						b.position.y += b.moveSpeed
+					} else if int(b.position.y) > b.path.Current().Y+ease {
+						b.position.y -= b.moveSpeed
+					} else {
+						finished.y = true
+					}
 				}
-			} else {
-				fmt.Println("Node unfinished")
+
+				if finished.x && finished.y {
+					fmt.Print("c")
+					if b.path.AtEnd() {
+						if b.path.AtEnd() {
+							b.canPathfind = true
+						}
+					} else {
+						if !b.path.AtEnd() {
+							b.path.Next()
+						}
+					}
+				} else {
+					fmt.Print("u")
+				}
 			}
 		}
 

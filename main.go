@@ -131,8 +131,14 @@ func (g *Game) Init() {
 
 	// GAME SETTINGS
 	g.settings = Settings{
-		gibs: 0,
+		gibs:       0,
+		fullscreen: true,
 	}
+
+	if g.settings.fullscreen { // Enable fullscreen if enabled
+		ebiten.SetFullscreen(true)
+	}
+
 }
 
 // Update updates the game
@@ -145,11 +151,6 @@ func (g *Game) Update(screen *ebiten.Image) error {
 	// Update game
 	if g.state == 1 {
 		updateGame(screen, g)
-	}
-
-	// Temporary
-	if ebiten.IsKeyPressed(ebiten.KeyF) {
-		ebiten.SetFullscreen(true)
 	}
 
 	return nil

@@ -4,5 +4,6 @@ package main
 
 // Settings is the game settings
 type Settings struct {
-	gibs int // 0 -> off, 1 -> normal, 2 -> high
+	gibs       int  // 0 -> off, 1 -> normal, 2 -> high
+	fullscreen bool // true for on, false for off
 }

@@ -29,15 +29,28 @@ func updateEnemies(g *Game) {
 		}
 
 		if g.enemies[e].isDead() {
+			gibAmount := 10 // Gib setting 1
+			gibSize := 8    // Gib setting 1
+
+			switch g.settings.gibs { // Gib setting 2
+			case 2:
+				gibSize = 9
+				gibAmount = 20
+			case 0:
+				gibAmount = 0
+			}
+
 			gibHandler := createGibHandler()
 			g.shadows = removeShadow((g.shadows), g.enemies[e].getShadow().id)
+
 			gibHandler.explode(
-				15,
-				8,
+				gibAmount,
+				gibSize,
 				g.enemies[e].getCenter(),
 				g.enemies[e].getCurrentSubImageRect(),
 				g.enemies[e].getImage(),
 			)
+
 			g.gibHandlers = append(g.gibHandlers, gibHandler)
 			g.enemies = removeEnemy(g.enemies, e)
 			continue

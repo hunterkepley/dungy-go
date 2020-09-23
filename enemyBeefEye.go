@@ -153,29 +153,34 @@ func (b *BeefEye) update(game *Game) {
 func (b *BeefEye) followPlayer(game *Game) {
 
 	if b.canPathfind {
+		if b.pathfindingTickRate < 0 {
+			start := newRolumn(
+				int(b.position.x),
+				int(b.position.y),
+			)
+			end := newRolumn(
+				int(game.player.position.x),
+				int(game.player.position.y),
+			)
 
-		start := newRolumn(
-			int(b.position.x),
-			int(b.position.y),
-		)
-		end := newRolumn(
-			int(game.player.position.x),
-			int(game.player.position.y),
-		)
+			// Make a path concurrently
+			wg.Add(1)
+			go calculatePath(astarChannel, game.currentMap.mapNodes, start, end)
 
-		// Make a path concurrently
-		wg.Add(1)
-		go calculatePath(astarChannel, game.currentMap.mapNodes, start, end)
+			wg.Wait()
 
-		wg.Wait()
-
-		// Get the path if it's finished
-		b.path = *<-astarChannel
-		b.canPathfind = false
+			// Get the path if it's finished
+			b.path = *<-astarChannel
+			b.canPathfind = false
+			b.pathfindingTickRate = b.pathfindingTickRateMax
+		} else {
+			b.pathfindingTickRate--
+		}
 	} else if !b.pathFinding && !b.canPathfind {
 
 		if &b.path != nil {
 
+			// If path is finished, generate new one.
 			if len(b.path.Cells)-1 == b.path.CurrentIndex {
 				b.canPathfind = true
 			} else {

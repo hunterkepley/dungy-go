@@ -42,15 +42,17 @@ type Game struct {
 	tiles            [][]Tile
 	borders          []Border
 	ui               []UI
+	maps             []Map
 
-	maps       []Map // All maps
-	currentMap Map   // Current map being played on
+	currentMap Map
 
 	lightHandler LightHandler // Controls the lights!
 
 	shadowID int // Shadow IDs, starts at 0 then increments when a shadow is added
 
 	state int // The game state, 0 is in main menu, 1 is in game, 2 is paused
+
+	settings Settings // Game settings
 }
 
 // Init initializes the game
@@ -126,6 +128,11 @@ func (g *Game) Init() {
 
 	// State starts in game [temporary]
 	g.state = 1
+
+	// GAME SETTINGS
+	g.settings = Settings{
+		gibs: 0,
+	}
 }
 
 // Update updates the game

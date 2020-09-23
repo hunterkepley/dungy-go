@@ -6,6 +6,8 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
+// TODO: Make tiles stored in maps and make tile generation map-based
+
 const (
 	wallOffset = 6 // How big the walls are, start tiles at this
 )

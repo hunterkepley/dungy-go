@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sync"
 
 	paths "github.com/SolarLune/paths"
@@ -22,8 +21,6 @@ func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, en
 
 	start = newRolumn(start.column/smallTileSize.x, start.row/smallTileSize.y)
 	end = newRolumn(end.column/smallTileSize.x, end.row/smallTileSize.y)
-	fmt.Println("s: ", start.column, ", ", start.row)
-	fmt.Println("e: ", end.column, ", ", end.row)
 
 	mapLayout := paths.NewGridFromStringArrays(mapNodes)
 
@@ -39,8 +36,11 @@ func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, en
 
 	// This gets a new Path (a slice of Cells) from the starting Cell to the destination Cell. If the path's length
 	// is greater than 0, then it was successful.
-	p := mapLayout.GetPath(mapLayout.Get(start.column, start.row), mapLayout.Get(end.column, end.row), false)
-	if p != nil {
-		channel <- p
+	for {
+		p := mapLayout.GetPath(mapLayout.Get(start.column, start.row), mapLayout.Get(end.column, end.row), true)
+		if p != nil {
+			channel <- p
+			break
+		}
 	}
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 
 	paths "github.com/SolarLune/paths"
@@ -68,7 +67,7 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 	b := &BeefEye{
 		position:  position,
 		velocity:  newVec2f(0, 0),
-		moveSpeed: 0.6,
+		moveSpeed: 1.2,
 
 		health:    6,
 		maxHealth: 6,
@@ -180,8 +179,11 @@ func (b *BeefEye) followPlayer(game *Game) {
 			if len(b.path.Cells)-1 == b.path.CurrentIndex {
 				b.canPathfind = true
 			} else {
-
-				ease := 20 // How much give the engine gives to 'reaching' a node
+				z := b.size.x
+				if b.size.y > b.size.x {
+					z = b.size.y
+				}
+				ease := z // How much give the engine gives to 'reaching' a node
 
 				finished := newVec2b(false, false)
 				if len(b.path.Cells) > 0 {
@@ -203,7 +205,6 @@ func (b *BeefEye) followPlayer(game *Game) {
 				}
 
 				if finished.x && finished.y {
-					fmt.Print("c")
 					if b.path.AtEnd() {
 						if b.path.AtEnd() {
 							b.canPathfind = true
@@ -213,8 +214,6 @@ func (b *BeefEye) followPlayer(game *Game) {
 							b.path.Next()
 						}
 					}
-				} else {
-					fmt.Print("u")
 				}
 			}
 		}

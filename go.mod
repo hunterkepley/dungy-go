@@ -9,4 +9,5 @@ require (
 	github.com/xarg/gopathfinding v0.0.0-20170223193223-aefc81ce6658
 	github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da
 	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8
+	gopkg.in/yaml.v2 v2.3.0
 )

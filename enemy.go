@@ -12,6 +12,7 @@ type Enemy interface {
 	update(game *Game)
 	isDead() bool
 	damage(value int)
+	attack(game *Game)
 
 	getShadow() Shadow
 	getCenter() Vec2f
@@ -32,7 +33,7 @@ func updateEnemies(g *Game) {
 			gibAmount := 10 // Gib setting 1
 			gibSize := 8    // Gib setting 1
 
-			switch g.settings.gibs { // Gib setting 2
+			switch g.settings.Graphics.gibs { // Gib setting 2
 			case 2:
 				gibSize = 9
 				gibAmount = 20
@@ -77,3 +78,5 @@ func renderEnemies(g *Game, screen *ebiten.Image) {
 func removeEnemy(slice []Enemy, e int) []Enemy {
 	return append(slice[:e], slice[e+1:]...)
 }
+
+// Attacking/hitbox stuff

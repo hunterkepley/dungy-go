@@ -226,6 +226,10 @@ func (b *BeefEye) isDead() bool {
 	return false
 }
 
+func (b *BeefEye) attack(game *Game) {
+
+}
+
 func (b *BeefEye) getCenter() Vec2f {
 	return b.center
 }

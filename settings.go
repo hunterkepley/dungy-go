@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"os"
 
 	"gopkg.in/yaml.v2"
 )
@@ -12,24 +12,23 @@ import (
 // Settings is the game settings
 type Settings struct {
 	Graphics struct {
-		gibs       int  // 0 -> off, 1 -> normal, 2 -> high
-		fullscreen bool // true for on, false for off
-	}
+		gibs       int  `yaml:"gibs"`
+		fullscreen bool `yaml:"fullscreen"`
+	} `yaml:"graphics"`
 }
 
-var testSettings = `
-graphics:
-	gibs: 2
-	fullscreen: false
-`
+func loadSettings(s *Settings) {
 
-func (s *Settings) loadSettings() Settings {
-	var settings Settings
-
-	err := yaml.Unmarshal([]byte(testSettings), &settings)
+	f, err := os.Open("./Assets/Config/settings.yaml")
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		log.Printf("error -- Failed to load settings.yaml   #%v ", err)
 	}
-	fmt.Printf("--- m:\n%v\n\n", settings)
-	return settings
+	defer f.Close()
+
+	decoder := yaml.NewDecoder(f)
+	err = decoder.Decode(&s)
+	if err != nil {
+		log.Printf("error -- Failed to decode settings.yaml   #%v ", err)
+	}
+
 }

@@ -123,6 +123,7 @@ func (g *Game) Init() {
 	// Make the astar path channel
 	astarChannel = make(chan *paths.Path, 2)
 
+	// Obviously, temporary
 	g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
 	g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
 
@@ -130,10 +131,10 @@ func (g *Game) Init() {
 	g.state = 1
 
 	// GAME SETTINGS
-	g.settings.loadSettings()
+	loadSettings(&g.settings)
 
 	if g.settings.Graphics.fullscreen { // Enable fullscreen if enabled
-		ebiten.SetFullscreen(false)
+		ebiten.SetFullscreen(true)
 	}
 
 }

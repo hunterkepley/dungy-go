@@ -92,15 +92,15 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 
 	image := iplayerSpritesheet
 	// Idle
-	idleFrontSpritesheet := createSpritesheet(newVec2i(0, 0), newVec2i(60, 26), 5, image)
-	idleBackSpritesheet := createSpritesheet(newVec2i(0, 26), newVec2i(60, 52), 5, image)
-	idleLeftSpritesheet := createSpritesheet(newVec2i(0, 52), newVec2i(70, 78), 5, image)
-	idleRightSpritesheet := createSpritesheet(newVec2i(0, 78), newVec2i(70, 104), 5, image)
+	idleFrontSpritesheet := createSpritesheet(newVec2i(103, 114), newVec2i(129, 132), 2, image)
+	idleBackSpritesheet := createSpritesheet(newVec2i(103, 133), newVec2i(129, 151), 2, image)
+	idleLeftSpritesheet := createSpritesheet(newVec2i(103, 95), newVec2i(129, 113), 2, image)
+	idleRightSpritesheet := createSpritesheet(newVec2i(103, 76), newVec2i(129, 94), 2, image)
 	// Running
-	runningFrontSpritesheet := createSpritesheet(newVec2i(0, 104), newVec2i(84, 128), 6, image)
-	runningBackSpritesheet := createSpritesheet(newVec2i(0, 129), newVec2i(84, 154), 6, image)
-	runningLeftSpritesheet := createSpritesheet(newVec2i(0, 154), newVec2i(90, 180), 6, image)
-	runningRightSpritesheet := createSpritesheet(newVec2i(0, 180), newVec2i(90, 206), 6, image)
+	runningFrontSpritesheet := createSpritesheet(newVec2i(103, 57), newVec2i(155, 75), 4, image)
+	runningBackSpritesheet := createSpritesheet(newVec2i(103, 38), newVec2i(155, 56), 4, image)
+	runningLeftSpritesheet := createSpritesheet(newVec2i(103, 19), newVec2i(155, 37), 4, image)
+	runningRightSpritesheet := createSpritesheet(newVec2i(103, 0), newVec2i(155, 18), 4, image)
 
 	return Player{
 		position:  position,

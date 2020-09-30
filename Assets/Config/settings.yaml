@@ -1,7 +1,6 @@
 # GRAPHICS SETTINGS ---
-
 graphics:
   gibs: 2 # 0 -> none; 1 -> normal; 2 -> extra
-  fullscreen: true # Whether or not the game should start in fullscreen
+  fullscreen: false # Whether or not the game should start in fullscreen
 
 # --- GRAPHICS SETTINGS

@@ -33,7 +33,7 @@ func updateEnemies(g *Game) {
 			gibAmount := 10 // Gib setting 1
 			gibSize := 8    // Gib setting 1
 
-			switch g.settings.Graphics.gibs { // Gib setting 2
+			switch g.settings.Graphics.Gibs { // Gib setting 2
 			case 2:
 				gibSize = 9
 				gibAmount = 20

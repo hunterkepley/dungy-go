@@ -12,9 +12,9 @@ import (
 // Settings is the game settings
 type Settings struct {
 	Graphics struct {
-		gibs       int  `yaml:"gibs"`
-		fullscreen bool `yaml:"fullscreen"`
-	} `yaml:"graphics"`
+		Gibs       int  `yaml:"gibs"`
+		Fullscreen bool `yaml:"fullscreen"`
+	}
 }
 
 func loadSettings(s *Settings) {

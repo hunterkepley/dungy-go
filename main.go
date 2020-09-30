@@ -133,7 +133,7 @@ func (g *Game) Init() {
 	// GAME SETTINGS
 	loadSettings(&g.settings)
 
-	if g.settings.Graphics.fullscreen { // Enable fullscreen if enabled
+	if g.settings.Graphics.Fullscreen { // Enable fullscreen if enabled
 		ebiten.SetFullscreen(true)
 	}
 

@@ -13,13 +13,13 @@ import (
 
 // BeefEyeAnimations is the animations
 type BeefEyeAnimations struct {
-	idleFront Animation
-	die       Animation
+	walkSide Animation
+	die      Animation
 }
 
 // BeefEyeAnimationSpeeds is the animation speeds
 type BeefEyeAnimationSpeeds struct {
-	idle float64
+	walk float64
 	die  float64
 }
 
@@ -36,6 +36,7 @@ type BeefEye struct {
 	dead      bool
 	remove    bool // Do we remove this enemy?
 	flipped   bool // Is the enemy flipped?
+	idle      bool // Is the enemy idling?
 
 	shadow *Shadow // The shadow below the enemy
 
@@ -55,7 +56,7 @@ type BeefEye struct {
 }
 
 func createBeefEye(position Vec2f, game *Game) *BeefEye {
-	idleFrontSpritesheet := createSpritesheet(newVec2i(0, 23), newVec2i(234, 47), 9, ienemiesSpritesheet)
+	walkSideSpritesheet := createSpritesheet(newVec2i(0, 23), newVec2i(234, 47), 9, ienemiesSpritesheet)
 	dieSpritesheet := createSpritesheet(newVec2i(0, 48), newVec2i(570, 71), 19, ienemiesSpritesheet)
 
 	shadowRect := image.Rect(0, 231, 14, 237)
@@ -70,16 +71,17 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 		health:    6,
 		maxHealth: 6,
 		dead:      false,
+		idle:      true,
 
 		shadow: &shadow,
 
 		spritesheet: dieSpritesheet,
 		animations: BeefEyeAnimations{
-			idleFront: createAnimation(idleFrontSpritesheet, ienemiesSpritesheet),
-			die:       createAnimation(dieSpritesheet, ienemiesSpritesheet),
+			walkSide: createAnimation(walkSideSpritesheet, ienemiesSpritesheet),
+			die:      createAnimation(dieSpritesheet, ienemiesSpritesheet),
 		},
 		animationSpeeds: BeefEyeAnimationSpeeds{
-			idle: 0.9,
+			walk: 0.9,
 			die:  1.2,
 		},
 
@@ -106,10 +108,10 @@ func (b *BeefEye) render(screen *ebiten.Image) {
 	op.GeoM.Scale(flip.x, flip.y)
 	op.GeoM.Translate(float64(b.size.x)/2, float64(b.size.y)/2)
 	b.subImageRect = image.Rect(
-		b.spritesheet.sprites[b.animation.currentFrame].startPosition.x,
-		b.spritesheet.sprites[b.animation.currentFrame].startPosition.y,
-		b.spritesheet.sprites[b.animation.currentFrame].endPosition.x,
-		b.spritesheet.sprites[b.animation.currentFrame].endPosition.y,
+		b.animation.spritesheet.sprites[b.animation.currentFrame].startPosition.x,
+		b.animation.spritesheet.sprites[b.animation.currentFrame].startPosition.y,
+		b.animation.spritesheet.sprites[b.animation.currentFrame].endPosition.x,
+		b.animation.spritesheet.sprites[b.animation.currentFrame].endPosition.y,
 	)
 	// POSITION
 	op.GeoM.Translate(float64(b.position.x), float64(b.position.y))
@@ -120,8 +122,14 @@ func (b *BeefEye) render(screen *ebiten.Image) {
 
 func (b *BeefEye) update(game *Game) {
 	// Start the animation if it's not playing
-	b.animation = b.animations.idleFront
-	b.animation.update(b.animationSpeeds.die)
+	if b.idle {
+		b.animation = b.animations.walkSide
+		b.animation.startForwards()
+		b.idle = false
+	}
+	if b.animation.id == b.animations.walkSide.id {
+		b.animation.update(b.animationSpeeds.walk)
+	}
 
 	// Pathfind to player
 	b.followPlayer(game)
@@ -131,8 +139,8 @@ func (b *BeefEye) update(game *Game) {
 	b.position.y += b.velocity.y
 
 	b.size = newVec2i(
-		b.spritesheet.sprites[b.animation.currentFrame].size.x,
-		b.spritesheet.sprites[b.animation.currentFrame].size.y,
+		b.animation.spritesheet.sprites[b.animation.currentFrame].size.x,
+		b.animation.spritesheet.sprites[b.animation.currentFrame].size.y,
 	)
 	endPosition := newVec2i(
 		int(b.position.x)+b.size.x,
@@ -147,6 +155,12 @@ func (b *BeefEye) update(game *Game) {
 }
 
 func (b *BeefEye) followPlayer(game *Game) {
+
+	if game.player.position.x+float64(game.player.dynamicSize.x)/2 > b.center.x {
+		b.flipped = true
+	} else {
+		b.flipped = false
+	}
 
 	if b.canPathfind {
 		start := newRolumn(

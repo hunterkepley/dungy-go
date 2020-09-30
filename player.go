@@ -161,7 +161,7 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 			image:        iitemsSpritesheet,
 			sprite:       createSprite(newVec2i(0, 46), newVec2i(21, 59), newVec2i(21, 13), iitemsSpritesheet),
 			fireSpeed:    0,
-			firespeedMax: 50,
+			firespeedMax: 40,
 			baseDamage:   1,
 		},
 

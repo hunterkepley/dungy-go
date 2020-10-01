@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"math"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten"
 )
@@ -181,6 +182,14 @@ type Bullet struct {
 }
 
 func createBullet(position Vec2f, rotation float64, speed float64, lightID int) Bullet {
+
+	// Accuracy!
+	up := rand.Float64()
+	down := rand.Float64()
+
+	accuracyRate := float64(gameReference.player.accuracy) / 100.
+
+	rotation += (up - down) * (1. - accuracyRate)
 
 	velocity := newVec2f(speed*math.Cos(rotation), speed*math.Sin(rotation))
 

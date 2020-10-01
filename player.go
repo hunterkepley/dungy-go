@@ -47,7 +47,8 @@ type Player struct {
 	animationSpeeds PlayerAnimationSpeeds // All animation speeds
 	isDrawable      bool                  // Is able to be drawn on the screen?
 
-	gun Gun // The players gun
+	gun      Gun // The players gun
+	accuracy int // Player's accuracy with firearms!
 
 	items []Item // Items held!
 
@@ -161,9 +162,10 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 			image:        iitemsSpritesheet,
 			sprite:       createSprite(newVec2i(0, 46), newVec2i(21, 59), newVec2i(21, 13), iitemsSpritesheet),
 			fireSpeed:    0,
-			firespeedMax: 40,
+			firespeedMax: 1,
 			baseDamage:   1,
 		},
+		accuracy: 1,
 
 		items: []Item{},
 
@@ -406,7 +408,7 @@ func (p *Player) input(g *Game) {
 func (p *Player) mouseButtonInput(g *Game) {
 	if p.isConscious {
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-			p.gun.fire(p.position, g.cursor.center, g)
+			p.gun.fire(p.position, g)
 		}
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
 			// Maybe a charge shot or special ability?

@@ -96,7 +96,7 @@ func (g *Gun) update(playerPosition Vec2f, cursorCenter Vec2i) {
 }
 
 // Creates the bullets n stuff
-func (g *Gun) fire(playerPosition Vec2f, cursorCenter Vec2i, game *Game) {
+func (g *Gun) fire(playerPosition Vec2f, game *Game) {
 	if g.fireSpeed <= 0 {
 		bulletSpeed := 3.
 		g.fireSpeed = g.firespeedMax

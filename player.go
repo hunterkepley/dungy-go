@@ -162,7 +162,7 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 			image:        iitemsSpritesheet,
 			sprite:       createSprite(newVec2i(0, 46), newVec2i(21, 59), newVec2i(21, 13), iitemsSpritesheet),
 			fireSpeed:    0,
-			firespeedMax: 1,
+			firespeedMax: 25,
 			baseDamage:   1,
 		},
 		accuracy: 1,
@@ -282,6 +282,7 @@ func (p *Player) input(g *Game) {
 	// TEMPORARY
 	if ebiten.IsKeyPressed(ebiten.KeyY) {
 		p.energy++
+		p.die(gameReference)
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyU) {
 		p.health++
@@ -596,3 +597,29 @@ func (p *Player) getBoundsStatic() image.Rectangle {
 }
 
 // ----------------
+
+// die
+func (p *Player) die(g *Game) {
+	gibAmount := 10 // Gib setting 1
+	gibSize := 6    // Gib setting 1
+
+	switch g.settings.Graphics.Gibs { // Gib setting 2
+	case 2:
+		gibAmount = 20
+		gibSize = 6
+	case 0:
+		gibAmount = 0
+	}
+
+	gibHandler := createGibHandler() // Gibs
+
+	gibHandler.explode(
+		gibAmount,
+		gibSize,
+		newVec2f(p.position.x+float64(p.dynamicSize.x/2), p.position.y+float64(p.dynamicSize.y/2)), // Center
+		p.animation.spritesheet.sprites[p.animation.currentFrame].getBounds(),
+		p.image,
+	)
+
+	g.gibHandlers = append(g.gibHandlers, gibHandler)
+}

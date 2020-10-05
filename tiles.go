@@ -66,17 +66,16 @@ func createTile(position Vec2f, tileType TileType, image *ebiten.Image) Tile {
 		size = wallTileSize
 	}
 	return Tile{
-		position,
-		size,
-		tileType,
+		position: position,
+		size:     size,
+		tileType: tileType,
 
-		sprite,
-		image,
+		sprite: sprite,
+		image:  image,
 	}
 }
 
 func (t *Tile) update() {
-
 }
 
 func (t *Tile) render(screen *ebiten.Image) {

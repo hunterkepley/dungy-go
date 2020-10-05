@@ -7,7 +7,7 @@ function getInformation()
 end
 
 function smarter() -- makes the player have thorns when touching enemies
-    accuracyChange = 40
+    accuracyChange = 15
 
     if Accuracy() < 100 then
         SetAccuracy(Accuracy() + accuracyChange)

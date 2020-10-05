@@ -31,7 +31,11 @@ func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, en
 	}
 
 	for _, goop := range mapLayout.GetCellsByRune('g') {
-		goop.Cost = 5
+		goop.Cost = 3
+	}
+
+	for _, lava := range mapLayout.GetCellsByRune('l') {
+		lava.Cost = 10
 	}
 
 	// This gets a new Path (a slice of Cells) from the starting Cell to the destination Cell. If the path's length

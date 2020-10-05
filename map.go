@@ -44,15 +44,6 @@ func (m *Map) update() {
 func (m *Map) render(screen *ebiten.Image) {
 }
 
-/*
- * This function handles the phase changes, or, the chunks of new maps that replace the current one
- *
- * Lots to do
- */
-func (m *Map) phaseHandler() {
-
-}
-
 func initMap(g *Game) {
 	index := 0
 	// Lights

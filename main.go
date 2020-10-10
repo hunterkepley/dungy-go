@@ -8,6 +8,7 @@ import (
 
 	paths "github.com/SolarLune/paths"
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/audio"
 	lua "github.com/yuin/gopher-lua"
 	"golang.org/x/image/font"
 )
@@ -47,6 +48,10 @@ type Game struct {
 	currentMap Map
 
 	lightHandler LightHandler // Controls the lights!
+
+	musicContext MusicContext // Controls music in the game
+	musicChannel chan *MusicContext
+	musicErrCh   chan error
 
 	shadowID int // Shadow IDs, starts at 0 then increments when a shadow is added
 
@@ -130,6 +135,21 @@ func (g *Game) Init() {
 	// State starts in game [temporary]
 	g.state = 1
 
+	// Set up music context
+	audioContext, err := audio.NewContext(musicSampleRate)
+	if err != nil {
+		panic("<UNRAY> Error setting up audio context")
+	}
+	m, err := createMusicContext(audioContext, typeOgg)
+	if err != nil {
+		panic("<UNRAY> Error creating music context")
+	}
+	g.musicContext = *m
+
+	// Set up music channels
+	g.musicChannel = make(chan *MusicContext)
+	g.musicErrCh = make(chan error)
+
 	// GAME SETTINGS
 	loadSettings(&g.settings)
 
@@ -180,6 +200,8 @@ func updateGame(screen *ebiten.Image, g *Game) {
 
 	// Game info update/check
 	go checkChangeDisplayInfo()
+
+	g.musicContext.update(g.musicChannel, g.musicErrCh)
 
 	// Update UI
 	updateUI(g)

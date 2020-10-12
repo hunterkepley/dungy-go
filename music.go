@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/audio"
@@ -53,9 +52,9 @@ func createMusicContext(audioContext *audio.Context, musicType musicType) (*Musi
 	switch musicType {
 	case typeOgg:
 		var err error
-		m, err := loadOgg("./Assets/Music/underground_worm_song")
-		fmt.Println("e: ", m)
-		s, err = vorbis.Decode(audioContext, audio.BytesReadSeekCloser(Ragtime_ogg))
+		m, err := loadOggByte("./Assets/Music/underground_worm_song.ogg")
+
+		s, err = vorbis.Decode(audioContext, audio.BytesReadSeekCloser(m))
 		if err != nil {
 			return nil, err
 		}

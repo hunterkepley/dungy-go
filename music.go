@@ -1,158 +1,122 @@
 package main
 
 import (
+	"log"
+	"os"
 	"time"
 
-	"github.com/hajimehoshi/ebiten/audio"
-	"github.com/hajimehoshi/ebiten/audio/vorbis"
+	"github.com/faiface/beep"
+	"github.com/faiface/beep/effects"
+	"github.com/faiface/beep/mp3"
+	"github.com/faiface/beep/speaker"
 )
 
-type musicType int
-
-const (
-	musicSampleRate = 22050 // Music sample rate
-
-	typeOgg musicType = iota
-	typeMP3
+var (
+	currentSong  = 0
+	musicCounter = 0 //used for seting up the audio
+	//musicAddr    [20]Music     //addresses for music files
+	//musicName    [20]MusicName //names of the music files
+	music []Music //literally music
+	//ARBITRARILY SET ARRAY LENGTH, CAN ADJUST LATER
 )
 
-func (t musicType) String() string {
-	switch t {
-	case typeOgg:
-		return "Ogg"
-	case typeMP3:
-		return "MP3"
-	default:
-		panic("not reached")
-	}
+//Music ... Music for the game in a simple-to-use system, must be mp3 for now
+type Music struct {
+	location string
+	name     string
 }
 
-// MusicContext is a context that holds the music player
-type MusicContext struct {
-	audioContext *audio.Context
-	audioPlayer  *audio.Player
-	current      time.Duration
-	total        time.Duration
-	seBytes      []byte
-	seCh         chan []byte
-	volume128    int
-	musicType    musicType
+//MusicName ... Names for the music files
+type MusicName struct {
+	name string
 }
 
-func createMusicContext(audioContext *audio.Context, musicType musicType) (*MusicContext, error) {
-	type audioStream interface {
-		audio.ReadSeekCloser
-		Length() int64
-	}
-
-	const bytesPerSample = 4 // TODO: This should be defined in audio package
-
-	var s audioStream
-
-	switch musicType {
-	case typeOgg:
-		var err error
-		m, err := loadOggByte("./Assets/Music/underground_worm_song.ogg")
-
-		s, err = vorbis.Decode(audioContext, audio.BytesReadSeekCloser(m))
-		if err != nil {
-			return nil, err
-		}
-	case typeMP3:
-		// TODO: finish this if you add MP3!
-		/*
-			var err error
-			s, err = mp3.Decode(audioContext, audio.BytesReadSeekCloser(raudio.Classic_mp3))
-			if err != nil {
-				return nil, err
-			}*/
-	default:
-		panic("not reached")
-	}
-	p, err := audio.NewPlayer(audioContext, s)
+func (m *Music) play() {
+	song, err := os.Open(m.location)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
-	musicContext := &MusicContext{
-		audioContext: audioContext,
-		audioPlayer:  p,
-		total:        time.Second * time.Duration(s.Length()) / bytesPerSample / musicSampleRate,
-		volume128:    128,
-		seCh:         make(chan []byte),
-		musicType:    musicType,
+
+	streamer, format, err := mp3.Decode(song)
+	if err != nil {
+		log.Fatal(err)
 	}
-	if musicContext.total == 0 {
-		musicContext.total = 1
+	defer streamer.Close()
+
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+
+	loop := beep.Loop(-1, streamer) //will indefinitley loop the song selected
+
+	volume := &effects.Volume{
+		Streamer: loop,
+		Base:     2,
+		Volume:   -2.5,
+		Silent:   false,
 	}
-	musicContext.audioPlayer.Play()
-	/*go func() {
-		s, err := wav.Decode(audioContext, audio.BytesReadSeekCloser(raudio.Jab_wav))
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-		b, err := ioutil.ReadAll(s)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-		musicContext.seCh <- b
-	}()*/
-	return musicContext, nil
+
+	done := make(chan bool)
+	speaker.Play(beep.Seq(volume, beep.Callback(func() {
+		done <- true
+	})))
+
+	<-done
 }
 
-func (m *MusicContext) updateMusic() error {
-	select {
-	case m.seBytes = <-m.seCh:
-		close(m.seCh)
-		m.seCh = nil
-	default:
-	}
+func loadMusic() {
+	dirname := "./Assets/Music"
 
-	if m.audioPlayer.IsPlaying() {
-		m.current = m.audioPlayer.Current()
+	f, err := os.Open(dirname)
+	if err != nil {
+		log.Fatal(err)
 	}
+	files, err := f.Readdir(-1)
+	f.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	//set up flag, name, and address
+	for _, file := range files {
+		name := file.Name()
 
-	return nil
+		if name[len(name)-3:] != "mp3" {
+			continue
+		}
+		location := dirname + "/" + file.Name()
+
+		music = append(music, Music{
+			location,
+			name,
+		})
+
+		//musicName[musicCounter].name = file.Name()
+		//musicAddr[musicCounter].location = dirname + "/" + file.Name()
+		musicCounter++
+	}
 }
 
-func (m *MusicContext) update(musicChan chan *MusicContext, errChan chan error) error {
-	select {
-	case p := <-musicChan:
-		m = p
-	case err := <-errChan:
-		return err
-	default:
+func closeSong() {
+	speaker.Close()
+}
+
+//literally just change the song 4head
+func switchSong(i int) {
+
+	if i == currentSong {
+		return //literally just don't do anything
 	}
 
-	/*if m != nil && inpututil.IsKeyJustPressed(ebiten.KeyA) {
-		var t musicType
-		switch m.musicType {
-		case typeOgg:
-			t = typeMP3
-		case typeMP3:
-			t = typeOgg
-		default:
-			panic("not reached")
-		}
+	currentSong = i
+	closeSong()
+	music[i].play()
+}
 
-		//m.Close() ???
-		m = nil
-
-		go func() {
-			p, err := createMusicContext(audio.CurrentContext(), t)
-			if err != nil {
-				errChan <- err
-				return
-			}
-			musicChan <- p
-		}()
-	}*/
-
-	if m != nil {
-		if err := m.updateMusic(); err != nil {
-			return err
+//pass in file name, index for file returned
+func searchMusic(s string) int {
+	for i := 0; i < musicCounter; i++ {
+		if music[i].name == s {
+			return i //returns the index for the desired song
 		}
 	}
-	return nil
+	//no filename found
+	return -1
 }

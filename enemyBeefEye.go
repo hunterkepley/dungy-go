@@ -96,6 +96,9 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 }
 
 func (b *BeefEye) render(screen *ebiten.Image) {
+	if len(b.animation.spritesheet.sprites) == 0 {
+		return
+	}
 	op := &ebiten.DrawImageOptions{}
 	// FLIP DECIDER
 	flip := newVec2f(-1, 1)

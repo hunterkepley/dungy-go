@@ -25,6 +25,8 @@ var (
 	mversionFont font.Face
 
 	gameReference *Game
+
+	tempSpawnCount int = 1
 )
 
 // Game is the info for the game
@@ -185,6 +187,13 @@ func updateGame(screen *ebiten.Image, g *Game) {
 
 	// Game info update/check
 	checkChangeDisplayInfo()
+
+	if len(g.enemies) == 0 {
+		for i := 0; i < tempSpawnCount; i++ {
+			g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
+		}
+		tempSpawnCount++
+	}
 
 	// Update UI
 	updateUI(g)

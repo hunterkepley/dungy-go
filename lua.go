@@ -56,9 +56,23 @@ func SetPlayerWalkSpeed(L *lua.LState) int {
 	return 0
 }
 
-// PlayerWalkSpeed gives the player's walkSpeed ...
+// PlayerWalkSpeed gives the player's walk speed ...
 func PlayerWalkSpeed(L *lua.LState) int {
 	lv := lua.LNumber(gameReference.player.walkSpeed)
+	L.Push(lv)
+	return 1
+}
+
+// SetPlayerRunSpeed sets the player's run speed ...
+func SetPlayerRunSpeed(L *lua.LState) int {
+	lv := L.ToInt(1)
+	gameReference.player.runSpeed = float64(lv)
+	return 0
+}
+
+// PlayerRunSpeed gives the player's run speed ...
+func PlayerRunSpeed(L *lua.LState) int {
+	lv := lua.LNumber(gameReference.player.runSpeed)
 	L.Push(lv)
 	return 1
 }
@@ -77,6 +91,20 @@ func GunFireSpeed(L *lua.LState) int {
 	return 1
 }
 
+// SetAccuracy sets the player's accuracy ...
+func SetAccuracy(L *lua.LState) int {
+	lv := L.ToInt(1)
+	gameReference.player.accuracy = lv
+	return 0
+}
+
+// Accuracy gives the player's accuracy ...
+func Accuracy(L *lua.LState) int {
+	lv := lua.LNumber(gameReference.player.accuracy)
+	L.Push(lv)
+	return 1
+}
+
 // TODO: Make functions to reset the values to defaults
 
 func initLuaFunctions(L *lua.LState) {
@@ -89,6 +117,12 @@ func initLuaFunctions(L *lua.LState) {
 	L.SetGlobal("SetPlayerWalkSpeed", L.NewFunction(SetPlayerWalkSpeed))
 	L.SetGlobal("PlayerWalkSpeed", L.NewFunction(PlayerWalkSpeed))
 
+	L.SetGlobal("SetPlayerRunSpeed", L.NewFunction(SetPlayerRunSpeed))
+	L.SetGlobal("PlayerRunSpeed", L.NewFunction(PlayerRunSpeed))
+
 	L.SetGlobal("SetGunFireSpeed", L.NewFunction(SetGunFireSpeed))
 	L.SetGlobal("GunFireSpeed", L.NewFunction(GunFireSpeed))
+
+	L.SetGlobal("SetAccuracy", L.NewFunction(SetAccuracy))
+	L.SetGlobal("Accuracy", L.NewFunction(Accuracy))
 }

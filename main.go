@@ -25,6 +25,8 @@ var (
 	mversionFont font.Face
 
 	gameReference *Game
+
+	tempSpawnCount int = 1
 )
 
 // Game is the info for the game
@@ -42,15 +44,17 @@ type Game struct {
 	tiles            [][]Tile
 	borders          []Border
 	ui               []UI
+	maps             []Map
 
-	maps       []Map // All maps
-	currentMap Map   // Current map being played on
+	currentMap Map
 
 	lightHandler LightHandler // Controls the lights!
 
 	shadowID int // Shadow IDs, starts at 0 then increments when a shadow is added
 
 	state int // The game state, 0 is in main menu, 1 is in game, 2 is paused
+
+	settings Settings // Game settings
 }
 
 // Init initializes the game
@@ -121,11 +125,25 @@ func (g *Game) Init() {
 	// Make the astar path channel
 	astarChannel = make(chan *paths.Path, 2)
 
+	// Obviously, temporary
 	g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
-	g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
+	//g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
 
 	// State starts in game [temporary]
 	g.state = 1
+
+	// Init music
+	loadMusic()
+	// Play song
+	go music[0].play()
+
+	// GAME SETTINGS
+	loadSettings(&g.settings)
+
+	if g.settings.Graphics.Fullscreen { // Enable fullscreen if enabled
+		ebiten.SetFullscreen(true)
+	}
+
 }
 
 // Update updates the game
@@ -138,11 +156,6 @@ func (g *Game) Update(screen *ebiten.Image) error {
 	// Update game
 	if g.state == 1 {
 		updateGame(screen, g)
-	}
-
-	// Temporary
-	if ebiten.IsKeyPressed(ebiten.KeyF) {
-		ebiten.SetFullscreen(true)
 	}
 
 	return nil
@@ -173,7 +186,14 @@ func updateGame(screen *ebiten.Image, g *Game) {
 	g.lightHandler.update()
 
 	// Game info update/check
-	go checkChangeDisplayInfo()
+	checkChangeDisplayInfo()
+
+	if len(g.enemies) == 0 {
+		for i := 0; i < tempSpawnCount; i++ {
+			g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
+		}
+		tempSpawnCount++
+	}
 
 	// Update UI
 	updateUI(g)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"math/rand"
 
@@ -129,10 +130,10 @@ func (g *GibHandler) explode(numberOfGibs int,
 	gibImage *ebiten.Image) {
 
 	for i := 0; i < numberOfGibs; i++ {
-		randomDistanceAllowed := 10 + rand.Intn(5)
-		randomRotation := float64(rand.Intn(5))
-		randomVelocity := newVec2i(int(float64(rand.Intn(8))+2), int(float64(rand.Intn(8))+2)) // Random velocity
-		switch rand.Intn(8) {
+		randomDistanceAllowed := 15 + rand.Intn(3)
+		randomRotation := float64(rand.Intn(15))
+		randomVelocity := newVec2i(rand.Intn(10), rand.Intn(10)) // Random velocity
+		switch rand.Intn(4) {
 		case (0):
 			randomVelocity.x *= -1
 		case (1):
@@ -140,9 +141,6 @@ func (g *GibHandler) explode(numberOfGibs int,
 		case (2):
 			randomVelocity.x *= -1
 			randomVelocity.y *= -1
-		case (3):
-			randomVelocity.x = 0
-			randomVelocity.y = 0
 		}
 
 		// Get the subimage size and position for random gibs
@@ -173,6 +171,7 @@ func (g *GibHandler) explode(numberOfGibs int,
 func updateGibHandlers(g *Game) {
 	for i := 0; i < len(g.gibHandlers); i++ {
 		g.gibHandlers[i].update(g)
+		fmt.Println(len(g.gibHandlers) * len(g.gibHandlers[i].gibs))
 	}
 }
 

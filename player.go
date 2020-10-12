@@ -47,7 +47,8 @@ type Player struct {
 	animationSpeeds PlayerAnimationSpeeds // All animation speeds
 	isDrawable      bool                  // Is able to be drawn on the screen?
 
-	gun Gun // The players gun
+	gun      Gun // The players gun
+	accuracy int // Player's accuracy with firearms!
 
 	items []Item // Items held!
 
@@ -92,15 +93,15 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 
 	image := iplayerSpritesheet
 	// Idle
-	idleFrontSpritesheet := createSpritesheet(newVec2i(0, 0), newVec2i(60, 26), 5, image)
-	idleBackSpritesheet := createSpritesheet(newVec2i(0, 26), newVec2i(60, 52), 5, image)
-	idleLeftSpritesheet := createSpritesheet(newVec2i(0, 52), newVec2i(70, 78), 5, image)
-	idleRightSpritesheet := createSpritesheet(newVec2i(0, 78), newVec2i(70, 104), 5, image)
+	idleFrontSpritesheet := createSpritesheet(newVec2i(103, 114), newVec2i(129, 132), 2, image)
+	idleBackSpritesheet := createSpritesheet(newVec2i(103, 133), newVec2i(129, 151), 2, image)
+	idleLeftSpritesheet := createSpritesheet(newVec2i(103, 95), newVec2i(129, 113), 2, image)
+	idleRightSpritesheet := createSpritesheet(newVec2i(103, 76), newVec2i(129, 94), 2, image)
 	// Running
-	runningFrontSpritesheet := createSpritesheet(newVec2i(0, 104), newVec2i(84, 128), 6, image)
-	runningBackSpritesheet := createSpritesheet(newVec2i(0, 129), newVec2i(84, 154), 6, image)
-	runningLeftSpritesheet := createSpritesheet(newVec2i(0, 154), newVec2i(90, 180), 6, image)
-	runningRightSpritesheet := createSpritesheet(newVec2i(0, 180), newVec2i(90, 206), 6, image)
+	runningFrontSpritesheet := createSpritesheet(newVec2i(103, 57), newVec2i(155, 75), 4, image)
+	runningBackSpritesheet := createSpritesheet(newVec2i(103, 38), newVec2i(155, 56), 4, image)
+	runningLeftSpritesheet := createSpritesheet(newVec2i(103, 19), newVec2i(155, 37), 4, image)
+	runningRightSpritesheet := createSpritesheet(newVec2i(103, 0), newVec2i(155, 18), 4, image)
 
 	return Player{
 		position:  position,
@@ -161,9 +162,10 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 			image:        iitemsSpritesheet,
 			sprite:       createSprite(newVec2i(0, 46), newVec2i(21, 59), newVec2i(21, 13), iitemsSpritesheet),
 			fireSpeed:    0,
-			firespeedMax: 50,
+			firespeedMax: 25,
 			baseDamage:   1,
 		},
+		accuracy: 1,
 
 		items: []Item{},
 
@@ -280,6 +282,7 @@ func (p *Player) input(g *Game) {
 	// TEMPORARY
 	if ebiten.IsKeyPressed(ebiten.KeyY) {
 		p.energy++
+		p.die(gameReference)
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyU) {
 		p.health++
@@ -406,7 +409,7 @@ func (p *Player) input(g *Game) {
 func (p *Player) mouseButtonInput(g *Game) {
 	if p.isConscious {
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-			p.gun.fire(p.position, g.cursor.center, g)
+			p.gun.fire(p.position, g)
 		}
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
 			// Maybe a charge shot or special ability?
@@ -594,3 +597,29 @@ func (p *Player) getBoundsStatic() image.Rectangle {
 }
 
 // ----------------
+
+// die
+func (p *Player) die(g *Game) {
+	gibAmount := 10 // Gib setting 1
+	gibSize := 6    // Gib setting 1
+
+	switch g.settings.Graphics.Gibs { // Gib setting 2
+	case 2:
+		gibAmount = 20
+		gibSize = 6
+	case 0:
+		gibAmount = 0
+	}
+
+	gibHandler := createGibHandler() // Gibs
+
+	gibHandler.explode(
+		gibAmount,
+		gibSize,
+		newVec2f(p.position.x+float64(p.dynamicSize.x/2), p.position.y+float64(p.dynamicSize.y/2)), // Center
+		p.animation.spritesheet.sprites[p.animation.currentFrame].getBounds(),
+		p.image,
+	)
+
+	g.gibHandlers = append(g.gibHandlers, gibHandler)
+}

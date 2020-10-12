@@ -14,7 +14,7 @@ type MapData struct {
 type Map struct {
 	data MapData
 
-	tiles    []Tile
+	tiles    []*Tile
 	lights   []*Light // Background/level-specific lights
 	mapNodes []string
 }
@@ -23,7 +23,7 @@ type Map struct {
 // Most likely will be random like items except an even likelihood of every map
 func initMaps(g *Game) {
 	gameReference.maps = append(gameReference.maps, Map{data: MapData{"SpaceShip", "0.1"}}) // SpaceShip
-	initMapSpaceShip(g)
+	initMap(g)
 }
 
 func updateMaps() {
@@ -44,8 +44,7 @@ func (m *Map) update() {
 func (m *Map) render(screen *ebiten.Image) {
 }
 
-// SpaceShip | INDEX 0
-func initMapSpaceShip(g *Game) {
+func initMap(g *Game) {
 	index := 0
 	// Lights
 	for i := 0; i < 12; i++ {
@@ -63,20 +62,20 @@ func initMapSpaceShip(g *Game) {
 	// Redo later with a mapNode maker function? Or, manually until editor?
 	gameReference.maps[index].mapNodes = []string{
 		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-		"x       x                   x",
-		"x       x                   x",
-		"x       x                   x",
-		"x       x                   x",
-		"x       x                   x",
-		"xxxxxx  x                   x",
-		"x       x                   x",
-		"xxxxxxx x                   x",
-		"x       x                   x",
-		"x xxxxxxx                 x x",
-		"x       x          xxxxxxxx x",
-		"x  xxx  xxx      xxxx       x",
-		"xxx  x x   xxxxxxx          x",
-		"x        x                  x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
+		"x                           x",
 		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 	}
 

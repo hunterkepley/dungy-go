@@ -2,9 +2,12 @@ package main
 
 import (
 	"image"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten"
 )
+
+// TODO: Make tiles stored in maps and make tile generation map-based
 
 const (
 	wallOffset = 6 // How big the walls are, start tiles at this
@@ -55,7 +58,10 @@ func createTile(position Vec2f, tileType TileType, image *ebiten.Image) Tile {
 	size := smallTileSize
 	switch tileType {
 	case (SmallTile):
-		sprite = createSprite(newVec2i(0, 0), smallTileSize, smallTileSize, image)
+		numberOfSmallTiles := 6
+		randomStart := newVec2i(rand.Intn(numberOfSmallTiles)*17, 0)
+		randomEnd := newVec2i(randomStart.x+smallTileSize.x, randomStart.y+smallTileSize.y)
+		sprite = createSprite(randomStart, randomEnd, smallTileSize, image)
 	case (BigTile):
 		sprite = createSprite(newVec2i(0, 18), newVec2i(31, 50), bigTileSize, image)
 		size = bigTileSize
@@ -64,17 +70,16 @@ func createTile(position Vec2f, tileType TileType, image *ebiten.Image) Tile {
 		size = wallTileSize
 	}
 	return Tile{
-		position,
-		size,
-		tileType,
+		position: position,
+		size:     size,
+		tileType: tileType,
 
-		sprite,
-		image,
+		sprite: sprite,
+		image:  image,
 	}
 }
 
 func (t *Tile) update() {
-
 }
 
 func (t *Tile) render(screen *ebiten.Image) {

@@ -24,7 +24,6 @@ func (b *Blood) render(screen *ebiten.Image) {
 	op.GeoM.Translate(0-float64(b.sprite.size.x)/2, 0-float64(b.sprite.size.y)/2)
 	op.GeoM.Rotate(b.rotation)
 	op.GeoM.Translate(b.position.x, b.position.y)
-	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
 
 	screen.DrawImage(b.image.SubImage(b.subImage).(*ebiten.Image), op)
 }

@@ -66,7 +66,7 @@ func (b *BlinkTrail) spawnUpdate(position Vec2f, direction Direction) {
 
 func createBlinkTrailSection(position Vec2f, direction Direction) BlinkTrailSection {
 	image := iplayerSpritesheet
-	blinkSpritesheet := createSpritesheet(newVec2i(0, 207), newVec2i(39, 230), 3, image)
+	blinkSpritesheet := createSpritesheet(newVec2i(102, 153), newVec2i(145, 171), 3, image)
 	animation := createAnimation(blinkSpritesheet, image)
 
 	return BlinkTrailSection{

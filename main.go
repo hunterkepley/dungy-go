@@ -135,7 +135,7 @@ func (g *Game) Init() {
 	// Init music
 	loadMusic()
 	// Play song
-	go music[0].play()
+	//go music[0].play()
 
 	// GAME SETTINGS
 	loadSettings(&g.settings)

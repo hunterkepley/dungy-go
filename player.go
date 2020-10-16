@@ -86,8 +86,8 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 	canBlinkTimer := 0
 	endBlinkTimer := 0
 
-	walkSpeed := 0.5
-	runSpeed := 0.9
+	walkSpeed := 0.9
+	runSpeed := 1.3
 
 	shadowRect := image.Rect(0, 231, 14, 237)
 
@@ -151,8 +151,8 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 		},
 		animationSpeeds: PlayerAnimationSpeeds{ // All animation speeds
 			1,   // idle
-			1.,  // walking
-			1.5, // running
+			1.2, // walking
+			1.7, // running
 			3,   // blink trail
 		},
 		isDrawable: true,

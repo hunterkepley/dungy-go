@@ -31,12 +31,14 @@ type BeefEye struct {
 	velocity  Vec2f
 	moveSpeed float64
 
-	health    int
-	maxHealth int
-	dead      bool
-	remove    bool // Do we remove this enemy?
-	flipped   bool // Is the enemy flipped?
-	idle      bool // Is the enemy idling?
+	health                 int
+	maxHealth              int
+	dead                   bool
+	deathExplosion         bool // When the death explosion is playing
+	deathExplosionFinished bool // When the death explosion is finished
+	remove                 bool // Do we remove this enemy?
+	flipped                bool // Is the enemy flipped?
+	idle                   bool // Is the enemy idling?
 
 	shadow *Shadow // The shadow below the enemy
 
@@ -68,10 +70,12 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 		velocity:  newVec2f(0, 0),
 		moveSpeed: 1.2,
 
-		health:    6,
-		maxHealth: 6,
-		dead:      false,
-		idle:      true,
+		health:                 6,
+		maxHealth:              6,
+		dead:                   false,
+		idle:                   true,
+		deathExplosion:         false,
+		deathExplosionFinished: false,
 
 		shadow: &shadow,
 
@@ -235,8 +239,14 @@ func (b *BeefEye) followPlayer(game *Game) {
 
 func (b *BeefEye) isDead() bool {
 	if b.health <= 0 {
-		if !b.dead {
-			b.dead = true
+
+		if !b.deathExplosionFinished {
+			b.deathExplosion = true
+		} else {
+
+			if !b.dead && !b.deathExplosion {
+				b.dead = true
+			}
 		}
 		return true
 	}

@@ -146,6 +146,8 @@ func (g *Game) Init() {
 
 }
 
+var e = 0
+
 // Update updates the game
 func (g *Game) Update(screen *ebiten.Image) error {
 	if !gameInitialized {

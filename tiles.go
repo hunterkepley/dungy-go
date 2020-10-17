@@ -7,7 +7,14 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-// TODO: Make tiles stored in maps and make tile generation map-based
+/*
+
+TODO:
+
+Make tiles become holes?
+*/
+
+/*this comment is here bc vscode go linter is trash and keeps making an extra / * every time I save*/
 
 const (
 	wallOffset = 6 // How big the walls are, start tiles at this

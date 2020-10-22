@@ -10,11 +10,11 @@ import (
 // PhaseChunk is a chunk of a "map" to phase in randomly
 type PhaseChunk struct {
 	tiles    []PhaseTile
-	enemies  []Enemy
+	enemies  []PhaseEnemy
 	mapNodes []string
 }
 
-func createPhaseChunk(tiles []PhaseTile, enemies []Enemy, mapNodes []string) PhaseChunk {
+func createPhaseChunk(tiles []PhaseTile, enemies []PhaseEnemy, mapNodes []string) PhaseChunk {
 	return PhaseChunk{
 		tiles:    tiles,
 		enemies:  enemies,
@@ -28,6 +28,12 @@ type PhaseTile struct {
 	image     *ebiten.Image
 	imageRect image.Rectangle
 	empty     bool // Whether or not this tile actually changes
+}
+
+// PhaseEnemy is a stripped down Enemy struct for easier usage with the phase chunk struct
+type PhaseEnemy struct {
+	enemyType    EnemyType
+	tilePosition Vec2i
 }
 
 func createPhaseTile(tileType TileType, image *ebiten.Image, imageRect image.Rectangle, empty bool) PhaseTile {
@@ -78,13 +84,77 @@ func (p *Phases) makePhases() {
 			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
 			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
 			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
 		},
-		[]Enemy{},
+		[]PhaseEnemy{
+			{
+				EBeefEye,
+				Vec2i{0, 0}, // Spawn on first tile
+			},
+			{
+				EBeefEye,
+				Vec2i{3, 3},
+			},
+		},
 		[]string{
 			"xxxx",
 			"xxxx",
 			"xxxx",
 			"xxxx",
+		},
+	)
+	p.addPhaseChunk(
+		[]PhaseTile{
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+		},
+		[]PhaseEnemy{
+			{
+				EBeefEye,
+				Vec2i{0, 0}, // Spawn on first tile
+			},
+			{
+				EBeefEye,
+				Vec2i{1, 0},
+			},
+			{
+				EBeefEye,
+				Vec2i{2, 0},
+			},
+		},
+		[]string{
+			"xxxxx",
+			"xxxxx",
+			"xxxxx",
+			"xxxxx",
 		},
 	)
 }
@@ -96,7 +166,7 @@ func (p *Phases) getRandomPhase() PhaseChunk {
 	return PhaseChunk{}
 }
 
-func (p *Phases) addPhaseChunk(tiles []PhaseTile, enemies []Enemy, mapNodes []string) {
+func (p *Phases) addPhaseChunk(tiles []PhaseTile, enemies []PhaseEnemy, mapNodes []string) {
 	c := createPhaseChunk(tiles, enemies, mapNodes)
 	p.chunks = append(p.chunks, c)
 }
@@ -115,7 +185,19 @@ func (p *Phases) phase() {
 					index.y+j < len(gameReference.tiles[i]) &&
 					gameReference.tiles[index.x+i][index.y+j].tileType == SmallTile &&
 					i+j < len(chosenChunk.tiles) {
+
+					// Set new tile image
 					gameReference.tiles[index.x+i][index.y+j].imageRect = chosenChunk.tiles[i+j].imageRect
+
+					// Enemies
+
+					for e := 0; e < len(chosenChunk.enemies); e++ {
+						if i == chosenChunk.enemies[e].tilePosition.x &&
+							j == chosenChunk.enemies[e].tilePosition.y {
+
+							generateEnemy(chosenChunk.enemies[e].enemyType, chosenTile.position, gameReference)
+						}
+					}
 				}
 
 			}
@@ -123,5 +205,4 @@ func (p *Phases) phase() {
 	}
 
 	_ = chosenTile
-	_ = chosenChunk
 }

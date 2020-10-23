@@ -52,8 +52,8 @@ func initPhases() Phases {
 	p := Phases{
 		chunks: []PhaseChunk{},
 
-		timer:    50,
-		timerMax: 50,
+		timer:    600,
+		timerMax: 600,
 	}
 
 	p.makePhases()
@@ -70,7 +70,9 @@ func (p *Phases) phaseHandler() {
 	if p.timer > 0 {
 		p.timer--
 	} else {
-		p.phase()
+		if len(gameReference.enemies) < 500 {
+			p.phase()
+		}
 		p.timer = p.timerMax
 	}
 }
@@ -79,10 +81,6 @@ func (p *Phases) makePhases() {
 	testTilePosition := image.Rect(102, 0, 118, 17)
 	p.addPhaseChunk(
 		[]PhaseTile{
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
 			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
 			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
 			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
@@ -107,10 +105,9 @@ func (p *Phases) makePhases() {
 			},
 		},
 		[]string{
-			"xxxx",
-			"xxxx",
-			"xxxx",
-			"xxxx",
+			"    ",
+			"    ",
+			"    ",
 		},
 	)
 	p.addPhaseChunk(
@@ -151,10 +148,10 @@ func (p *Phases) makePhases() {
 			},
 		},
 		[]string{
-			"xxxxx",
-			"xxxxx",
-			"xxxxx",
-			"xxxxx",
+			"     ",
+			"     ",
+			"     ",
+			"     ",
 		},
 	)
 }
@@ -176,18 +173,18 @@ func (p *Phases) phase() {
 	chosenChunk := p.getRandomPhase()
 
 	// Choose random tile
-	chosenTile, index := getRandomTile(gameReference)
+	_, index := getRandomTile(gameReference, Vec2i{len(chosenChunk.mapNodes[0]), len(chosenChunk.mapNodes[1])})
 
 	if len(chosenChunk.tiles) > 0 {
 		for i := 0; i < len(chosenChunk.mapNodes); i++ {
 			for j := 0; j < len(chosenChunk.mapNodes[i]); j++ {
 				if index.x+i < len(gameReference.tiles) &&
 					index.y+j < len(gameReference.tiles[i]) &&
-					gameReference.tiles[index.x+i][index.y+j].tileType == SmallTile &&
+					gameReference.tiles[index.x+j][index.y+i].tileType == SmallTile &&
 					i+j < len(chosenChunk.tiles) {
 
 					// Set new tile image
-					gameReference.tiles[index.x+i][index.y+j].imageRect = chosenChunk.tiles[i+j].imageRect
+					gameReference.tiles[index.x+j][index.y+i].imageRect = chosenChunk.tiles[i+j].imageRect
 
 					// Enemies
 
@@ -195,7 +192,11 @@ func (p *Phases) phase() {
 						if i == chosenChunk.enemies[e].tilePosition.x &&
 							j == chosenChunk.enemies[e].tilePosition.y {
 
-							generateEnemy(chosenChunk.enemies[e].enemyType, chosenTile.position, gameReference)
+							generateEnemy(
+								chosenChunk.enemies[e].enemyType,
+								newVec2f(gameReference.tiles[index.x+j][index.y+i].position.x, gameReference.tiles[index.x+j][index.y+i].position.y),
+								gameReference,
+							)
 						}
 					}
 				}
@@ -203,6 +204,4 @@ func (p *Phases) phase() {
 			}
 		}
 	}
-
-	_ = chosenTile
 }

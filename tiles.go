@@ -208,8 +208,8 @@ func renderTiles(g *Game, screen *ebiten.Image) {
 	}
 }
 
-func getRandomTile(g *Game) (Tile, Vec2i) {
-	index := newVec2i(rand.Intn(len(g.tiles)), rand.Intn(len(g.tiles[0])))
+func getRandomTile(g *Game, lessen Vec2i) (Tile, Vec2i) {
+	index := newVec2i(rand.Intn(len(g.tiles)-lessen.x), rand.Intn(len(g.tiles[0])-lessen.y))
 
 	return g.tiles[index.x][index.y], index
 }

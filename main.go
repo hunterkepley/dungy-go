@@ -123,7 +123,7 @@ func (g *Game) Init() {
 	initLuaFunctions(L)
 
 	// Make the astar path channel
-	astarChannel = make(chan *paths.Path, 2)
+	astarChannel = make(chan *paths.Path, 500)
 
 	// Obviously, temporary
 	g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
@@ -135,7 +135,7 @@ func (g *Game) Init() {
 	// Init music
 	loadMusic()
 	// Play song
-	//go music[0].play()
+	go music[0].play()
 
 	// GAME SETTINGS
 	loadSettings(&g.settings)

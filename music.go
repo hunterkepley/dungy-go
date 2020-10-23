@@ -50,7 +50,7 @@ func (m *Music) play() {
 	volume := &effects.Volume{
 		Streamer: loop,
 		Base:     2,
-		Volume:   -2.5,
+		Volume:   -5.5,
 		Silent:   false,
 	}
 

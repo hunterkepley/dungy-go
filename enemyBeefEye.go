@@ -293,3 +293,7 @@ func (b *BeefEye) damage(value int) {
 func (b *BeefEye) getShadow() Shadow {
 	return *b.shadow
 }
+
+func (b *BeefEye) setPosition(pos Vec2f) {
+	b.position = pos
+}

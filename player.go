@@ -31,6 +31,7 @@ type Player struct {
 	movement    Movement  // Walking? Running?
 	isMoving    bool      // Is currently moving due to input?
 	isConscious bool      // Is player conscious? [Can use input?]
+	isDead      bool      // Is the player dead?
 
 	canBlinkTimer int        // Timer between blinks
 	endBlinkTimer int        // Timer for each blink
@@ -125,6 +126,7 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 		movement:    Walking, // Movement
 		isMoving:    false,
 		isConscious: true,
+		isDead:      false,
 
 		canBlinkTimer: canBlinkTimer, // Time between blinks
 		endBlinkTimer: endBlinkTimer, // Time for each blink
@@ -224,6 +226,11 @@ func (p *Player) update(g *Game) {
 	}
 
 	p.walkSmokeEmitter.update(p.position, p.dynamicSize, p.direction, spawnWalkSmoke)
+
+	if p.isDead {
+		p.isDrawable = false
+	}
+
 }
 
 func (p *Player) render(screen *ebiten.Image) {
@@ -622,4 +629,9 @@ func (p *Player) die(g *Game) {
 	)
 
 	g.gibHandlers = append(g.gibHandlers, gibHandler)
+
+	// Delete shadow
+	//removeShadow(g.shadows, p.shadow.id)
+
+	p.isDead = true
 }

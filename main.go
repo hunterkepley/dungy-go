@@ -123,7 +123,7 @@ func (g *Game) Init() {
 	initLuaFunctions(L)
 
 	// Make the astar path channel
-	astarChannel = make(chan *paths.Path, 2)
+	astarChannel = make(chan *paths.Path, 500)
 
 	// Obviously, temporary
 	g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
@@ -189,13 +189,6 @@ func updateGame(screen *ebiten.Image, g *Game) {
 
 	// Game info update/check
 	checkChangeDisplayInfo()
-
-	if len(g.enemies) == 0 {
-		for i := 0; i < tempSpawnCount; i++ {
-			g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
-		}
-		tempSpawnCount++
-	}
 
 	// Update UI
 	updateUI(g)

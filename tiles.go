@@ -50,8 +50,9 @@ type Tile struct {
 	size     Vec2i
 	tileType TileType
 
-	sprite Sprite
-	image  *ebiten.Image // Spritesheet
+	sprite    Sprite
+	image     *ebiten.Image // Spritesheet
+	imageRect image.Rectangle
 }
 
 var (
@@ -86,21 +87,21 @@ func createTile(position Vec2f, tileType TileType, image *ebiten.Image) Tile {
 	}
 }
 
-func (t *Tile) update() {
-}
-
 func (t *Tile) render(screen *ebiten.Image) {
 	if t.tileType != Empty {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(t.position.x, t.position.y)
 		op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
-		subImageRect := image.Rect(
-			t.sprite.startPosition.x,
-			t.sprite.startPosition.y,
-			t.sprite.endPosition.x,
-			t.sprite.endPosition.y,
-		)
-		screen.DrawImage(t.image.SubImage(subImageRect).(*ebiten.Image), op)
+		if t.imageRect.Empty() {
+			// If empty, give rect based on sprite
+			t.imageRect = image.Rect(
+				t.sprite.startPosition.x,
+				t.sprite.startPosition.y,
+				t.sprite.endPosition.x,
+				t.sprite.endPosition.y,
+			)
+		}
+		screen.DrawImage(t.image.SubImage(t.imageRect).(*ebiten.Image), op)
 	}
 }
 
@@ -205,4 +206,10 @@ func renderTiles(g *Game, screen *ebiten.Image) {
 			g.tiles[i][j].render(screen)
 		}
 	}
+}
+
+func getRandomTile(g *Game, lessen Vec2i) (Tile, Vec2i) {
+	index := newVec2i(rand.Intn(len(g.tiles)-lessen.x), rand.Intn(len(g.tiles[0])-lessen.y))
+
+	return g.tiles[index.x][index.y], index
 }

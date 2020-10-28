@@ -201,7 +201,7 @@ func (b *BeefEye) followPlayer(game *Game) {
 		wg.Add(1)
 		go calculatePath(astarChannel, game.currentMap.mapNodes, start, end)
 
-		wg.Wait()
+		defer wg.Wait()
 
 		// Get the path if it's finished
 		b.path = *<-astarChannel

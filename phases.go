@@ -199,9 +199,11 @@ func (p *Phases) phase() {
 							)
 						}
 					}
+
 				}
 
 			}
 		}
+
 	}
 }

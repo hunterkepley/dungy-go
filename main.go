@@ -135,7 +135,7 @@ func (g *Game) Init() {
 	// Init music
 	loadMusic()
 	// Play song
-	go music[0].play()
+	go music[rand.Intn(len(music)-1)].play()
 
 	// GAME SETTINGS
 	loadSettings(&g.settings)
@@ -145,8 +145,6 @@ func (g *Game) Init() {
 	}
 
 }
-
-var e = 0
 
 // Update updates the game
 func (g *Game) Update(screen *ebiten.Image) error {

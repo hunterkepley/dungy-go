@@ -159,13 +159,19 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 		},
 		isDrawable: true,
 
+		// The player's gun is defined here
 		gun: Gun{
-			position:     position,
-			image:        iitemsSpritesheet,
-			sprite:       createSprite(newVec2i(0, 46), newVec2i(21, 59), newVec2i(21, 13), iitemsSpritesheet),
+			position: position,
+			image:    iitemsSpritesheet,
+			sprite:   createSprite(newVec2i(0, 46), newVec2i(21, 59), newVec2i(21, 13), iitemsSpritesheet),
+
 			fireSpeed:    0,
 			firespeedMax: 10,
-			baseDamage:   1,
+
+			baseDamage: 1,
+
+			animation:      createAnimation(createSpritesheet(Vec2i{0, 77}, Vec2i{60, 95}, 2, iitemsSpritesheet), iitemsSpritesheet),
+			animationSpeed: 1.5,
 		},
 		accuracy: 50,
 

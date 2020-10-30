@@ -167,7 +167,7 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 			firespeedMax: 10,
 			baseDamage:   1,
 		},
-		accuracy: 1,
+		accuracy: 50,
 
 		items: []Item{},
 

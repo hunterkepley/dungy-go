@@ -150,5 +150,6 @@ func (g *Gun) calculateDamage() int {
 }
 
 func removeBullet(slice []Bullet, e int) []Bullet {
+	removeLight(gameReference.lightHandler.lights, slice[e].lightID)
 	return append(slice[:e], slice[e+1:]...)
 }

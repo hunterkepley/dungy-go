@@ -82,6 +82,7 @@ func updateEnemies(g *Game) {
 		for b := 0; b < len(g.player.gun.bullets); b++ {
 			if isAABBCollision(g.enemies[e].getCurrentSubImageRect(), g.player.gun.bullets[b].collisionRect) {
 				g.enemies[e].damage(g.player.gun.calculateDamage())
+				// TODO: This causes a very annoying bug where light appears at top right for a frame sometimes
 				g.player.gun.bullets[b].destroy = true
 				break
 			}

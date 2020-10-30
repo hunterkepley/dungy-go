@@ -31,12 +31,15 @@ type BeefEye struct {
 	velocity  Vec2f
 	moveSpeed float64
 
-	health    int
-	maxHealth int
-	dead      bool
-	remove    bool // Do we remove this enemy?
-	flipped   bool // Is the enemy flipped?
-	idle      bool // Is the enemy idling?
+	health                 int
+	maxHealth              int
+	dead                   bool
+	deathExplosion         bool // When the death explosion is playing
+	deathExplosionFinished bool // When the death explosion is finished
+	dying                  bool
+	remove                 bool // Do we remove this enemy?
+	flipped                bool // Is the enemy flipped?
+	idle                   bool // Is the enemy idling?
 
 	shadow *Shadow // The shadow below the enemy
 
@@ -68,10 +71,13 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 		velocity:  newVec2f(0, 0),
 		moveSpeed: 1.2,
 
-		health:    6,
-		maxHealth: 6,
-		dead:      false,
-		idle:      true,
+		health:                 15,
+		maxHealth:              15,
+		dead:                   false,
+		idle:                   true,
+		deathExplosion:         false,
+		deathExplosionFinished: false,
+		dying:                  false,
 
 		shadow: &shadow,
 
@@ -81,8 +87,8 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 			die:      createAnimation(dieSpritesheet, ienemiesSpritesheet),
 		},
 		animationSpeeds: BeefEyeAnimationSpeeds{
-			walk: 0.9,
-			die:  1.2,
+			walk: 1.3,
+			die:  2.,
 		},
 
 		astarNodes:  []pathfinding.Node{},
@@ -130,31 +136,47 @@ func (b *BeefEye) update(game *Game) {
 		b.animation.startForwards()
 		b.idle = false
 	}
-	if b.animation.id == b.animations.walkSide.id {
-		b.animation.update(b.animationSpeeds.walk)
+	if b.deathExplosion && !b.dying {
+		b.dying = true
+		b.animation = b.animations.die
+		b.animation.startBackwards()
 	}
 
-	// Pathfind to player
-	b.followPlayer(game)
+	switch b.animation.id {
+	case b.animations.walkSide.id:
+		b.animation.update(b.animationSpeeds.walk)
+	case b.animations.die.id: // Special case for explosion animation
+		b.animation.update(b.animationSpeeds.die)
+		if b.animation.finishedFirstPlay {
+			b.deathExplosionFinished = true
+			b.deathExplosion = false
+		}
+	}
 
-	// Move enemy
-	b.position.x += b.velocity.x
-	b.position.y += b.velocity.y
+	if !b.dying {
 
-	b.size = newVec2i(
-		b.animation.spritesheet.sprites[b.animation.currentFrame].size.x,
-		b.animation.spritesheet.sprites[b.animation.currentFrame].size.y,
-	)
-	endPosition := newVec2i(
-		int(b.position.x)+b.size.x,
-		int(b.position.y)+b.size.y,
-	)
+		// Pathfind to player
+		go b.followPlayer(game)
 
-	// Update shadow
-	b.shadow.update(b.position, b.size)
+		// Move enemy
+		b.position.x += b.velocity.x
+		b.position.y += b.velocity.y
 
-	b.subImageRect = image.Rect(int(b.position.x), int(b.position.y), endPosition.x, endPosition.y)
-	b.center = newVec2f(b.position.x+float64(b.size.x)/2, b.position.y+float64(b.size.y)/2)
+		b.size = newVec2i(
+			b.animation.spritesheet.sprites[b.animation.currentFrame].size.x,
+			b.animation.spritesheet.sprites[b.animation.currentFrame].size.y,
+		)
+		endPosition := newVec2i(
+			int(b.position.x)+b.size.x,
+			int(b.position.y)+b.size.y,
+		)
+
+		// Update shadow
+		b.shadow.update(b.position, b.size)
+
+		b.subImageRect = image.Rect(int(b.position.x), int(b.position.y), endPosition.x, endPosition.y)
+		b.center = newVec2f(b.position.x+float64(b.size.x)/2, b.position.y+float64(b.size.y)/2)
+	}
 }
 
 func (b *BeefEye) followPlayer(game *Game) {
@@ -179,7 +201,7 @@ func (b *BeefEye) followPlayer(game *Game) {
 		wg.Add(1)
 		go calculatePath(astarChannel, game.currentMap.mapNodes, start, end)
 
-		wg.Wait()
+		defer wg.Wait()
 
 		// Get the path if it's finished
 		b.path = *<-astarChannel
@@ -235,10 +257,15 @@ func (b *BeefEye) followPlayer(game *Game) {
 
 func (b *BeefEye) isDead() bool {
 	if b.health <= 0 {
-		if !b.dead {
-			b.dead = true
+
+		if !b.deathExplosionFinished {
+			b.deathExplosion = true
+		} else {
+			if !b.dead && !b.deathExplosion {
+				b.dead = true
+			}
+			return true
 		}
-		return true
 	}
 	return false
 }
@@ -265,4 +292,8 @@ func (b *BeefEye) damage(value int) {
 
 func (b *BeefEye) getShadow() Shadow {
 	return *b.shadow
+}
+
+func (b *BeefEye) setPosition(pos Vec2f) {
+	b.position = pos
 }

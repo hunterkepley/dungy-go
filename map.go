@@ -4,25 +4,18 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-// MapData is the metadata for a Map (mainly the name and version)
-type MapData struct {
-	name    string
-	version string
-}
-
 // Map is a map, it contains MapData, tiles, etc
 type Map struct {
-	data MapData
-
 	tiles    []*Tile
 	lights   []*Light // Background/level-specific lights
 	mapNodes []string
+	phases   Phases
 }
 
 // I plan for this to end up loading map files just based off map names.
 // Most likely will be random like items except an even likelihood of every map
 func initMaps(g *Game) {
-	gameReference.maps = append(gameReference.maps, Map{data: MapData{"SpaceShip", "0.1"}}) // SpaceShip
+	gameReference.maps = append(gameReference.maps, Map{}) // SpaceShip
 	initMap(g)
 }
 
@@ -39,6 +32,7 @@ func renderMaps(screen *ebiten.Image) {
 }
 
 func (m *Map) update() {
+	gameReference.maps[0].phases.phaseHandler()
 }
 
 func (m *Map) render(screen *ebiten.Image) {
@@ -46,6 +40,7 @@ func (m *Map) render(screen *ebiten.Image) {
 
 func initMap(g *Game) {
 	index := 0
+	gameReference.maps[index].phases = initPhases()
 	// Lights
 	for i := 0; i < 12; i++ {
 		offset := 17.

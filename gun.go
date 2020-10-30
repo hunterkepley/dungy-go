@@ -14,11 +14,15 @@ type Gun struct {
 	rotation    float64
 	storedAngle float64
 	flipped     bool
+	firing      bool // Is the gun firing? (Do we need to animate it?)
 
 	fireSpeed    int
 	firespeedMax int
 
 	baseDamage int // Base damage the gun's bullets deliver
+
+	animation      Animation // Fire animation
+	animationSpeed float64   // Fire animation speed
 
 	bullets []Bullet
 
@@ -46,6 +50,17 @@ func (g *Gun) render(screen *ebiten.Image) {
 		g.sprite.endPosition.y,
 	)
 
+	if g.firing {
+		currentFrame := g.animation.spritesheet.sprites[g.animation.currentFrame]
+
+		subImageRect = image.Rect(
+			currentFrame.startPosition.x,
+			currentFrame.startPosition.y,
+			currentFrame.endPosition.x,
+			currentFrame.endPosition.y,
+		)
+	}
+
 	screen.DrawImage(g.image.SubImage(subImageRect).(*ebiten.Image), op)
 }
 
@@ -54,6 +69,14 @@ func (g *Gun) update(playerPosition Vec2f, cursorCenter Vec2i) {
 	// Placement offset [circle]
 	radius := 12.
 	angle := math.Atan2(playerPosition.y-float64(cursorCenter.y), playerPosition.x-float64(cursorCenter.x))
+
+	if g.firing {
+		g.animation.update(g.animationSpeed)
+		if g.animation.finishedFirstPlay {
+			g.firing = false
+			g.animation.finishedFirstPlay = false
+		}
+	}
 
 	// Flip gun image
 	if angle < Pi/2 && angle > Pi/-2 {
@@ -98,6 +121,10 @@ func (g *Gun) update(playerPosition Vec2f, cursorCenter Vec2i) {
 // Creates the bullets n stuff
 func (g *Gun) fire(playerPosition Vec2f, game *Game) {
 	if g.fireSpeed <= 0 {
+		g.firing = true
+		g.animation.startForwards()
+		g.animation.currentFrame = 0
+
 		bulletSpeed := 3.
 		g.fireSpeed = g.firespeedMax
 		lightID := game.lightHandler.addLight(game.lightHandler.lightImages.bulletLight, g.rotation)
@@ -150,5 +177,6 @@ func (g *Gun) calculateDamage() int {
 }
 
 func removeBullet(slice []Bullet, e int) []Bullet {
+	removeLight(gameReference.lightHandler.lights, slice[e].lightID)
 	return append(slice[:e], slice[e+1:]...)
 }

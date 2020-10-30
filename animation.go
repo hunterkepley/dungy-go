@@ -28,24 +28,26 @@ func (a AnimationState) String() string {
 
 // Animation a system for animating an image using Ebiten subsets
 type Animation struct {
-	spritesheet  Spritesheet
-	currentFrame int
-	timer        float64
-	maxTimer     float64
-	id           int            // For checking if an animation equals another
-	state        AnimationState // If the animation is currently playing
+	spritesheet       Spritesheet
+	currentFrame      int
+	timer             float64
+	maxTimer          float64
+	id                int            // For checking if an animation equals another
+	state             AnimationState // If the animation is currently playing
+	finishedFirstPlay bool           // Whether or not the animation played one time at least
 }
 
 func createAnimation(spritesheet Spritesheet, image *ebiten.Image) Animation {
 
 	idAnimation++
 	return Animation{
-		spritesheet,
-		0,           // currentFrame
-		0,           // timer
-		10,          // maxTimer
-		idAnimation, // Animation ID
-		AnimationPlayingForwards,
+		spritesheet:       spritesheet,
+		currentFrame:      0,           // currentFrame
+		timer:             0,           // timer
+		maxTimer:          10,          // maxTimer
+		id:                idAnimation, // Animation ID
+		state:             AnimationPlayingForwards,
+		finishedFirstPlay: false,
 	}
 }
 
@@ -66,12 +68,14 @@ func (a *Animation) update(speed float64) {
 			a.currentFrame++
 			if a.currentFrame == a.spritesheet.numberOfSprites {
 				// Reached the end!
+				a.finishedFirstPlay = true
 				a.currentFrame = 0
 			}
 
 		case AnimationPlayingBackwards: // Backwards
 			a.currentFrame--
 			if a.currentFrame == -1 {
+				a.finishedFirstPlay = true
 				a.currentFrame = a.spritesheet.numberOfSprites - 1 // Set to end again!
 			}
 		}

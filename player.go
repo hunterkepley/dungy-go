@@ -31,6 +31,7 @@ type Player struct {
 	movement    Movement  // Walking? Running?
 	isMoving    bool      // Is currently moving due to input?
 	isConscious bool      // Is player conscious? [Can use input?]
+	isDead      bool      // Is the player dead?
 
 	canBlinkTimer int        // Timer between blinks
 	endBlinkTimer int        // Timer for each blink
@@ -86,8 +87,8 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 	canBlinkTimer := 0
 	endBlinkTimer := 0
 
-	walkSpeed := 0.5
-	runSpeed := 0.9
+	walkSpeed := 0.9
+	runSpeed := 1.3
 
 	shadowRect := image.Rect(0, 231, 14, 237)
 
@@ -125,6 +126,7 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 		movement:    Walking, // Movement
 		isMoving:    false,
 		isConscious: true,
+		isDead:      false,
 
 		canBlinkTimer: canBlinkTimer, // Time between blinks
 		endBlinkTimer: endBlinkTimer, // Time for each blink
@@ -151,21 +153,27 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 		},
 		animationSpeeds: PlayerAnimationSpeeds{ // All animation speeds
 			1,   // idle
-			1.,  // walking
-			1.5, // running
+			1.2, // walking
+			1.7, // running
 			3,   // blink trail
 		},
 		isDrawable: true,
 
+		// The player's gun is defined here
 		gun: Gun{
-			position:     position,
-			image:        iitemsSpritesheet,
-			sprite:       createSprite(newVec2i(0, 46), newVec2i(21, 59), newVec2i(21, 13), iitemsSpritesheet),
+			position: position,
+			image:    iitemsSpritesheet,
+			sprite:   createSprite(newVec2i(0, 46), newVec2i(21, 59), newVec2i(21, 13), iitemsSpritesheet),
+
 			fireSpeed:    0,
-			firespeedMax: 25,
-			baseDamage:   1,
+			firespeedMax: 10,
+
+			baseDamage: 1,
+
+			animation:      createAnimation(createSpritesheet(Vec2i{0, 77}, Vec2i{60, 95}, 2, iitemsSpritesheet), iitemsSpritesheet),
+			animationSpeed: 1.5,
 		},
-		accuracy: 1,
+		accuracy: 50,
 
 		items: []Item{},
 
@@ -224,6 +232,11 @@ func (p *Player) update(g *Game) {
 	}
 
 	p.walkSmokeEmitter.update(p.position, p.dynamicSize, p.direction, spawnWalkSmoke)
+
+	if p.isDead {
+		p.isDrawable = false
+	}
+
 }
 
 func (p *Player) render(screen *ebiten.Image) {
@@ -622,4 +635,9 @@ func (p *Player) die(g *Game) {
 	)
 
 	g.gibHandlers = append(g.gibHandlers, gibHandler)
+
+	// Delete shadow
+	//removeShadow(g.shadows, p.shadow.id)
+
+	p.isDead = true
 }

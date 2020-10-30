@@ -6,6 +6,17 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
+// EnemyType
+type EnemyType int
+
+const (
+	// EBeefEye is the Beef Eye enemy
+	EBeefEye EnemyType = iota + 1
+
+	// EWorm is the worm enemy
+	EWorm
+)
+
 // Enemy is the interface for all enemies in the game
 type Enemy interface {
 	render(screen *ebiten.Image)
@@ -14,11 +25,21 @@ type Enemy interface {
 	damage(value int)
 	attack(game *Game)
 
+	setPosition(Vec2f)
+
 	getShadow() Shadow
 	getCenter() Vec2f
 	getCurrentSubImageRect() image.Rectangle
 
 	getImage() *ebiten.Image
+}
+
+// Generates an enemy then adds to enemy list automatically
+func generateEnemy(enemyType EnemyType, position Vec2f, g *Game) {
+	switch enemyType {
+	case EBeefEye:
+		g.enemies = append(g.enemies, createBeefEye(position, g))
+	}
 }
 
 func updateEnemies(g *Game) {
@@ -61,6 +82,7 @@ func updateEnemies(g *Game) {
 		for b := 0; b < len(g.player.gun.bullets); b++ {
 			if isAABBCollision(g.enemies[e].getCurrentSubImageRect(), g.player.gun.bullets[b].collisionRect) {
 				g.enemies[e].damage(g.player.gun.calculateDamage())
+				// TODO: This causes a very annoying bug where light appears at top right for a frame sometimes
 				g.player.gun.bullets[b].destroy = true
 				break
 			}

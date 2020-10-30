@@ -152,7 +152,7 @@ func (b *BulletGlow) render(screen *ebiten.Image, glowSprite *Sprite) {
 }
 
 func (b *BulletGlow) update(position Vec2f, rotation float64) {
-	b.size = newVec2i(b.sprite.size.x, b.sprite.size.y)
+	b.size = newVec2i(b.sprite.size.x, b.sprite.size.y) // Useless for now
 	b.position = position
 	b.rotation = rotation
 }

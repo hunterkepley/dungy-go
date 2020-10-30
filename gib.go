@@ -1,12 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten"
 )
+
+/*
+
+TODO:
+
+REMOVE GIB HANDLERS AFTER THEY FINISH SPAWNING GIBS
+
+*/
 
 // Gib is random piece of a subimage that has a bloodEmitter
 type Gib struct {
@@ -98,7 +105,7 @@ func createGib(position Vec2f,
 		position,
 		size,
 		randomVelocity,
-		createBloodEmitter(position, 1, size, ibloodSpritesheet),
+		createBloodEmitter(position, 5, size, ibloodSpritesheet),
 		distanceAllowed,
 		true,
 		rotation,
@@ -171,7 +178,6 @@ func (g *GibHandler) explode(numberOfGibs int,
 func updateGibHandlers(g *Game) {
 	for i := 0; i < len(g.gibHandlers); i++ {
 		g.gibHandlers[i].update(g)
-		fmt.Println(len(g.gibHandlers) * len(g.gibHandlers[i].gibs))
 	}
 }
 

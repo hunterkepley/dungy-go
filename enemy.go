@@ -66,13 +66,13 @@ func updateEnemies(g *Game) {
 		}
 
 		if g.enemies[e].isDead() {
-			gibAmount := 10 // Gib setting 1
-			gibSize := 8    // Gib setting 1
+			gibAmount := 15 // Gib setting 1
+			gibSize := 5    // Gib setting 1
 
 			switch g.settings.Graphics.Gibs { // Gib setting 2
 			case 2:
 				gibSize = 9
-				gibAmount = 20
+				gibAmount = 15
 			case 0:
 				gibAmount = 0
 			}

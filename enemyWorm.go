@@ -63,7 +63,7 @@ func createWorm(position Vec2f, game *Game) *Worm {
 	return &Worm{
 		position:  position,
 		velocity:  newVec2f(0, 0),
-		moveSpeed: 0.5,
+		moveSpeed: 1.4,
 
 		health:    3,
 		maxHealth: 3,

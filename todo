@@ -18,3 +18,5 @@ x-Make worms follow player and spawn on some phases
 -Item description
 
 -Rewrite pathfinding to be smoother between nodes
+-Pathfinding bug with the top wall
+-Phases x and y are flipped

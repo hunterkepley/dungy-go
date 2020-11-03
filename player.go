@@ -170,10 +170,10 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 
 			baseDamage: 1,
 
-			animation:      createAnimation(createSpritesheet(Vec2i{0, 77}, Vec2i{60, 95}, 2, iitemsSpritesheet), iitemsSpritesheet),
+			animation:      createAnimation(createSpritesheet(Vec2i{0, 81}, Vec2i{42, 95}, 2, iitemsSpritesheet), iitemsSpritesheet),
 			animationSpeed: 1.5,
 		},
-		accuracy: 50,
+		accuracy: 75,
 
 		items: []Item{},
 

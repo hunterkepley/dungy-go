@@ -86,85 +86,6 @@ func (p *Phases) phaseHandler() {
 	}
 }
 
-func (p *Phases) makePhases() {
-	testTilePosition := image.Rect(102, 0, 118, 17)
-	p.addPhaseChunk(
-		[]PhaseTile{
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-		},
-		[]PhaseEnemy{
-			{
-				EBeefEye,
-				Vec2i{0, 0}, // Spawn on first tile
-			},
-			{
-				EBeefEye,
-				Vec2i{3, 3},
-			},
-		},
-		[]string{
-			"    ",
-			"    ",
-			"    ",
-		},
-	)
-	p.addPhaseChunk(
-		[]PhaseTile{
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-		},
-		[]PhaseEnemy{
-			{
-				EBeefEye,
-				Vec2i{0, 0}, // Spawn on first tile
-			},
-			{
-				EBeefEye,
-				Vec2i{1, 0},
-			},
-			{
-				EBeefEye,
-				Vec2i{2, 0},
-			},
-		},
-		[]string{
-			"     ",
-			"     ",
-			"     ",
-			"     ",
-		},
-	)
-}
-
 func (p *Phases) getRandomPhase() PhaseChunk {
 	if len(p.chunks) > 0 {
 		return p.chunks[rand.Intn(len(p.chunks))]
@@ -215,7 +136,82 @@ func (p *Phases) phase() {
 
 					}
 				}
+
 			}
 		}
+
 	}
+}
+
+// PHASES -- May move to another file? Maybe it's own filetype and parser?
+
+func (p *Phases) makePhases() {
+	testTilePosition := image.Rect(102, 0, 118, 17)
+	p.addPhaseChunk(
+		[]PhaseTile{
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+		},
+		[]PhaseEnemy{
+			{
+				EBeefEye,
+				Vec2i{0, 0}, // Spawn on first tile
+			},
+			{
+				EBeefEye,
+				Vec2i{3, 3},
+			},
+		},
+		[]string{
+			"    ",
+			"    ",
+			"    ",
+		},
+	)
+	p.addPhaseChunk(
+		[]PhaseTile{
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+		},
+		[]PhaseEnemy{
+			{
+				EWorm,
+				Vec2i{0, 0}, // Spawn on first tile
+			},
+			{
+				EWorm,
+				Vec2i{1, 1},
+			},
+			{
+				EWorm,
+				Vec2i{2, 0},
+			},
+			{
+				EWorm,
+				Vec2i{3, 1},
+			},
+		},
+		[]string{
+			"  ",
+			"  ",
+			"  ",
+			"  ",
+		},
+	)
 }

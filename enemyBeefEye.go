@@ -155,9 +155,6 @@ func (b *BeefEye) update(game *Game) {
 
 	if !b.dying {
 
-		// Pathfind to player
-		go b.followPlayer(game)
-
 		// Move enemy
 		b.position.x += b.velocity.x
 		b.position.y += b.velocity.y
@@ -176,82 +173,6 @@ func (b *BeefEye) update(game *Game) {
 
 		b.subImageRect = image.Rect(int(b.position.x), int(b.position.y), endPosition.x, endPosition.y)
 		b.center = newVec2f(b.position.x+float64(b.size.x)/2, b.position.y+float64(b.size.y)/2)
-	}
-}
-
-func (b *BeefEye) followPlayer(game *Game) {
-
-	if game.player.position.x+float64(game.player.dynamicSize.x)/2 > b.center.x {
-		b.flipped = true
-	} else {
-		b.flipped = false
-	}
-
-	if b.canPathfind {
-		start := newRolumn(
-			int(b.position.x),
-			int(b.position.y),
-		)
-		end := newRolumn(
-			int(game.player.position.x),
-			int(game.player.position.y),
-		)
-
-		// Make a path concurrently
-		wg.Add(1)
-		go calculatePath(astarChannel, game.currentMap.mapNodes, start, end)
-
-		defer wg.Wait()
-
-		// Get the path if it's finished
-		b.path = *<-astarChannel
-		b.canPathfind = false
-	} else if !b.pathFinding && !b.canPathfind {
-
-		if &b.path != nil {
-
-			// If path is finished, generate new one.
-			if len(b.path.Cells)-1 == b.path.CurrentIndex {
-				b.canPathfind = true
-			} else {
-				z := b.size.x
-				if b.size.y > b.size.x {
-					z = b.size.y
-				}
-				ease := z // How much give the engine gives to 'reaching' a node
-
-				finished := newVec2b(false, false)
-				if len(b.path.Cells) > 0 {
-					if int(b.position.x) < (b.path.Current().X*smallTileSize.x - ease) {
-						b.position.x += b.moveSpeed
-					} else if int(b.position.x) > (b.path.Current().X*smallTileSize.x + ease) {
-						b.position.x -= b.moveSpeed
-					} else {
-						finished.x = true
-					}
-
-					if int(b.position.y) < (b.path.Current().Y*smallTileSize.y - ease) {
-						b.position.y += b.moveSpeed
-					} else if int(b.position.y) > (b.path.Current().Y*smallTileSize.y + ease) {
-						b.position.y -= b.moveSpeed
-					} else {
-						finished.y = true
-					}
-				}
-
-				if finished.x && finished.y {
-					if b.path.AtEnd() {
-						if b.path.AtEnd() {
-							b.canPathfind = true
-						}
-					} else {
-						if !b.path.AtEnd() {
-							b.path.Next()
-						}
-					}
-				}
-			}
-		}
 	}
 }
 
@@ -278,6 +199,10 @@ func (b *BeefEye) getCenter() Vec2f {
 	return b.center
 }
 
+func (b *BeefEye) getPosition() Vec2f {
+	return b.position
+}
+
 func (b *BeefEye) getCurrentSubImageRect() image.Rectangle {
 	return b.subImageRect
 }
@@ -286,14 +211,54 @@ func (b *BeefEye) getImage() *ebiten.Image {
 	return b.image
 }
 
+func (b *BeefEye) getSize() Vec2i {
+	return b.size
+}
+
 func (b *BeefEye) damage(value int) {
-	b.health -= value
+	b.health--
 }
 
 func (b *BeefEye) getShadow() Shadow {
 	return *b.shadow
 }
 
+func (b *BeefEye) getMoveSpeed() float64 {
+	return b.moveSpeed
+}
+
+func (b *BeefEye) getDying() bool {
+	return b.dying
+}
+
+func (b *BeefEye) getPath() *paths.Path {
+	return &b.path
+}
+
+func (b *BeefEye) getCanPathfind() bool {
+	return b.canPathfind
+}
+
+func (b *BeefEye) getFlipped() bool {
+	return b.flipped
+}
+
+func (b *BeefEye) getPathfinding() bool {
+	return b.pathFinding
+}
+
 func (b *BeefEye) setPosition(pos Vec2f) {
 	b.position = pos
+}
+
+func (b *BeefEye) setFlipped(flipped bool) {
+	b.flipped = flipped
+}
+
+func (b *BeefEye) setPath(path paths.Path) {
+	b.path = path
+}
+
+func (b *BeefEye) setCanPathfind(canPathfind bool) {
+	b.canPathfind = canPathfind
 }

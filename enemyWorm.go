@@ -3,7 +3,9 @@ package main
 import (
 	"image"
 
+	paths "github.com/SolarLune/paths"
 	"github.com/hajimehoshi/ebiten"
+	pathfinding "github.com/xarg/gopathfinding"
 )
 
 // WormAnimations is the animations for worms
@@ -24,13 +26,17 @@ type Worm struct {
 	velocity  Vec2f
 	moveSpeed float64
 
-	health    int
-	maxHealth int
-	dead      bool
-	remove    bool // Do we remove this worm?
-	flipped   bool // Is the worm flipped?
+	health                 int
+	maxHealth              int
+	dead                   bool
+	deathExplosion         bool // When the death explosion is playing
+	deathExplosionFinished bool // When the death explosion is finished
+	dying                  bool
+	remove                 bool // Do we remove this enemy?
+	flipped                bool // Is the enemy flipped?
+	idle                   bool // Is the enemy idling?
 
-	shadow *Shadow // The shadow below the worm
+	shadow *Shadow // The shadow below the enemy
 
 	subImageRect image.Rectangle
 
@@ -40,6 +46,11 @@ type Worm struct {
 	animationSpeeds WormAnimationSpeeds
 
 	image *ebiten.Image
+
+	astarNodes  []pathfinding.Node
+	path        paths.Path
+	canPathfind bool
+	pathFinding bool
 }
 
 func createWorm(position Vec2f, game *Game) *Worm {
@@ -67,6 +78,10 @@ func createWorm(position Vec2f, game *Game) *Worm {
 		animationSpeeds: WormAnimationSpeeds{
 			idle: 0.9,
 		},
+
+		astarNodes:  []pathfinding.Node{},
+		canPathfind: true,
+		pathFinding: false,
 
 		image: ienemiesSpritesheet,
 	}
@@ -105,9 +120,6 @@ func (w *Worm) update(game *Game) {
 	}
 	w.animation.update(w.animationSpeeds.idle)
 
-	// Pathfind to player
-	w.followPlayer(game)
-
 	// Move worm
 	w.position.x += w.velocity.x
 	w.position.y += w.velocity.y
@@ -128,26 +140,6 @@ func (w *Worm) update(game *Game) {
 	w.center = newVec2f(w.position.x+float64(w.size.x)/2, w.position.y+float64(w.size.y)/2)
 }
 
-func (w *Worm) followPlayer(game *Game) {
-	if w.position.x < game.player.position.x-w.moveSpeed {
-		w.velocity.x = w.moveSpeed
-		w.flipped = true
-	} else if w.position.x > game.player.position.x+w.moveSpeed {
-		w.velocity.x = -w.moveSpeed
-		w.flipped = false
-	} else {
-		w.velocity.x = 0
-	}
-
-	if w.position.y < game.player.position.y-w.moveSpeed {
-		w.velocity.y = w.moveSpeed
-	} else if w.position.y > game.player.position.y+w.moveSpeed {
-		w.velocity.y = -w.moveSpeed
-	} else {
-		w.velocity.y = 0
-	}
-}
-
 func (w *Worm) isDead() bool {
 	if w.health <= 0 {
 		if !w.dead {
@@ -158,8 +150,16 @@ func (w *Worm) isDead() bool {
 	return false
 }
 
+func (w *Worm) attack(game *Game) {
+
+}
+
 func (w *Worm) getCenter() Vec2f {
 	return w.center
+}
+
+func (w *Worm) getPosition() Vec2f {
+	return w.position
 }
 
 func (w *Worm) getCurrentSubImageRect() image.Rectangle {
@@ -170,10 +170,54 @@ func (w *Worm) getImage() *ebiten.Image {
 	return w.image
 }
 
+func (w *Worm) getSize() Vec2i {
+	return w.size
+}
+
 func (w *Worm) damage(value int) {
 	w.health--
 }
 
 func (w *Worm) getShadow() Shadow {
 	return *w.shadow
+}
+
+func (w *Worm) getMoveSpeed() float64 {
+	return w.moveSpeed
+}
+
+func (w *Worm) getDying() bool {
+	return w.dying
+}
+
+func (w *Worm) getPath() *paths.Path {
+	return &w.path
+}
+
+func (w *Worm) getCanPathfind() bool {
+	return w.canPathfind
+}
+
+func (w *Worm) getFlipped() bool {
+	return w.flipped
+}
+
+func (w *Worm) getPathfinding() bool {
+	return w.pathFinding
+}
+
+func (w *Worm) setPosition(pos Vec2f) {
+	w.position = pos
+}
+
+func (w *Worm) setFlipped(flipped bool) {
+	w.flipped = flipped
+}
+
+func (w *Worm) setPath(path paths.Path) {
+	w.path = path
+}
+
+func (w *Worm) setCanPathfind(canPathfind bool) {
+	w.canPathfind = canPathfind
 }

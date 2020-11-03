@@ -39,9 +39,6 @@ func (g *Gun) render(screen *ebiten.Image) {
 	} else {
 		op.GeoM.Scale(1, 1)
 	}
-	op.GeoM.Rotate(g.rotation)
-	op.GeoM.Translate(g.position.x, g.position.y)
-	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
 
 	subImageRect := image.Rect(
 		g.sprite.startPosition.x,
@@ -50,7 +47,8 @@ func (g *Gun) render(screen *ebiten.Image) {
 		g.sprite.endPosition.y,
 	)
 
-	if g.firing {
+	if g.firing { // Gun is firing
+
 		currentFrame := g.animation.spritesheet.sprites[g.animation.currentFrame]
 
 		subImageRect = image.Rect(
@@ -59,7 +57,20 @@ func (g *Gun) render(screen *ebiten.Image) {
 			currentFrame.endPosition.x,
 			currentFrame.endPosition.y,
 		)
+
+		flipAmount := 0.2
+
+		if g.flipped {
+			op.GeoM.Rotate(g.rotation + flipAmount)
+		} else {
+			op.GeoM.Rotate(g.rotation - flipAmount)
+		}
+	} else {
+		op.GeoM.Rotate(g.rotation)
 	}
+	op.GeoM.Translate(g.position.x, g.position.y)
+
+	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
 
 	screen.DrawImage(g.image.SubImage(subImageRect).(*ebiten.Image), op)
 }

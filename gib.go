@@ -42,10 +42,6 @@ func (g *Gib) update(game *Game) {
 
 			notInWall = false
 			g.canMove = false
-			if notInWall {
-				g.velocity.x *= -1
-				g.velocity.y *= -1
-			}
 		}
 		if notInWall {
 			// If positive, subtract until 0
@@ -100,17 +96,19 @@ func createGib(position Vec2f,
 	subImage image.Rectangle,
 	image *ebiten.Image) Gib {
 
-	size := newVec2i(subImage.Max.X-subImage.Min.X, subImage.Max.Y-subImage.Min.Y)
+	bloodSpawnTimer := 10.
+
+	size := newVec2i((subImage.Max.X-subImage.Min.X)+8, (subImage.Max.Y-subImage.Min.Y)+8)
 	return Gib{
-		position,
-		size,
-		randomVelocity,
-		createBloodEmitter(position, 5, size, ibloodSpritesheet),
-		distanceAllowed,
-		true,
-		rotation,
-		subImage,
-		image,
+		position:        position,
+		size:            size,
+		velocity:        randomVelocity,
+		bloodEmitter:    createBloodEmitter(position, bloodSpawnTimer, size, ibloodSpritesheet),
+		distanceAllowed: distanceAllowed,
+		canMove:         true,
+		rotation:        rotation,
+		subImage:        subImage,
+		image:           image,
 	}
 }
 
@@ -137,9 +135,10 @@ func (g *GibHandler) explode(numberOfGibs int,
 	gibImage *ebiten.Image) {
 
 	for i := 0; i < numberOfGibs; i++ {
-		randomDistanceAllowed := 15 + rand.Intn(3)
+		randomDistanceAllowed := 15 + rand.Intn(10)
 		randomRotation := float64(rand.Intn(15))
-		randomVelocity := newVec2i(rand.Intn(10), rand.Intn(10)) // Random velocity
+		randomVelocity := newVec2i(1+rand.Intn(3), 1+rand.Intn(3)) // Random velocity
+
 		switch rand.Intn(4) {
 		case (0):
 			randomVelocity.x *= -1

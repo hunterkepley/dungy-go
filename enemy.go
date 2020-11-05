@@ -36,7 +36,7 @@ type Enemy interface {
 	getFlipped() bool                        // Is enemy flipped?
 	getSize() Vec2i
 	getMoveSpeed() float64
-	getDying() bool
+	getDying() bool // Is the enemy dying?
 
 	// Mostly pathfinding stuff
 	getCanPathfind() bool // Can enemy find a path?
@@ -66,12 +66,12 @@ func updateEnemies(g *Game) {
 		}
 
 		if g.enemies[e].isDead() {
-			gibAmount := 15 // Gib setting 1
-			gibSize := 5    // Gib setting 1
+			gibAmount := 8 // Gib setting 1
+			gibSize := 7   // Gib setting 1
 
 			switch g.settings.Graphics.Gibs { // Gib setting 2
 			case 2:
-				gibSize = 9
+				gibSize = 7
 				gibAmount = 15
 			case 0:
 				gibAmount = 0

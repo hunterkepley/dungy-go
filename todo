@@ -20,3 +20,11 @@ x-Make worms follow player and spawn on some phases
 -Rewrite pathfinding to be smoother between nodes
 -Pathfinding bug with the top wall
 -Phases x and y are flipped
+
+-Fix bug with pathfinding where path processes lock when no path can be made (timer?)
+
+-Bullet range
+
+-Make gibs in a global gibs list, same with blood
+--When gibs are done being emitted, delete gibhandler and blood emitter
+--?Maybe delete gibhandler in general?

@@ -44,21 +44,7 @@ func (g *Gib) update(game *Game) {
 			g.canMove = false
 		}
 		if notInWall {
-			// If positive, subtract until 0
-			if g.velocity.x != 0 {
-				if g.velocity.x > 0 {
-					g.velocity.x--
-				} else if g.velocity.x < 0 { // Negative
-					g.velocity.y++
-				}
-			}
-			if g.velocity.y != 0 {
-				if g.velocity.y > 0 {
-					g.velocity.y--
-				} else if g.velocity.y < 0 { // Negative
-					g.velocity.y++
-				}
-			}
+
 			g.position.x += float64(g.velocity.x)
 			g.position.y += float64(g.velocity.y)
 			g.distanceAllowed--
@@ -135,19 +121,9 @@ func (g *GibHandler) explode(numberOfGibs int,
 	gibImage *ebiten.Image) {
 
 	for i := 0; i < numberOfGibs; i++ {
-		randomDistanceAllowed := 15 + rand.Intn(10)
+		randomDistanceAllowed := 3 + rand.Intn(10)
 		randomRotation := float64(rand.Intn(15))
-		randomVelocity := newVec2i(1+rand.Intn(3), 1+rand.Intn(3)) // Random velocity
-
-		switch rand.Intn(4) {
-		case (0):
-			randomVelocity.x *= -1
-		case (1):
-			randomVelocity.y *= -1
-		case (2):
-			randomVelocity.x *= -1
-			randomVelocity.y *= -1
-		}
+		randomVelocity := newVec2i(-3+rand.Intn(6), -3+rand.Intn(6)) // Random velocity
 
 		// Get the subimage size and position for random gibs
 		subImageSize := newVec2i(subImage.Max.X-subImage.Min.X, subImage.Max.Y-subImage.Min.Y)

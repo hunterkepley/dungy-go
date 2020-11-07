@@ -162,10 +162,11 @@ type Bullet struct {
 	position Vec2f
 	size     Vec2i
 
-	velocity    Vec2f
-	rotation    float64
-	storedAngle float64
-	speed       float64
+	velocity          Vec2f
+	rotation          float64
+	storedAngle       float64
+	speed             float64
+	distanceTravelled float64 // How far has the bullet travelled?
 
 	collisionRect image.Rectangle
 
@@ -253,6 +254,11 @@ func (b *Bullet) update(game *Game) {
 		int(b.position.x)+b.size.x,
 		int(b.position.y)+b.size.y,
 	)
+
+	b.distanceTravelled++
+	if b.distanceTravelled >= gameReference.player.gunRange {
+		b.destroy = true
+	}
 
 }
 

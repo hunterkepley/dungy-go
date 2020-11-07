@@ -48,8 +48,9 @@ type Player struct {
 	animationSpeeds PlayerAnimationSpeeds // All animation speeds
 	isDrawable      bool                  // Is able to be drawn on the screen?
 
-	gun      Gun // The players gun
-	accuracy int // Player's accuracy with firearms!
+	gun      Gun     // The players gun
+	accuracy int     // Player's accuracy with firearms!
+	gunRange float64 // Player's range with firearms!
 
 	items []Item // Items held!
 
@@ -174,6 +175,7 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 			animationSpeed: 1.5,
 		},
 		accuracy: 75,
+		gunRange: 25,
 
 		items: []Item{},
 

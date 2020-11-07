@@ -146,7 +146,6 @@ func (h *LightHandler) render(screen *ebiten.Image) {
 		// Rotate light
 		op.GeoM.Translate(0-float64(lightSize.x)/2, 0-float64(lightSize.y)/2)
 		//op.GeoM.Rotate(h.lights[i].rotation)
-		//op.GeoM.Rotate(h.lights[i].rotation)
 		op.GeoM.Translate(float64(lightSize.x)/2, float64(lightSize.y)/2)
 
 		// Move light

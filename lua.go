@@ -32,6 +32,8 @@ type ItemAPI struct {
 	gunFireSpeed       lua.LGFunction
 	setAccuracy        lua.LGFunction // Player accuracy
 	accuracy           lua.LGFunction
+	setGunRange        lua.LGFunction // Player gun fire range
+	gunRange           lua.LGFunction
 }
 
 var itemAPI ItemAPI = ItemAPI{
@@ -106,6 +108,18 @@ var itemAPI ItemAPI = ItemAPI{
 		L.Push(lv)
 		return 1
 	},
+
+	setGunRange: func(L *lua.LState) int {
+		lv := L.ToInt(1)
+		gameReference.player.gunRange = float64(lv)
+		return 0
+	},
+
+	gunRange: func(L *lua.LState) int {
+		lv := lua.LNumber(gameReference.player.gunRange)
+		L.Push(lv)
+		return 1
+	},
 }
 
 func initLuaFunctions(L *lua.LState) {
@@ -126,4 +140,7 @@ func initLuaFunctions(L *lua.LState) {
 
 	L.SetGlobal("SetAccuracy", L.NewFunction(itemAPI.setAccuracy))
 	L.SetGlobal("Accuracy", L.NewFunction(itemAPI.accuracy))
+
+	L.SetGlobal("SetGunRange", L.NewFunction(itemAPI.setGunRange))
+	L.SetGlobal("GunRange", L.NewFunction(itemAPI.gunRange))
 }

@@ -5,7 +5,7 @@
 
 -Explosion for beefeye
 
-x-Make worms follow player and spawn on some phases
+X-Make worms follow player and spawn on some phases
 
 -Worm attack
 -Beefeye attack
@@ -14,16 +14,18 @@ x-Make worms follow player and spawn on some phases
 
 -Menu
 
--Item pickup screen thing
+-Item pickup screen thing?
 -Item description
+-Item API Timers
 
 -Rewrite pathfinding to be smoother between nodes
 -Pathfinding bug with the top wall
--Phases x and y are flipped
+-Phases x and y are flipped?
+-Phase bug [in discord]
 
--Fix bug with pathfinding where path processes lock when no path can be made (timer?)
+-Fix bug with pathfinding where path processes lock when no path can be made (timer for completion?)
 
--Bullet range
+X-Bullet range
 
 -Make gibs in a global gibs list, same with blood
 --When gibs are done being emitted, delete gibhandler and blood emitter

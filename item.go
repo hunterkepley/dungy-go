@@ -150,6 +150,7 @@ func (i *Item) init() {
 		newVec2i(spriteMax.x-spriteMin.x, spriteMax.y-spriteMin.y),
 		i.image,
 	)
+	i.size = i.sprite.size
 }
 
 func (i *Item) render(screen *ebiten.Image) {

@@ -146,21 +146,21 @@ func (p *Phases) phase() {
 // PHASES -- May move to another file? Maybe it's own filetype and parser?
 
 func (p *Phases) makePhases() {
-	testTilePosition := image.Rect(102, 0, 118, 17)
+	beefEyeTile := image.Rect(119, 0, 135, 17)
 	p.addPhaseChunk(
 		[]PhaseTile{
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
 		},
 		[]PhaseEnemy{
 			{
@@ -178,16 +178,17 @@ func (p *Phases) makePhases() {
 			"    ",
 		},
 	)
+	wormTile := image.Rect(102, 0, 118, 17)
 	p.addPhaseChunk(
 		[]PhaseTile{
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
-			createPhaseTile(SmallTile, itileSpritesheet, testTilePosition, true),
+			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
 		},
 		[]PhaseEnemy{
 			{

@@ -8,9 +8,6 @@ import (
 	pathfinding "github.com/xarg/gopathfinding"
 )
 
-// TODO: Make it so animations store if they play forwards or backwards in themselves
-// TODO: Make it so that the beefy guy explodes before dying completely
-
 // BeefEyeAnimations is the animations
 type BeefEyeAnimations struct {
 	walkSide Animation

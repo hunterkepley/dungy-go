@@ -28,3 +28,6 @@ x-Make worms follow player and spawn on some phases
 -Make gibs in a global gibs list, same with blood
 --When gibs are done being emitted, delete gibhandler and blood emitter
 --?Maybe delete gibhandler in general?
+
+-Knockback on enemies!
+-Temporary attack animations for enemies and design attacks

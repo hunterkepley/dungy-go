@@ -152,7 +152,7 @@ func (b *BulletGlow) render(screen *ebiten.Image, glowSprite *Sprite) {
 }
 
 func (b *BulletGlow) update(position Vec2f, rotation float64) {
-	b.size = newVec2i(b.sprite.size.x, b.sprite.size.y)
+	b.size = newVec2i(b.sprite.size.x, b.sprite.size.y) // Useless for now
 	b.position = position
 	b.rotation = rotation
 }
@@ -162,10 +162,11 @@ type Bullet struct {
 	position Vec2f
 	size     Vec2i
 
-	velocity    Vec2f
-	rotation    float64
-	storedAngle float64
-	speed       float64
+	velocity          Vec2f
+	rotation          float64
+	storedAngle       float64
+	speed             float64
+	distanceTravelled float64 // How far has the bullet travelled?
 
 	collisionRect image.Rectangle
 
@@ -253,6 +254,11 @@ func (b *Bullet) update(game *Game) {
 		int(b.position.x)+b.size.x,
 		int(b.position.y)+b.size.y,
 	)
+
+	b.distanceTravelled++
+	if b.distanceTravelled >= gameReference.player.gunRange {
+		b.destroy = true
+	}
 
 }
 

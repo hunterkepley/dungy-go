@@ -42,27 +42,9 @@ func (g *Gib) update(game *Game) {
 
 			notInWall = false
 			g.canMove = false
-			if notInWall {
-				g.velocity.x *= -1
-				g.velocity.y *= -1
-			}
 		}
 		if notInWall {
-			// If positive, subtract until 0
-			if g.velocity.x != 0 {
-				if g.velocity.x > 0 {
-					g.velocity.x--
-				} else if g.velocity.x < 0 { // Negative
-					g.velocity.y++
-				}
-			}
-			if g.velocity.y != 0 {
-				if g.velocity.y > 0 {
-					g.velocity.y--
-				} else if g.velocity.y < 0 { // Negative
-					g.velocity.y++
-				}
-			}
+
 			g.position.x += float64(g.velocity.x)
 			g.position.y += float64(g.velocity.y)
 			g.distanceAllowed--
@@ -100,17 +82,19 @@ func createGib(position Vec2f,
 	subImage image.Rectangle,
 	image *ebiten.Image) Gib {
 
-	size := newVec2i(subImage.Max.X-subImage.Min.X, subImage.Max.Y-subImage.Min.Y)
+	bloodSpawnTimer := 10.
+
+	size := newVec2i((subImage.Max.X-subImage.Min.X)+8, (subImage.Max.Y-subImage.Min.Y)+8)
 	return Gib{
-		position,
-		size,
-		randomVelocity,
-		createBloodEmitter(position, 5, size, ibloodSpritesheet),
-		distanceAllowed,
-		true,
-		rotation,
-		subImage,
-		image,
+		position:        position,
+		size:            size,
+		velocity:        randomVelocity,
+		bloodEmitter:    createBloodEmitter(position, bloodSpawnTimer, size, ibloodSpritesheet),
+		distanceAllowed: distanceAllowed,
+		canMove:         true,
+		rotation:        rotation,
+		subImage:        subImage,
+		image:           image,
 	}
 }
 
@@ -137,18 +121,9 @@ func (g *GibHandler) explode(numberOfGibs int,
 	gibImage *ebiten.Image) {
 
 	for i := 0; i < numberOfGibs; i++ {
-		randomDistanceAllowed := 15 + rand.Intn(3)
+		randomDistanceAllowed := 3 + rand.Intn(10)
 		randomRotation := float64(rand.Intn(15))
-		randomVelocity := newVec2i(rand.Intn(10), rand.Intn(10)) // Random velocity
-		switch rand.Intn(4) {
-		case (0):
-			randomVelocity.x *= -1
-		case (1):
-			randomVelocity.y *= -1
-		case (2):
-			randomVelocity.x *= -1
-			randomVelocity.y *= -1
-		}
+		randomVelocity := newVec2i(-3+rand.Intn(6), -3+rand.Intn(6)) // Random velocity
 
 		// Get the subimage size and position for random gibs
 		subImageSize := newVec2i(subImage.Max.X-subImage.Min.X, subImage.Max.Y-subImage.Min.Y)

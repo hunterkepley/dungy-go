@@ -12,6 +12,17 @@ var (
 	astarChannel chan *paths.Path // Stores all channels for astar paths
 )
 
+/*
+
+Possible solution for waitgroup based crashes:
+
+Make a counter for how many concurrent processes are finished or running, then only
+reuse the waitgroup when when Wait has returned?
+
+Or multiple waitgroups? Every enemy could have one
+
+*/
+
 func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, end Rolumn) {
 	// This line creates a new Grid, comprised of Cells. The size is 10x10. By default, all Cells are
 	// walkable and have a cost of 1, and a blank character of ' '.

@@ -12,8 +12,9 @@ import (
 var (
 	displayInfo          bool = false
 	canChangeDisplayInfo bool = true          // If you can press f5 again
-	version                   = "0.2.3"       // Game version
+	version                   = "0.2.5"       // Game version
 	title                     = "UNRAY ALPHA" // Game title
+	devVersion                = true          // Is it in development or release?
 )
 
 func displayGameInfo(screen *ebiten.Image, player Player) {
@@ -25,7 +26,11 @@ func displayGameInfo(screen *ebiten.Image, player Player) {
 	screen.DrawImage(iUISpritesheet.SubImage(boxRect).(*ebiten.Image), op)
 	// Draw UNRAY V...
 	versionFontPosition := newVec2i(2, 10)
-	msg := fmt.Sprintf("%s v%s", title, version)
+	dev := ""
+	if devVersion {
+		dev = "d"
+	}
+	msg := fmt.Sprintf("%s v%s%s", title, version, dev)
 	text.Draw(screen, msg, mversionFont, versionFontPosition.x, versionFontPosition.y, color.NRGBA{255, 0, 0, 255})
 	// Draw info
 	tpsFontPosition := newVec2i(2, 20)

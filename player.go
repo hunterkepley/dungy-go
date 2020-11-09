@@ -638,7 +638,7 @@ func (p *Player) die(g *Game) {
 
 	g.gibHandlers = append(g.gibHandlers, gibHandler)
 
-	// Delete shadow
+	// TODO: Delete shadow
 	//removeShadow(g.shadows, p.shadow.id)
 
 	p.isDead = true

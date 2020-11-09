@@ -27,8 +27,14 @@ ACTIVE:
 -Temporary attack animations for enemies and design attacks
 
 -Get rid of big tiles?
--- They're kinda useless and just make certain things more difficult
+--They're kinda useless and just make certain things more difficult
 
+-Make as little information become initalized on enemy creation as possible
+--Spritesheets are a good example
+
+-Number of times played in animations [to play an animation X times before Y]
+
+-Gun heats up after a few shots and will damage you if it gets too hot (fire?) ???
 
 WORKING ON:
 

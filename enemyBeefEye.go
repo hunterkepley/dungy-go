@@ -12,12 +12,14 @@ import (
 type BeefEyeAnimations struct {
 	walkSide Animation
 	die      Animation
+	attack   Animation
 }
 
 // BeefEyeAnimationSpeeds is the animation speeds
 type BeefEyeAnimationSpeeds struct {
-	walk float64
-	die  float64
+	walk   float64
+	die    float64
+	attack float64
 }
 
 // BeefEye is a beefy eye type enemy
@@ -37,6 +39,7 @@ type BeefEye struct {
 	remove                 bool // Do we remove this enemy?
 	flipped                bool // Is the enemy flipped?
 	idle                   bool // Is the enemy idling?
+	attacking              bool // Is the enemy attacking?
 
 	shadow *Shadow // The shadow below the enemy
 
@@ -58,6 +61,7 @@ type BeefEye struct {
 func createBeefEye(position Vec2f, game *Game) *BeefEye {
 	walkSideSpritesheet := createSpritesheet(newVec2i(0, 23), newVec2i(234, 47), 9, ienemiesSpritesheet)
 	dieSpritesheet := createSpritesheet(newVec2i(0, 48), newVec2i(570, 71), 19, ienemiesSpritesheet)
+	attackSpritesheet := createSpritesheet(newVec2i(270, 48), newVec2i(570, 71), 10, ienemiesSpritesheet)
 
 	shadowRect := image.Rect(0, 231, 14, 237)
 	shadow := createShadow(shadowRect, iplayerSpritesheet, generateUniqueShadowID(game))
@@ -82,10 +86,12 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 		animations: BeefEyeAnimations{
 			walkSide: createAnimation(walkSideSpritesheet, ienemiesSpritesheet),
 			die:      createAnimation(dieSpritesheet, ienemiesSpritesheet),
+			attack:   createAnimation(attackSpritesheet, ienemiesSpritesheet),
 		},
 		animationSpeeds: BeefEyeAnimationSpeeds{
-			walk: 1.3,
-			die:  2.,
+			walk:   1.3,
+			die:    2.,
+			attack: 1.,
 		},
 
 		astarNodes:  []pathfinding.Node{},
@@ -132,8 +138,7 @@ func (b *BeefEye) update(game *Game) {
 		b.animation = b.animations.walkSide
 		b.animation.startForwards()
 		b.idle = false
-	}
-	if b.deathExplosion && !b.dying {
+	} else if b.deathExplosion && !b.dying {
 		b.dying = true
 		b.animation = b.animations.die
 		b.animation.startBackwards()
@@ -148,6 +153,8 @@ func (b *BeefEye) update(game *Game) {
 			b.deathExplosionFinished = true
 			b.deathExplosion = false
 		}
+	case b.animations.attack.id:
+		b.animation.update(b.animationSpeeds.attack)
 	}
 
 	if !b.dying {
@@ -171,6 +178,10 @@ func (b *BeefEye) update(game *Game) {
 		b.subImageRect = image.Rect(int(b.position.x), int(b.position.y), endPosition.x, endPosition.y)
 		b.center = newVec2f(b.position.x+float64(b.size.x)/2, b.position.y+float64(b.size.y)/2)
 	}
+
+	// Attack
+
+	b.attack(game)
 }
 
 func (b *BeefEye) isDead() bool {
@@ -189,7 +200,19 @@ func (b *BeefEye) isDead() bool {
 }
 
 func (b *BeefEye) attack(game *Game) {
+	if b.attacking {
+		if b.animation.finishedFirstPlay {
+			b.attacking = false
+			b.idle = true
+		}
+	} else if !b.attacking && isAABBCollision(game.player.getBoundsDynamic(), b.subImageRect) {
 
+		b.animation = b.animations.attack
+		b.animation.startBackwards()
+
+		b.attacking = true
+
+	}
 }
 
 func (b *BeefEye) getCenter() Vec2f {

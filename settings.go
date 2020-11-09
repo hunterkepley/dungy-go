@@ -15,6 +15,9 @@ type Settings struct {
 		Gibs       int  `yaml:"gibs"`
 		Fullscreen bool `yaml:"fullscreen"`
 	}
+	Audio struct {
+		MusicVolume float64 `yaml:"musicvolume:"`
+	}
 }
 
 func loadSettings(s *Settings) {

@@ -50,7 +50,7 @@ func (m *Music) play() {
 	volume := &effects.Volume{
 		Streamer: loop,
 		Base:     2,
-		Volume:   -4.0,
+		Volume:   gameReference.settings.Audio.MusicVolume,
 		Silent:   false,
 	}
 

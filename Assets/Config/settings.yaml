@@ -4,3 +4,9 @@ graphics:
   fullscreen: false # Whether or not the game should start in fullscreen
 
 # --- GRAPHICS SETTINGS
+
+# AUDIO SETTINGS ---
+audio:
+  musicVolume: -4.0 # Decibles difference on volume, -4 by default (loud music!)
+
+# --- AUDIO SETTINGS

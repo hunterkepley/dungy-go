@@ -7,13 +7,9 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-/*
+/* TODO: REMOVE GIB HANDLERS AFTER THEY FINISH SPAWNING GIBS
 
-TODO:
-
-REMOVE GIB HANDLERS AFTER THEY FINISH SPAWNING GIBS
-
-*/
+ */
 
 // Gib is random piece of a subimage that has a bloodEmitter
 type Gib struct {

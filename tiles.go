@@ -7,12 +7,8 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-/*
-
-TODO:
-
-Make tiles become holes?
-*/
+/* TODO: Make tiles become holes?
+ */
 
 /*this comment is here bc vscode go linter is trash and keeps making an extra / * every time I save*/
 

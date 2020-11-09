@@ -5,7 +5,6 @@ ACTIVE:
 
 -Explosion for beefeye
 -Worm attack
--Beefeye attack
 
 -Player death
 
@@ -13,8 +12,9 @@ ACTIVE:
 
 -Item pickup screen thing?
 -Item description
+-Item API Timers
 
--Rewrite pathfinding to be smoother between nodes
+-Rewrite pathfinding lerp to be smoother between nodes
 -Pathfinding bug with the top wall
 -Phases x and y are flipped?
 -Phase bug [in discord]
@@ -22,9 +22,6 @@ ACTIVE:
 -Make gibs in a global gibs list, same with blood
 --When gibs are done being emitted, delete gibhandler and blood emitter
 --?Maybe delete gibhandler in general?
-
--Knockback on enemies!
--Temporary attack animations for enemies and design attacks
 
 -Get rid of big tiles?
 --They're kinda useless and just make certain things more difficult
@@ -34,13 +31,14 @@ ACTIVE:
 
 -Number of times played in animations [to play an animation X times before Y]
 
--Gun heats up after a few shots and will damage you if it gets too hot (fire?) ???
+-?Gun heats up after a few shots and will damage you if it gets too hot (fire?) ???
 
 WORKING ON:
 
--Item API Timers
+-Beefeye attack
+-Temporary attack animations for enemies and design attacks
+-Knockback on enemies!
 -Fix bug with pathfinding where path processes lock when no path can be made (timer for completion?)
-
 
 FINISHED:
 

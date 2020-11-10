@@ -8,11 +8,28 @@ import (
 	pathfinding "github.com/xarg/gopathfinding"
 )
 
+// BeefEyeShockwave is each individual shockwave that can hit the player
+type BeefEyeShockwave struct {
+}
+
+// BeefEyeShockwaveHandler controls the shockwave that is emitted when the BeefEye attacks
+type BeefEyeShockwaveHandler struct {
+	shockwaves []BeefEyeShockwave
+}
+
 // BeefEyeAnimations is the animations
 type BeefEyeAnimations struct {
 	walkSide Animation
 	die      Animation
 	attack   Animation
+}
+
+func (b *BeefEyeShockwaveHandler) createShockwave(beefEye *BeefEye) {
+	numberOfWaves := 10
+
+	for i := 0; i < numberOfWaves; i++ {
+		b.shockwaves = append(b.shockwaves, BeefEyeShockwave{})
+	}
 }
 
 // BeefEyeAnimationSpeeds is the animation speeds
@@ -41,7 +58,8 @@ type BeefEye struct {
 	idle                   bool // Is the enemy idling?
 	attacking              bool // Is the enemy attacking?
 
-	shadow *Shadow // The shadow below the enemy
+	shadow           *Shadow                 // The shadow below the enemy
+	shockwaveHandler BeefEyeShockwaveHandler // The shockwave handler for when the BeefEye attacks
 
 	subImageRect image.Rectangle
 
@@ -144,6 +162,7 @@ func (b *BeefEye) update(game *Game) {
 		b.animation.startBackwards()
 	}
 
+	// Animation speeds and other specialities related to animations
 	switch b.animation.id {
 	case b.animations.walkSide.id:
 		b.animation.update(b.animationSpeeds.walk)
@@ -157,7 +176,7 @@ func (b *BeefEye) update(game *Game) {
 		b.animation.update(b.animationSpeeds.attack)
 	}
 
-	if !b.dying {
+	if !b.dying && !b.attacking {
 
 		// Move enemy
 		b.position.x += b.velocity.x
@@ -249,6 +268,10 @@ func (b *BeefEye) getMoveSpeed() float64 {
 
 func (b *BeefEye) getDying() bool {
 	return b.dying
+}
+
+func (b *BeefEye) getAttacking() bool {
+	return b.attacking
 }
 
 func (b *BeefEye) getPath() *paths.Path {

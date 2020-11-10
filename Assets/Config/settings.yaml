@@ -7,6 +7,6 @@ graphics:
 
 # AUDIO SETTINGS ---
 audio:
-  musicVolume: -4.0 # Decibles difference on volume, -4 by default (loud music!)
+  musicVolume: -4.0 # -/+ Decibles on volume, -4 by default (loud music!)
 
 # --- AUDIO SETTINGS

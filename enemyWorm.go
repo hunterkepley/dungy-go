@@ -35,6 +35,7 @@ type Worm struct {
 	remove                 bool // Do we remove this enemy?
 	flipped                bool // Is the enemy flipped?
 	idle                   bool // Is the enemy idling?
+	attacking              bool // Is the enemy attacking?
 
 	shadow *Shadow // The shadow below the enemy
 
@@ -188,6 +189,10 @@ func (w *Worm) getMoveSpeed() float64 {
 
 func (w *Worm) getDying() bool {
 	return w.dying
+}
+
+func (w *Worm) getAttacking() bool {
+	return w.attacking
 }
 
 func (w *Worm) getPath() *paths.Path {

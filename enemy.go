@@ -36,7 +36,8 @@ type Enemy interface {
 	getFlipped() bool                        // Is enemy flipped?
 	getSize() Vec2i
 	getMoveSpeed() float64
-	getDying() bool // Is the enemy dying?
+	getDying() bool     // Is the enemy dying?
+	getAttacking() bool // Is the enemy attacking currently?
 
 	// Mostly pathfinding stuff
 	getCanPathfind() bool // Can enemy find a path?
@@ -94,7 +95,7 @@ func updateEnemies(g *Game) {
 		}
 		g.enemies[e].update(g)
 
-		if !g.enemies[e].getDying() {
+		if !g.enemies[e].getDying() && !g.enemies[e].getAttacking() {
 			enemiesPathfinding(g, g.enemies[e])
 		}
 

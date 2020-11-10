@@ -62,7 +62,7 @@ func initPhases() Phases {
 		chunks: []PhaseChunk{},
 
 		timer:    1,
-		timerMax: 600,
+		timerMax: 1,
 	}
 
 	p.makePhases()
@@ -73,13 +73,13 @@ func initPhases() Phases {
 /*
  * This function handles the phase changes, or, the chunks of new maps that replace the current one
  *
- * Lots to do
  */
 func (p *Phases) phaseHandler() {
+	maxEnemies := 500
 	if p.timer > 0 {
 		p.timer--
 	} else {
-		if len(gameReference.enemies) < 500 {
+		if len(gameReference.enemies) < maxEnemies {
 			p.phase()
 		}
 		p.timer = p.timerMax
@@ -103,7 +103,7 @@ func (p *Phases) phase() {
 	chosenChunk := p.getRandomPhase()
 
 	// Choose random tile and get the index
-	_, index := getRandomTile(gameReference, Vec2i{len(chosenChunk.mapNodes[0]), len(chosenChunk.mapNodes[1])})
+	_, index := getRandomTile(gameReference, Vec2i{len(chosenChunk.mapNodes[0]) - 1, len(chosenChunk.mapNodes) - 1})
 
 	currentTile := Vec2i{0, 0}
 
@@ -169,7 +169,7 @@ func (p *Phases) makePhases() {
 			},
 			{
 				EBeefEye,
-				Vec2i{3, 3},
+				Vec2i{2, 3},
 			},
 		},
 		[]string{

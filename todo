@@ -17,7 +17,6 @@ ACTIVE:
 -Rewrite pathfinding lerp to be smoother between nodes
 -Pathfinding bug with the top wall
 -Phases x and y are flipped?
--Phase bug [in discord]
 
 -Make gibs in a global gibs list, same with blood
 --When gibs are done being emitted, delete gibhandler and blood emitter
@@ -45,3 +44,4 @@ FINISHED:
 
 X-Bullet range
 X-Make worms follow player and spawn on some phases
+X-Phase bug [in discord]

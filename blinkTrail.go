@@ -76,7 +76,7 @@ func createBlinkTrailSection(position Vec2f, direction Direction) BlinkTrailSect
 		animation:   &animation,
 		direction:   direction,
 
-		timeToLive: 20,
+		timeToLive: 25,
 
 		image: image,
 	}

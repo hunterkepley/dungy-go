@@ -30,23 +30,25 @@ type Gib struct {
 
 func (g *Gib) update(game *Game) {
 	notInWall := true
-	if g.distanceAllowed >= 0 {
-		if g.position.x <= 17+float64(g.size.x) ||
-			g.position.y <= 27 ||
-			g.position.x+float64(g.size.x) >= screenWidth-17-float64(g.size.x) ||
-			g.position.y+float64(g.size.y) >= screenHeight-17-float64(g.size.y) {
+	if g.canMove {
+		if g.distanceAllowed >= 0 {
+			if g.position.x <= 5+float64(g.size.x) ||
+				g.position.y <= 27 ||
+				g.position.x+float64(g.size.x) >= screenWidth-5 ||
+				g.position.y+float64(g.size.y) >= screenHeight-5 {
 
-			notInWall = false
+				notInWall = false
+				g.canMove = false
+			}
+			if notInWall {
+
+				g.position.x += float64(g.velocity.x)
+				g.position.y += float64(g.velocity.y)
+				g.distanceAllowed--
+			}
+		} else {
 			g.canMove = false
 		}
-		if notInWall {
-
-			g.position.x += float64(g.velocity.x)
-			g.position.y += float64(g.velocity.y)
-			g.distanceAllowed--
-		}
-	} else {
-		g.canMove = false
 	}
 }
 

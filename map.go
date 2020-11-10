@@ -54,7 +54,6 @@ func initMap(g *Game) {
 		)
 	}
 
-	// Redo later with a mapNode maker function? Or, manually until editor?
 	gameReference.maps[index].mapNodes = []string{
 		"                           ",
 		"                           ",

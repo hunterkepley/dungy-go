@@ -22,11 +22,12 @@ ACTIVE:
 -Make gibs in a global gibs list, same with blood
 --When gibs are done being emitted, delete gibhandler and blood emitter
 --?Maybe delete gibhandler in general?
+-Lower the gib/blood footprint
 
 -Get rid of big tiles?
 --They're kinda useless and just make certain things more difficult
 
--Make as little information become initalized on enemy creation as possible
+-Make as little information become initalized on enemy creation as possible (lower the enemy footprint)
 --Spritesheets are a good example
 
 -Number of times played in animations [to play an animation X times before Y]

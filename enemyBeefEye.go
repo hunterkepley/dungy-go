@@ -10,6 +10,16 @@ import (
 
 // BeefEyeShockwave is each individual shockwave that can hit the player
 type BeefEyeShockwave struct {
+	position Vec2f
+
+	velocity  Vec2f
+	moveSpeed Vec2f
+
+	animation          Animation
+	animationSpeed     float64
+	animationCanFinish bool
+
+	image *ebiten.Image
 }
 
 // BeefEyeShockwaveHandler controls the shockwave that is emitted when the BeefEye attacks
@@ -28,7 +38,13 @@ func (b *BeefEyeShockwaveHandler) createShockwave(beefEye *BeefEye) {
 	numberOfWaves := 10
 
 	for i := 0; i < numberOfWaves; i++ {
-		b.shockwaves = append(b.shockwaves, BeefEyeShockwave{})
+		b.shockwaves = append(b.shockwaves, BeefEyeShockwave{
+			position: beefEye.center,
+
+			moveSpeed: newVec2f(10, 10),
+
+			image: ienemiesSpritesheet,
+		})
 	}
 }
 
@@ -90,13 +106,9 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 		velocity:  newVec2f(0, 0),
 		moveSpeed: 1.1,
 
-		health:                 15,
-		maxHealth:              15,
-		dead:                   false,
-		idle:                   true,
-		deathExplosion:         false,
-		deathExplosionFinished: false,
-		dying:                  false,
+		health:    15,
+		maxHealth: 15,
+		idle:      true,
 
 		shadow: &shadow,
 
@@ -114,7 +126,6 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 
 		astarNodes:  []pathfinding.Node{},
 		canPathfind: true,
-		pathFinding: false,
 
 		image: ienemiesSpritesheet,
 	}

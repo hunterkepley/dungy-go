@@ -127,7 +127,7 @@ func (g *Game) Init() {
 
 	// Obviously, temporary
 	g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
-	g.enemies = append(g.enemies, Enemy(createWorm(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
+	//g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
 
 	// State starts in game [temporary]
 	g.state = 1

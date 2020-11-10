@@ -219,18 +219,20 @@ func (b *BeefEye) isDead() bool {
 }
 
 func (b *BeefEye) attack(game *Game) {
-	if b.attacking {
-		if b.animation.finishedFirstPlay {
-			b.attacking = false
-			b.idle = true
+	if !b.dying {
+		if b.attacking {
+			if b.animation.finishedFirstPlay {
+				b.attacking = false
+				b.idle = true
+			}
+		} else if !b.attacking && isAABBCollision(game.player.getBoundsDynamic(), b.subImageRect) {
+
+			b.animation = b.animations.attack
+			b.animation.startBackwards()
+
+			b.attacking = true
+
 		}
-	} else if !b.attacking && isAABBCollision(game.player.getBoundsDynamic(), b.subImageRect) {
-
-		b.animation = b.animations.attack
-		b.animation.startBackwards()
-
-		b.attacking = true
-
 	}
 }
 

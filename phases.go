@@ -10,14 +10,14 @@ import (
 // PhaseChunk is a chunk of a "map" to phase in randomly
 type PhaseChunk struct {
 	tiles    []PhaseTile
-	enemies  []PhaseEnemy
+	portal   Portal
 	mapNodes []string
 }
 
-func createPhaseChunk(tiles []PhaseTile, enemies []PhaseEnemy, mapNodes []string) PhaseChunk {
+func createPhaseChunk(tiles []PhaseTile, portal Portal, mapNodes []string) PhaseChunk {
 	return PhaseChunk{
 		tiles:    tiles,
-		enemies:  enemies,
+		portal:   portal,
 		mapNodes: mapNodes,
 	}
 }
@@ -30,12 +30,6 @@ type PhaseTile struct {
 
 	finishedMoving bool // Whether or not the tile moved down then up like it should
 	empty          bool // Whether or not this tile actually changes
-}
-
-// PhaseEnemy is a stripped down Enemy struct for easier usage with the phase chunk struct
-type PhaseEnemy struct {
-	enemyType    EnemyType
-	tilePosition Vec2i
 }
 
 func createPhaseTile(tileType TileType, image *ebiten.Image, imageRect image.Rectangle, empty bool) PhaseTile {
@@ -61,8 +55,8 @@ func initPhases() Phases {
 	p := Phases{
 		chunks: []PhaseChunk{},
 
-		timer:    1,
-		timerMax: 1,
+		timer:    600,
+		timerMax: 600,
 	}
 
 	p.makePhases()
@@ -93,8 +87,8 @@ func (p *Phases) getRandomPhase() PhaseChunk {
 	return PhaseChunk{}
 }
 
-func (p *Phases) addPhaseChunk(tiles []PhaseTile, enemies []PhaseEnemy, mapNodes []string) {
-	c := createPhaseChunk(tiles, enemies, mapNodes)
+func (p *Phases) addPhaseChunk(tiles []PhaseTile, portal Portal, mapNodes []string) {
+	c := createPhaseChunk(tiles, portal, mapNodes)
 	p.chunks = append(p.chunks, c)
 }
 
@@ -122,19 +116,9 @@ func (p *Phases) phase() {
 					gameReference.tiles[currentTile.x][currentTile.y].imageRect = chosenChunk.tiles[i+j].imageRect
 
 					chosenChunk.tiles[i+j].finishedMoving = true
-					// Enemies
-					for e := 0; e < len(chosenChunk.enemies); e++ {
-						if i == chosenChunk.enemies[e].tilePosition.x &&
-							j == chosenChunk.enemies[e].tilePosition.y {
 
-							generateEnemy(
-								chosenChunk.enemies[e].enemyType,
-								newVec2f(gameReference.tiles[currentTile.x][currentTile.y].position.x, gameReference.tiles[currentTile.x][currentTile.y].position.y),
-								gameReference,
-							)
-						}
+					// TODO: Portal
 
-					}
 				}
 
 			}
@@ -146,68 +130,42 @@ func (p *Phases) phase() {
 // PHASES -- May move to another file? Maybe it's own filetype and parser?
 
 func (p *Phases) makePhases() {
-	beefEyeTile := image.Rect(119, 0, 135, 17)
+	redTile := image.Rect(119, 0, 135, 17)
 	p.addPhaseChunk(
 		[]PhaseTile{
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, beefEyeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, redTile, true),
 		},
-		[]PhaseEnemy{
-			{
-				EBeefEye,
-				Vec2i{0, 0}, // Spawn on first tile
-			},
-			{
-				EBeefEye,
-				Vec2i{2, 3},
-			},
-		},
+		Portal{},
 		[]string{
 			"    ",
 			"    ",
 			"    ",
 		},
 	)
-	wormTile := image.Rect(102, 0, 118, 17)
+	orangeTile := image.Rect(102, 0, 118, 17)
 	p.addPhaseChunk(
 		[]PhaseTile{
-			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
-			createPhaseTile(SmallTile, itileSpritesheet, wormTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, orangeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, orangeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, orangeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, orangeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, orangeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, orangeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, orangeTile, true),
+			createPhaseTile(SmallTile, itileSpritesheet, orangeTile, true),
 		},
-		[]PhaseEnemy{
-			{
-				EWorm,
-				Vec2i{0, 0}, // Spawn on first tile
-			},
-			{
-				EWorm,
-				Vec2i{1, 1},
-			},
-			{
-				EWorm,
-				Vec2i{2, 0},
-			},
-			{
-				EWorm,
-				Vec2i{3, 1},
-			},
-		},
+		Portal{},
 		[]string{
 			"  ",
 			"  ",

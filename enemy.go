@@ -196,3 +196,7 @@ func renderEnemies(g *Game, screen *ebiten.Image) {
 func removeEnemy(slice []Enemy, e int) []Enemy {
 	return append(slice[:e], slice[e+1:]...)
 }
+
+func enemySpawnHandler(g *Game) {
+
+}

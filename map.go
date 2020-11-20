@@ -12,10 +12,8 @@ type Map struct {
 	phases   Phases
 }
 
-// I plan for this to end up loading map files just based off map names.
-// Most likely will be random like items except an even likelihood of every map
 func initMaps(g *Game) {
-	gameReference.maps = append(gameReference.maps, Map{}) // SpaceShip
+	gameReference.maps = append(gameReference.maps, Map{})
 	initMap(g)
 }
 

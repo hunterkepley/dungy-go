@@ -82,6 +82,7 @@ func createWorm(position Vec2f, game *Game) *Worm {
 
 		astarNodes:  []pathfinding.Node{},
 		pathFinding: false,
+		canPathfind: true,
 
 		image: ienemiesSpritesheet,
 	}

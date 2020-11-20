@@ -4,7 +4,6 @@ import (
 	"image"
 	_ "image/png"
 	"log"
-	"math/rand"
 
 	paths "github.com/SolarLune/paths"
 	"github.com/hajimehoshi/ebiten"
@@ -45,6 +44,8 @@ type Game struct {
 	borders          []Border
 	ui               []UI
 	maps             []Map
+
+	enemySpawnHandlerContext EnemySpawnHandlerContext // Holds info for spawning enemies
 
 	currentMap Map
 
@@ -125,10 +126,6 @@ func (g *Game) Init() {
 	// Make the astar path channel
 	astarChannel = make(chan *paths.Path, 500)
 
-	// Obviously, temporary
-	g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
-	//g.enemies = append(g.enemies, Enemy(createBeefEye(newVec2f(float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))), g)))
-
 	// State starts in game [temporary]
 	g.state = 1
 
@@ -143,6 +140,9 @@ func (g *Game) Init() {
 	if g.settings.Graphics.Fullscreen { // Enable fullscreen if enabled
 		ebiten.SetFullscreen(true)
 	}
+
+	// Enemy spawn timer
+	g.enemySpawnHandlerContext.spawnTimerMax = 10
 
 }
 

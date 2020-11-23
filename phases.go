@@ -38,8 +38,7 @@ func createPhaseTile(tileType TileType, image *ebiten.Image, imageRect image.Rec
 		image:     image,
 		imageRect: imageRect,
 
-		finishedMoving: false,
-		empty:          empty,
+		empty: empty,
 	}
 }
 
@@ -55,8 +54,8 @@ func initPhases() Phases {
 	p := Phases{
 		chunks: []PhaseChunk{},
 
-		timer:    600,
-		timerMax: 600,
+		timer:    200,
+		timerMax: 200,
 	}
 
 	p.makePhases()
@@ -99,6 +98,8 @@ func (p *Phases) phase() {
 	// Choose random tile and get the index
 	_, index := getRandomTile(gameReference, Vec2i{len(chosenChunk.mapNodes[0]) - 1, len(chosenChunk.mapNodes) - 1})
 
+	portalCounter := 0
+
 	currentTile := Vec2i{0, 0}
 
 	if len(chosenChunk.tiles) > 0 {
@@ -115,10 +116,17 @@ func (p *Phases) phase() {
 
 					gameReference.tiles[currentTile.x][currentTile.y].imageRect = chosenChunk.tiles[i+j].imageRect
 
-					chosenChunk.tiles[i+j].finishedMoving = true
+					// Portal
+					if portalCounter > 2 {
+						chosenChunk.portal = createPortal(Vec2f{
+							gameReference.tiles[currentTile.x][currentTile.y].position.x,
+							gameReference.tiles[currentTile.x][currentTile.y].position.y,
+						})
 
-					// TODO: Portal
-
+						gameReference.portals = append(gameReference.portals, chosenChunk.portal)
+						portalCounter = -100
+					}
+					portalCounter++
 				}
 
 			}

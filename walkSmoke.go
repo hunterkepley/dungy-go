@@ -135,7 +135,7 @@ func (w *WalkSmoke) render(screen *ebiten.Image) {
 		currentFrame.endPosition.y,
 	)
 
-	screen.DrawImage(w.image.SubImage(subImageRect).(*ebiten.Image), op) // Draw player
+	screen.DrawImage(w.image.SubImage(subImageRect).(*ebiten.Image), op)
 
 }
 

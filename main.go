@@ -44,6 +44,7 @@ type Game struct {
 	borders          []Border
 	ui               []UI
 	maps             []Map
+	portals          []Portal
 
 	enemySpawnHandlerContext EnemySpawnHandlerContext // Holds info for spawning enemies
 
@@ -176,6 +177,10 @@ func updateGame(screen *ebiten.Image, g *Game) {
 	// Update items
 	updateItems(g)
 
+	for i := 0; i < len(g.portals); i++ {
+		g.portals[i].update(g)
+	}
+
 	// Update enemies
 	updateEnemies(g)
 
@@ -215,9 +220,14 @@ func drawGame(screen *ebiten.Image, g *Game) {
 
 	renderItems(g, screen)
 
-	// Render shadows!
+	// Render shadows
 	for i := 0; i < len(g.shadows); i++ {
 		g.shadows[i].render(screen)
+	}
+
+	// Render portals
+	for i := 0; i < len(g.portals); i++ {
+		g.portals[i].render(screen)
 	}
 
 	// Render enemies behind player

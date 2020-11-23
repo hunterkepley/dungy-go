@@ -60,3 +60,12 @@ func createSpritesheet(startPosition Vec2i, endPosition Vec2i, numberOfSprites i
 func (s *Spritesheet) endPosition() Vec2i {
 	return newVec2i(s.startPosition.x+s.size.x, s.startPosition.y+s.size.y)
 }
+
+func (s *Spritesheet) getBounds() image.Rectangle {
+	return image.Rect(
+		s.startPosition.x,
+		s.startPosition.y,
+		s.startPosition.x+s.size.x,
+		s.startPosition.y+s.size.y,
+	)
+}

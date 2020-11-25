@@ -1,6 +1,9 @@
 package main
 
 import (
+	"image"
+	"math"
+
 	"github.com/hajimehoshi/ebiten"
 )
 
@@ -23,7 +26,41 @@ func createPortal(position Vec2f) Portal {
 }
 
 func (p *Portal) update(g *Game) {
+	if isAABBCollision(
+		image.Rect(int(p.position.x), int(p.position.y), int(p.position.x)+p.sprite.size.x, int(p.position.y)+p.sprite.size.y),
+		g.player.getBoundsStatic()) {
 
+		p.eatTiles(g)
+	}
+}
+
+func (p *Portal) eatTiles(g *Game) {
+	moveSpeed := 1.
+	for i := 0; i < len(g.tiles); i++ {
+		for j := 0; j < len(g.tiles[i]); j++ {
+			// Calculate movement using an imaginary vector :)
+			dx := p.position.x - g.tiles[i][j].position.x
+			dy := p.position.y - g.tiles[i][j].position.y
+
+			ln := math.Sqrt(dx*dx + dy*dy)
+
+			dx /= ln
+			dy /= ln
+
+			// Move towards portal
+			g.tiles[i][j].position.x += dx * moveSpeed
+			g.tiles[i][j].position.y += dy * moveSpeed
+
+			g.tiles[i][j].rotation = dx * dy // Rotation
+			if g.tiles[i][j].scale.x > 0 {
+				g.tiles[i][j].scale.x -= 0.005 // Scale
+			}
+			if g.tiles[i][j].scale.y > 0 {
+				g.tiles[i][j].scale.y -= 0.005 // Scale
+			}
+
+		}
+	}
 }
 
 func (p *Portal) render(screen *ebiten.Image) {

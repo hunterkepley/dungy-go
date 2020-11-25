@@ -45,6 +45,8 @@ type Tile struct {
 	position Vec2f
 	size     Vec2i
 	tileType TileType
+	rotation float64
+	scale    Vec2f
 
 	sprite    Sprite
 	image     *ebiten.Image // Spritesheet
@@ -77,6 +79,7 @@ func createTile(position Vec2f, tileType TileType, image *ebiten.Image) Tile {
 		position: position,
 		size:     size,
 		tileType: tileType,
+		scale:    Vec2f{1, 1},
 
 		sprite: sprite,
 		image:  image,
@@ -86,6 +89,8 @@ func createTile(position Vec2f, tileType TileType, image *ebiten.Image) Tile {
 func (t *Tile) render(screen *ebiten.Image) {
 	if t.tileType != Empty {
 		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Rotate(t.rotation)
+		op.GeoM.Scale(t.scale.x, t.scale.y)
 		op.GeoM.Translate(t.position.x, t.position.y)
 		op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
 		if t.imageRect.Empty() {

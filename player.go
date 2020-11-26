@@ -110,7 +110,7 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 		walkSpeed: walkSpeed,
 		runSpeed:  runSpeed,
 
-		health:    3,
+		health:    10,
 		maxHealth: health,
 
 		energy:               energy,

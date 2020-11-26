@@ -2,6 +2,7 @@ package main
 
 import (
 	"image"
+	"math"
 
 	paths "github.com/SolarLune/paths"
 	"github.com/hajimehoshi/ebiten"
@@ -148,32 +149,40 @@ func enemiesPathfinding(g *Game, e Enemy) {
 			if len(e.getPath().Cells)-1 == e.getPath().CurrentIndex {
 				e.setCanPathfind(true)
 			} else {
-				z := e.getSize().x
-				if e.getSize().y > e.getSize().x {
-					z = e.getSize().y
-				}
-				ease := z // How much give the engine gives to 'reaching' a node
 
-				finished := newVec2b(false, false)
+				finished := false
 				if len(e.getPath().Cells) > 0 {
-					if int(e.getPosition().x) < (e.getPath().Current().X*smallTileSize.x - ease) {
-						e.setPosition(Vec2f{e.getPosition().x + e.getMoveSpeed(), e.getPosition().y})
-					} else if int(e.getPosition().x) > (e.getPath().Current().X*smallTileSize.x + ease) {
-						e.setPosition(Vec2f{e.getPosition().x - e.getMoveSpeed(), e.getPosition().y})
-					} else {
-						finished.x = true
-					}
+					// Calculate movement using an imaginary vector :)
+					dx := float64(e.getPath().Current().X*smallTileSize.x) - e.getCenter().x
+					dy := float64(e.getPath().Current().Y*smallTileSize.y) - e.getCenter().y
 
-					if int(e.getPosition().y) < (e.getPath().Current().Y*smallTileSize.y - ease) {
-						e.setPosition(Vec2f{e.getPosition().x, e.getPosition().y + e.getMoveSpeed()})
-					} else if int(e.getPosition().y) > (e.getPath().Current().Y*smallTileSize.y + ease) {
-						e.setPosition(Vec2f{e.getPosition().x, e.getPosition().y - e.getMoveSpeed()})
-					} else {
-						finished.y = true
+					ln := math.Sqrt(dx*dx + dy*dy)
+
+					dx /= ln
+					dy /= ln
+
+					// Move towards portal
+					e.setPosition(Vec2f{e.getPosition().x + dx*e.getMoveSpeed(), e.getPosition().y + dy*e.getMoveSpeed()})
+
+					if isAABBCollision(
+						image.Rect(
+							int(e.getPosition().x),
+							int(e.getPosition().y),
+							int(e.getPosition().x)+e.getSize().x,
+							int(e.getPosition().y)+e.getSize().y,
+						),
+						image.Rect(
+							e.getPath().Current().X*smallTileSize.x,
+							e.getPath().Current().Y*smallTileSize.y,
+							e.getPath().Current().X*smallTileSize.x+smallTileSize.x,
+							e.getPath().Current().Y*smallTileSize.y+smallTileSize.y,
+						),
+					) {
+						finished = true
 					}
 				}
 
-				if finished.x && finished.y {
+				if finished {
 					if e.getPath().AtEnd() {
 						if e.getPath().AtEnd() {
 							e.setCanPathfind(true)

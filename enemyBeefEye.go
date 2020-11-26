@@ -2,6 +2,7 @@ package main
 
 import (
 	"image"
+	"math"
 
 	paths "github.com/SolarLune/paths"
 	"github.com/hajimehoshi/ebiten"
@@ -13,13 +14,72 @@ type BeefEyeShockwave struct {
 	position Vec2f
 
 	velocity  Vec2f
-	moveSpeed Vec2f
+	moveSpeed float64
+	size      Vec2i
 
-	animation          Animation
-	animationSpeed     float64
-	animationCanFinish bool
+	animation      Animation
+	spritesheet    Spritesheet
+	animationSpeed float64
+	destroy        bool
+	damage         int
 
-	image *ebiten.Image
+	subImageRect image.Rectangle
+	image        *ebiten.Image
+}
+
+func (b *BeefEyeShockwave) update(beefEye BeefEye, i int) {
+	animationSpeed := 0.7
+
+	go func() {
+		if isAABBCollision(
+			image.Rect(int(b.position.x), int(b.position.y), int(b.position.x)+b.size.x, int(b.position.y)+b.size.y),
+			image.Rect(
+				int(gameReference.player.position.x),
+				int(gameReference.player.position.y),
+				int(gameReference.player.position.x)+gameReference.player.staticSize.x,
+				int(gameReference.player.position.y)+gameReference.player.staticSize.y,
+			),
+		) {
+			b.destroy = true
+			gameReference.player.health -= b.damage
+		}
+	}()
+
+	vec := Vec2f{math.Cos(float64(i)), math.Sin(float64(i))}
+
+	// Move away from beefEye
+	b.position.x += vec.x * b.moveSpeed
+	b.position.y += vec.y * b.moveSpeed
+
+	b.animation.update(animationSpeed)
+
+	if b.animation.finishedFirstPlay {
+		b.destroy = true
+	}
+
+}
+
+func (b *BeefEyeShockwave) render(screen *ebiten.Image) {
+	if len(b.animation.spritesheet.sprites) == 0 {
+		return
+	}
+	op := &ebiten.DrawImageOptions{}
+
+	// ROTATE & FLIP
+	op.GeoM.Translate(float64(0-b.size.x)/2, float64(0-b.size.y)/2)
+	// Rotate here
+	op.GeoM.Translate(float64(b.size.x)/2, float64(b.size.y)/2)
+	b.subImageRect = image.Rect(
+		b.animation.spritesheet.sprites[b.animation.currentFrame].startPosition.x,
+		b.animation.spritesheet.sprites[b.animation.currentFrame].startPosition.y,
+		b.animation.spritesheet.sprites[b.animation.currentFrame].endPosition.x,
+		b.animation.spritesheet.sprites[b.animation.currentFrame].endPosition.y,
+	)
+	// POSITION
+	op.GeoM.Translate(float64(b.position.x), float64(b.position.y))
+	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+
+	screen.DrawImage(b.image.SubImage(b.subImageRect).(*ebiten.Image), op) // Draw enemy
 }
 
 // BeefEyeShockwaveHandler controls the shockwave that is emitted when the BeefEye attacks
@@ -27,25 +87,51 @@ type BeefEyeShockwaveHandler struct {
 	shockwaves []BeefEyeShockwave
 }
 
+func (b *BeefEyeShockwaveHandler) init(beefEye *BeefEye, numShockwaves int) {
+
+	spritesheet := createSpritesheet(Vec2i{0, 71}, Vec2i{39, 84}, 3, ienemiesSpritesheet)
+
+	for i := 0; i < numShockwaves; i++ {
+		b.shockwaves = append(b.shockwaves, BeefEyeShockwave{
+			position: Vec2f{beefEye.center.x - float64(spritesheet.size.x/spritesheet.numberOfSprites/2), beefEye.center.y - float64(spritesheet.size.y/spritesheet.numberOfSprites/2)},
+
+			moveSpeed: 2,
+
+			damage: 1,
+
+			spritesheet: spritesheet,
+
+			animation: createAnimation(spritesheet, ienemiesSpritesheet),
+
+			image: ienemiesSpritesheet,
+		})
+	}
+}
+
+func (b *BeefEyeShockwaveHandler) render(screen *ebiten.Image) {
+	for i := 0; i < len(b.shockwaves); i++ {
+		b.shockwaves[i].render(screen)
+	}
+}
+
+func (b *BeefEyeShockwaveHandler) update(beefEye BeefEye) {
+	for i := 0; i < len(b.shockwaves); i++ {
+		b.shockwaves[i].update(beefEye, i)
+		if b.shockwaves[i].destroy {
+			b.shockwaves = removeShockwave(b.shockwaves, i)
+		}
+	}
+}
+
+func removeShockwave(slice []BeefEyeShockwave, b int) []BeefEyeShockwave {
+	return append(slice[:b], slice[b+1:]...)
+}
+
 // BeefEyeAnimations is the animations
 type BeefEyeAnimations struct {
 	walkSide Animation
 	die      Animation
 	attack   Animation
-}
-
-func (b *BeefEyeShockwaveHandler) createShockwave(beefEye *BeefEye) {
-	numberOfWaves := 10
-
-	for i := 0; i < numberOfWaves; i++ {
-		b.shockwaves = append(b.shockwaves, BeefEyeShockwave{
-			position: beefEye.center,
-
-			moveSpeed: newVec2f(10, 10),
-
-			image: ienemiesSpritesheet,
-		})
-	}
 }
 
 // BeefEyeAnimationSpeeds is the animation speeds
@@ -121,7 +207,7 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 		animationSpeeds: BeefEyeAnimationSpeeds{
 			walk:   1.3,
 			die:    2.,
-			attack: 1.,
+			attack: 3.,
 		},
 
 		astarNodes:  []pathfinding.Node{},
@@ -157,6 +243,8 @@ func (b *BeefEye) render(screen *ebiten.Image) {
 	// POSITION
 	op.GeoM.Translate(float64(b.position.x), float64(b.position.y))
 	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+
+	b.shockwaveHandler.render(screen)
 
 	screen.DrawImage(b.image.SubImage(b.subImageRect).(*ebiten.Image), op) // Draw enemy
 }
@@ -230,11 +318,13 @@ func (b *BeefEye) isDead() bool {
 }
 
 func (b *BeefEye) attack(game *Game) {
+	b.shockwaveHandler.update(*b)
 	if !b.dying {
 		if b.attacking {
 			if b.animation.finishedFirstPlay {
 				b.attacking = false
 				b.idle = true
+				b.shockwaveHandler.init(b, 21)
 			}
 		} else if !b.attacking && isAABBCollision(game.player.getBoundsDynamic(), b.subImageRect) {
 

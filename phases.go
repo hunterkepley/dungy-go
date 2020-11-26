@@ -54,8 +54,8 @@ func initPhases() Phases {
 	p := Phases{
 		chunks: []PhaseChunk{},
 
-		timer:    200,
-		timerMax: 200,
+		timer:    1000,
+		timerMax: 1000,
 	}
 
 	p.makePhases()

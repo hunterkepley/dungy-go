@@ -53,10 +53,10 @@ func (p *Portal) eatTiles(g *Game) {
 
 			g.tiles[i][j].rotation = dx * dy // Rotation
 			if g.tiles[i][j].scale.x > 0 {
-				g.tiles[i][j].scale.x -= 0.005 // Scale
+				g.tiles[i][j].scale.x -= 0.004 // Scale
 			}
 			if g.tiles[i][j].scale.y > 0 {
-				g.tiles[i][j].scale.y -= 0.005 // Scale
+				g.tiles[i][j].scale.y -= 0.004 // Scale
 			}
 
 		}

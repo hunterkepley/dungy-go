@@ -124,12 +124,12 @@ func enemiesPathfinding(g *Game, e Enemy) {
 
 	if e.getCanPathfind() {
 		start := newRolumn(
-			int(e.getPosition().x),
-			int(e.getPosition().y),
+			int(e.getPosition().x+float64(e.getSize().x/2)),
+			int(e.getPosition().y+float64(e.getSize().y/2)),
 		)
 		end := newRolumn(
-			int(g.player.position.x),
-			int(g.player.position.y),
+			int(g.player.position.x)+g.player.staticSize.x/2,
+			int(g.player.position.y)+g.player.staticSize.y/2,
 		)
 
 		// Make a path concurrently
@@ -140,7 +140,9 @@ func enemiesPathfinding(g *Game, e Enemy) {
 
 		// Get the path if it's finished
 		e.setPath(*<-astarChannel)
-		e.setCanPathfind(false)
+		if len(e.getPath().Cells) > 4 {
+			e.setCanPathfind(false)
+		}
 	} else if !e.getPathfinding() && !e.getCanPathfind() {
 
 		if e.getPath() != nil {
@@ -153,7 +155,7 @@ func enemiesPathfinding(g *Game, e Enemy) {
 				finished := false
 				if len(e.getPath().Cells) > 0 {
 					// Calculate movement using an imaginary vector :)
-					dx := float64(e.getPath().Current().X*smallTileSize.x) - e.getCenter().x
+					dx := float64(e.getPath().Current().X*smallTileSize.x) - e.getPosition().x
 					dy := float64(e.getPath().Current().Y*smallTileSize.y) - e.getCenter().y
 
 					ln := math.Sqrt(dx*dx + dy*dy)
@@ -163,6 +165,8 @@ func enemiesPathfinding(g *Game, e Enemy) {
 
 					// Move towards portal
 					e.setPosition(Vec2f{e.getPosition().x + dx*e.getMoveSpeed(), e.getPosition().y + dy*e.getMoveSpeed()})
+
+					g.cursor.position = Vec2i{e.getPath().Current().X * smallTileSize.x, e.getPath().Current().Y * smallTileSize.y}
 
 					if isAABBCollision(
 						image.Rect(

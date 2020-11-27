@@ -14,7 +14,7 @@ type Map struct {
 
 func initMaps(g *Game) {
 	gameReference.maps = append(gameReference.maps, Map{})
-	initMapSpaceship(g)
+	g.maps[0] = initMapSpaceship() // Spaceship
 }
 
 func updateMaps() {
@@ -36,7 +36,7 @@ func (m *Map) update() {
 func (m *Map) render(screen *ebiten.Image) {
 }
 
-func initMapSpaceship(g *Game) {
+func initMapSpaceship() Map {
 	index := 0
 	gameReference.maps[index].phases = initPhases()
 	// Lights
@@ -71,5 +71,5 @@ func initMapSpaceship(g *Game) {
 		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 	}
 
-	g.currentMap = gameReference.maps[index]
+	return gameReference.maps[index]
 }

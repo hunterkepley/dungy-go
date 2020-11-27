@@ -23,6 +23,8 @@ type BeefEyeShockwave struct {
 	destroy        bool
 	damage         int
 
+	attackRadius float64 // When the player is in this radius, the enemy will attack!
+
 	subImageRect image.Rectangle
 	image        *ebiten.Image
 }

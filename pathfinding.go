@@ -52,6 +52,11 @@ func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, en
 	// This gets a new Path (a slice of Cells) from the starting Cell to the destination Cell. If the path's length
 	// is greater than 0, then it was successful.
 	for {
+		// Break out with a nil path if unable to path (start/end on non-walkable cells)
+		if !mapLayout.Get(start.column, start.row).Walkable || !mapLayout.Get(end.column, end.row).Walkable {
+			channel <- nil
+			return
+		}
 		p := mapLayout.GetPath(mapLayout.Get(start.column, start.row), mapLayout.Get(end.column, end.row), true)
 		if p != nil {
 			channel <- p

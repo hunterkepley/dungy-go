@@ -24,8 +24,6 @@ type BeefEyeShockwave struct {
 	destroy        bool
 	damage         int
 
-	attackRadius float64 // When the player is in this radius, the enemy will attack!
-
 	subImageRect image.Rectangle
 	image        *ebiten.Image
 }
@@ -158,10 +156,11 @@ type BeefEye struct {
 	deathExplosion         bool // When the death explosion is playing
 	deathExplosionFinished bool // When the death explosion is finished
 	dying                  bool
-	remove                 bool // Do we remove this enemy?
-	flipped                bool // Is the enemy flipped?
-	idle                   bool // Is the enemy idling?
-	attacking              bool // Is the enemy attacking?
+	remove                 bool    // Do we remove this enemy?
+	flipped                bool    // Is the enemy flipped?
+	idle                   bool    // Is the enemy idling?
+	attacking              bool    // Is the enemy attacking?
+	attackRadius           float64 // When the player is in this radius, the enemy will attack!
 
 	shadow           *Shadow                 // The shadow below the enemy
 	shockwaveHandler BeefEyeShockwaveHandler // The shockwave handler for when the BeefEye attacks
@@ -195,9 +194,10 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 		velocity:  newVec2f(0, 0),
 		moveSpeed: 1.1,
 
-		health:    15,
-		maxHealth: 15,
-		idle:      true,
+		health:       15,
+		maxHealth:    15,
+		idle:         true,
+		attackRadius: 30,
 
 		shadow: &shadow,
 
@@ -329,7 +329,7 @@ func (b *BeefEye) attack(game *Game) {
 				b.idle = true
 				b.shockwaveHandler.init(b, 21)
 			}
-		} else if !b.attacking && isAABBCollision(game.player.getBoundsDynamic(), b.subImageRect) {
+		} else if !b.attacking && isCircularCollision(game.player.getBoundsDynamic(), image.Rect(int(b.center.x-b.attackRadius), int(b.center.y-b.attackRadius), int(b.center.x+b.attackRadius), int(b.center.y+b.attackRadius))) {
 
 			b.animation = b.animations.attack
 			b.animation.startBackwards()

@@ -19,20 +19,27 @@ func isAABBCollision(a image.Rectangle, b image.Rectangle) bool {
 
 // isCircularCollision checks whether or not a collides with b using circles based on the radius of the largest w/h of the rects
 func isCircularCollision(a image.Rectangle, b image.Rectangle) bool {
-	dx := a.Min.X + a.Size().X/2 - b.Min.X + b.Size().X/2
-	dy := a.Min.Y + a.Size().Y/2 - b.Min.Y + b.Size().Y/2
-	distance := math.Sqrt(float64(dx*dx + dy*dy))
 
-	r1 := a.Size().X
-	if a.Size().Y > r1 {
-		r1 = a.Size().Y
+	c1 := Vec2i{a.Min.X + (a.Max.X-a.Min.X)/2, a.Min.Y + (a.Max.Y-a.Min.Y)/2}
+	c2 := Vec2i{b.Min.X + (b.Max.X-b.Min.X)/2, b.Min.Y + (b.Max.Y-b.Min.Y)/2}
+
+	distance := math.Sqrt(float64(((c1.x - c2.x) * (c1.x - c2.x)) + ((c1.y - c2.y) * (c1.y - c2.y))))
+
+	r1 := a.Max.X - a.Min.X
+	if a.Max.Y-a.Min.Y > r1 {
+		r1 = a.Max.Y - a.Min.Y
 	}
-	r2 := b.Size().X
-	if b.Size().Y > r2 {
-		r2 = b.Size().Y
+
+	r2 := b.Max.X - b.Min.X
+	if b.Max.Y-b.Min.Y > r1 {
+		r2 = b.Max.Y - b.Min.Y
 	}
+	r2 /= 2
+	r1 /= 2
+
 	if distance < float64(r1+r2) {
 		return true
 	}
+
 	return false
 }

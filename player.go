@@ -548,6 +548,7 @@ func (p *Player) updateLevels(g *Game) {
 	if p.health < 0 {
 		p.health = 0
 	}
+	// DEATH
 	if p.health == 0 {
 		g.state = 0
 		p.die(g)

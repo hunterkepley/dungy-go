@@ -13,8 +13,9 @@ type Map struct {
 }
 
 func initMaps(g *Game) {
-	gameReference.maps = append(gameReference.maps, Map{})
+	g.maps = append(gameReference.maps, Map{})
 	g.maps[0] = initMapSpaceship() // Spaceship
+	g.currentMap = g.maps[0]
 }
 
 func updateMaps() {

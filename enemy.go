@@ -166,8 +166,6 @@ func enemiesPathfinding(g *Game, e Enemy) {
 					// Move towards portal
 					e.setPosition(Vec2f{e.getPosition().x + dx*e.getMoveSpeed(), e.getPosition().y + dy*e.getMoveSpeed()})
 
-					g.cursor.position = Vec2i{e.getPath().Current().X * smallTileSize.x, e.getPath().Current().Y * smallTileSize.y}
-
 					if isAABBCollision(
 						image.Rect(
 							int(e.getPosition().x),

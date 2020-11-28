@@ -193,7 +193,7 @@ func (p *Player) update(g *Game) {
 		p.animation.update(p.animationSpeeds.running)
 	}
 	p.input(g)
-	go p.updateLevels()
+	go p.updateLevels(g)
 
 	// Blink update
 	p.updateBlinkTrail()
@@ -237,6 +237,7 @@ func (p *Player) update(g *Game) {
 
 	if p.isDead {
 		p.isDrawable = false
+		p.shadow.isDrawable = false
 	}
 
 }
@@ -553,9 +554,12 @@ func (p *Player) wallCollisions() {
 }
 
 // Updates health, energy, maybe etc
-func (p *Player) updateLevels() {
+func (p *Player) updateLevels(g *Game) {
 	if p.health < 0 {
 		p.health = 0
+	}
+	if p.health == 0 {
+		p.die(g)
 	}
 	if p.health > p.maxHealth {
 		p.health = p.maxHealth

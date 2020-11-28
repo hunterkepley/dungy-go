@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"math"
+	"math/rand"
 
 	paths "github.com/SolarLune/paths"
 	"github.com/hajimehoshi/ebiten"
@@ -97,7 +98,7 @@ func (b *BeefEyeShockwaveHandler) init(beefEye *BeefEye, numShockwaves int) {
 		b.shockwaves = append(b.shockwaves, BeefEyeShockwave{
 			position: Vec2f{beefEye.center.x - float64(spritesheet.size.x/spritesheet.numberOfSprites/2), beefEye.center.y - float64(spritesheet.size.y/spritesheet.numberOfSprites/2)},
 
-			moveSpeed: 2,
+			moveSpeed: rand.Float64() + 1.5,
 
 			damage: 1,
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"math"
 
@@ -11,6 +12,8 @@ import (
 type Portal struct {
 	position Vec2f
 
+	state int // 0 -> sucking tiles; 1 -> spewing tiles
+
 	sprite Sprite
 	image  *ebiten.Image
 }
@@ -20,6 +23,8 @@ func createPortal(position Vec2f) Portal {
 	return Portal{
 		position: position,
 
+		state: -1,
+
 		sprite: createSprite(Vec2i{21, 302}, Vec2i{34, 328}, Vec2i{13, 26}, image),
 		image:  image,
 	}
@@ -28,9 +33,16 @@ func createPortal(position Vec2f) Portal {
 func (p *Portal) update(g *Game) {
 	if isAABBCollision(
 		image.Rect(int(p.position.x), int(p.position.y), int(p.position.x)+p.sprite.size.x, int(p.position.y)+p.sprite.size.y),
-		g.player.getBoundsStatic()) {
+		g.player.getBoundsStatic()) && p.state == -1 {
 
+		p.state = 0
+	}
+	switch p.state {
+	case 0:
 		p.eatTiles(g)
+		g.player.position = p.position
+	case 1:
+
 	}
 }
 
@@ -59,6 +71,11 @@ func (p *Portal) eatTiles(g *Game) {
 				g.tiles[i][j].scale.y -= 0.004 // Scale
 			}
 
+			fmt.Println(g.tiles[i][j].scale.x)
+
+			if g.tiles[i][j].scale.x <= 0 || g.tiles[i][j].scale.y <= 0 {
+				p.state = 1
+			}
 		}
 	}
 }

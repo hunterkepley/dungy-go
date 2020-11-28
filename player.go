@@ -184,62 +184,61 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 }
 
 func (p *Player) update(g *Game) {
-	switch p.movement {
-	case (Idle):
-		p.animation.update(p.animationSpeeds.idle)
-	case (Walking):
-		p.animation.update(p.animationSpeeds.walking)
-	case (Running):
-		p.animation.update(p.animationSpeeds.running)
-	}
-	p.input(g)
-	go p.updateLevels(g)
+	if !p.isDead {
+		switch p.movement {
+		case (Idle):
+			p.animation.update(p.animationSpeeds.idle)
+		case (Walking):
+			p.animation.update(p.animationSpeeds.walking)
+		case (Running):
+			p.animation.update(p.animationSpeeds.running)
+		}
+		p.input(g)
+		go p.updateLevels(g)
 
-	// Blink update
-	p.updateBlinkTrail()
-	p.blinkTrail.update()
+		// Blink update
+		p.updateBlinkTrail()
+		p.blinkTrail.update()
 
-	// Item/Lua update
-	p.updateItems()
+		// Item/Lua update
+		p.updateItems()
 
-	// Gun update
-	p.gun.update(
-		newVec2f(p.position.x+float64(p.dynamicSize.x)/2, p.position.y+float64(p.dynamicSize.y)/2),
-		newVec2i(g.cursor.center.x, g.cursor.center.y),
-	)
+		// Gun update
+		p.gun.update(
+			newVec2f(p.position.x+float64(p.dynamicSize.x)/2, p.position.y+float64(p.dynamicSize.y)/2),
+			newVec2i(g.cursor.center.x, g.cursor.center.y),
+		)
 
-	// Set size
-	p.dynamicSize = p.animation.spritesheet.sprites[0].size
-	p.wallCollisions()
+		// Set size
+		p.dynamicSize = p.animation.spritesheet.sprites[0].size
+		p.wallCollisions()
 
-	// Check if drawable
-	if p.isDrawable == p.isBlinking {
-		p.isDrawable = !p.isDrawable
-		p.isConscious = !p.isConscious // No shoot or move while blink
-	}
+		// Check if drawable
+		if p.isDrawable == p.isBlinking {
+			p.isDrawable = !p.isDrawable
+			p.isConscious = !p.isConscious // No shoot or move while blink
+		}
 
-	p.shadow.isDrawable = p.isDrawable
-	p.shadow.update(p.position, p.dynamicSize)
-	g.lightHandler.lights[g.lightHandler.getLightIndex(p.lightID)].update(
-		newVec2f(
-			p.position.x+float64(p.staticSize.x/2),
-			p.position.y+float64(p.staticSize.y/2),
-		),
-		0,
-	)
+		p.shadow.isDrawable = p.isDrawable
+		p.shadow.update(p.position, p.dynamicSize)
+		g.lightHandler.lights[g.lightHandler.getLightIndex(p.lightID)].update(
+			newVec2f(
+				p.position.x+float64(p.staticSize.x/2),
+				p.position.y+float64(p.staticSize.y/2),
+			),
+			0,
+		)
 
-	spawnWalkSmoke := false
-	if p.movement == Running && p.isMoving {
-		spawnWalkSmoke = true
-	}
+		spawnWalkSmoke := false
+		if p.movement == Running && p.isMoving {
+			spawnWalkSmoke = true
+		}
 
-	p.walkSmokeEmitter.update(p.position, p.dynamicSize, p.direction, spawnWalkSmoke)
-
-	if p.isDead {
+		p.walkSmokeEmitter.update(p.position, p.dynamicSize, p.direction, spawnWalkSmoke)
+	} else {
 		p.isDrawable = false
 		p.shadow.isDrawable = false
 	}
-
 }
 
 func (p *Player) render(screen *ebiten.Image) {
@@ -550,7 +549,6 @@ func (p *Player) updateLevels(g *Game) {
 	}
 	// DEATH
 	if p.health == 0 {
-		g.state = 0
 		p.die(g)
 	}
 	if p.health > p.maxHealth {

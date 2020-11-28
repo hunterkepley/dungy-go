@@ -158,6 +158,8 @@ func enemiesPathfinding(g *Game, e Enemy) {
 		}
 	} else if !e.getPathfinding() && !e.getCanPathfind() {
 
+		// Pathfinding
+
 		if e.getPath() != nil {
 
 			// If path is finished, generate new one.

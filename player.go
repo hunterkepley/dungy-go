@@ -7,7 +7,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// Player is the player in the fuckin game I hate useless comments
+// Player is the player in the game
 type Player struct {
 	position Vec2f
 	//center   Vec2f
@@ -295,16 +295,6 @@ func (p *Player) input(g *Game) {
 	// Blink
 	p.blinkHandler()
 
-	// TEMPORARY
-	if ebiten.IsKeyPressed(ebiten.KeyY) {
-		p.energy++
-		p.die(gameReference)
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyU) {
-		p.health++
-	}
-	// TEMPORARY
-
 	// Mouse button input
 	p.mouseButtonInput(g)
 
@@ -559,6 +549,7 @@ func (p *Player) updateLevels(g *Game) {
 		p.health = 0
 	}
 	if p.health == 0 {
+		g.state = 0
 		p.die(g)
 	}
 	if p.health > p.maxHealth {

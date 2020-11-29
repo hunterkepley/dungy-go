@@ -4,6 +4,7 @@ import (
 	"image"
 	_ "image/png"
 	"log"
+	"math/rand"
 
 	paths "github.com/SolarLune/paths"
 	"github.com/hajimehoshi/ebiten"
@@ -142,7 +143,8 @@ func (g *Game) Init() {
 	}
 
 	// Enemy spawners
-	g.enemySpawners = append(g.enemySpawners, createEnemySpawner(g.currentMap.randomPosition(), EBeefEye, 10, image.Rect(31, 50, 59, 71)))
+	g.enemySpawners = append(g.enemySpawners, createEnemySpawner(g.currentMap.randomPosition(), EBeefEye, float64(rand.Intn(600)+60), image.Rect(31, 50, 59, 71)))
+	g.enemySpawners = append(g.enemySpawners, createEnemySpawner(g.currentMap.randomPosition(), EWorm, float64(rand.Intn(300)+50), image.Rect(0, 0, 17, 22)))
 
 }
 

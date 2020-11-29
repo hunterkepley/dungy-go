@@ -114,7 +114,7 @@ func (e *EnemySpawner) update(g *Game) {
 				case EWorm:
 					g.enemies = append(g.enemies, createWorm(e.position, g))
 				}
-				// TODO: RANDOMIZE
+
 				e.position = g.currentMap.randomPosition()
 				e.bits = createImageBits(e.position, e.subImage, e.image)
 

@@ -196,8 +196,8 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 		velocity:  newVec2f(0, 0),
 		moveSpeed: 1.1,
 
-		health:       15,
-		maxHealth:    15,
+		health:       35,
+		maxHealth:    35,
 		idle:         true,
 		attackRadius: 30,
 

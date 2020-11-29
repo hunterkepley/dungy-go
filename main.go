@@ -34,6 +34,7 @@ type Game struct {
 	cursor Cursor
 
 	enemies          []Enemy
+	enemySpawners    []EnemySpawner
 	items            []Item
 	gibHandlers      []GibHandler
 	bloodEmitters    []BloodEmitter
@@ -45,8 +46,6 @@ type Game struct {
 	ui               []UI
 	maps             []Map
 	portals          []Portal
-
-	enemySpawnHandlerContext EnemySpawnHandlerContext // Holds info for spawning enemies
 
 	currentMap Map
 
@@ -142,8 +141,8 @@ func (g *Game) Init() {
 		ebiten.SetFullscreen(true)
 	}
 
-	// Enemy spawn timer
-	g.enemySpawnHandlerContext.spawnTimerMax = 10
+	// Enemy spawners
+	g.enemySpawners = append(g.enemySpawners, createEnemySpawner(g.currentMap.randomPosition(), EBeefEye, 10, image.Rect(31, 50, 59, 71)))
 
 }
 
@@ -182,6 +181,9 @@ func updateGame(screen *ebiten.Image, g *Game) {
 	}
 
 	// Update enemies
+	for i := range g.enemySpawners {
+		g.enemySpawners[i].update(g)
+	}
 	updateEnemies(g)
 
 	// Update gib handlers
@@ -231,6 +233,9 @@ func drawGame(screen *ebiten.Image, g *Game) {
 	}
 
 	// Render enemies behind player
+	for _, s := range g.enemySpawners {
+		s.render(screen)
+	}
 	renderEnemies(g, screen)
 
 	// Render player

@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"math/rand"
+
 	"github.com/hajimehoshi/ebiten"
 )
 
@@ -35,6 +38,17 @@ func (m *Map) update() {
 }
 
 func (m *Map) render(screen *ebiten.Image) {
+}
+
+func (m *Map) randomPosition() Vec2f {
+	position := Vec2f{0, 0}
+	randomTile := Vec2i{0, 0}
+	for m.mapNodes[randomTile.x][randomTile.y] != ' ' {
+		randomTile = Vec2i{rand.Intn(len(m.mapNodes) - 2), rand.Intn(len(m.mapNodes[0]) - 2)}
+	}
+	position = Vec2f{float64(randomTile.y * smallTileSize.x), float64(randomTile.x * smallTileSize.y)}
+	fmt.Println(position)
+	return position
 }
 
 func initMapSpaceship() Map {

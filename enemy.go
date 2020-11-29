@@ -62,8 +62,6 @@ func generateEnemy(enemyType EnemyType, position Vec2f, g *Game) {
 
 func updateEnemies(g *Game) {
 
-	enemySpawnHandler(g)
-
 	for e := 0; e < len(g.enemies); e++ {
 		if e >= len(g.enemies) {
 			break
@@ -233,19 +231,4 @@ type EnemySpawnHandlerContext struct {
 
 func (e *EnemySpawnHandlerContext) resetTimer() {
 	e.spawnTimer = e.spawnTimerMax
-}
-
-func enemySpawnHandler(g *Game) {
-
-	if g.enemySpawnHandlerContext.spawnTimer > 0 {
-		g.enemySpawnHandlerContext.spawnTimer--
-	} else {
-		if ebiten.IsKeyPressed(ebiten.KeyO) {
-			g.enemies = append(g.enemies, createWorm(vec2f(g.cursor.center), g))
-			g.enemySpawnHandlerContext.resetTimer()
-		} else if ebiten.IsKeyPressed(ebiten.KeyP) {
-			g.enemies = append(g.enemies, createBeefEye(vec2f(g.cursor.center), g))
-			g.enemySpawnHandlerContext.resetTimer()
-		}
-	}
 }

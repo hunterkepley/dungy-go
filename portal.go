@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"math"
 
@@ -70,8 +69,6 @@ func (p *Portal) eatTiles(g *Game) {
 			if g.tiles[i][j].scale.y > 0 {
 				g.tiles[i][j].scale.y -= 0.004 // Scale
 			}
-
-			fmt.Println(g.tiles[i][j].scale.x)
 
 			if g.tiles[i][j].scale.x <= 0 || g.tiles[i][j].scale.y <= 0 {
 				p.state = 1

@@ -25,6 +25,7 @@ type Worm struct {
 	size      Vec2i
 	velocity  Vec2f
 	moveSpeed float64
+	weight    float64
 
 	health                 int
 	maxHealth              int
@@ -65,6 +66,7 @@ func createWorm(position Vec2f, game *Game) *Worm {
 		position:  position,
 		velocity:  newVec2f(0, 0),
 		moveSpeed: 1.4,
+		weight:    0.2,
 
 		health:    15,
 		maxHealth: 15,
@@ -229,4 +231,8 @@ func (w *Worm) setPath(path paths.Path) {
 
 func (w *Worm) setCanPathfind(canPathfind bool) {
 	w.canPathfind = canPathfind
+}
+
+func (w *Worm) getWeight() float64 {
+	return w.weight
 }

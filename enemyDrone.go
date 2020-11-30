@@ -25,6 +25,7 @@ type Drone struct {
 	size      Vec2i
 	velocity  Vec2f
 	moveSpeed float64
+	weight    float64
 
 	health                 int
 	maxHealth              int
@@ -65,6 +66,7 @@ func createDrone(position Vec2f, game *Game) *Drone {
 		position:  position,
 		velocity:  newVec2f(0, 0),
 		moveSpeed: 1.4,
+		weight:    0.3,
 
 		health:    15,
 		maxHealth: 15,
@@ -229,4 +231,8 @@ func (d *Drone) setPath(path paths.Path) {
 
 func (d *Drone) setCanPathfind(canPathfind bool) {
 	d.canPathfind = canPathfind
+}
+
+func (d *Drone) getWeight() float64 {
+	return d.weight
 }

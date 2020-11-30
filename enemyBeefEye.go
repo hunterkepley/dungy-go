@@ -151,6 +151,7 @@ type BeefEye struct {
 	size      Vec2i
 	velocity  Vec2f
 	moveSpeed float64
+	weight    float64
 
 	health                 int
 	maxHealth              int
@@ -195,6 +196,7 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 		position:  position,
 		velocity:  newVec2f(0, 0),
 		moveSpeed: 1.1,
+		weight:    0.5,
 
 		health:       35,
 		maxHealth:    35,
@@ -412,4 +414,8 @@ func (b *BeefEye) setPath(path paths.Path) {
 
 func (b *BeefEye) setCanPathfind(canPathfind bool) {
 	b.canPathfind = canPathfind
+}
+
+func (b *BeefEye) getWeight() float64 {
+	return b.weight
 }

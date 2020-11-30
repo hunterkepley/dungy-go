@@ -39,6 +39,7 @@ type Enemy interface {
 	getMoveSpeed() float64
 	getDying() bool     // Is the enemy dying?
 	getAttacking() bool // Is the enemy attacking currently?
+	getWeight() float64 // Enemy's weight (for knockback)
 
 	// Mostly pathfinding stuff
 	getCanPathfind() bool // Can enemy find a path?
@@ -104,7 +105,15 @@ func updateEnemies(g *Game) {
 		for b := 0; b < len(g.player.gun.bullets); b++ {
 			if isAABBCollision(g.enemies[e].getCurrentSubImageRect(), g.player.gun.bullets[b].collisionRect) {
 				g.enemies[e].damage(g.player.gun.calculateDamage())
-				// TODO: This causes a very annoying bug where light appears at top right for a frame sometimes
+
+				// Knockback
+				vel := Vec2f{
+					g.player.gun.bullets[b].velocity.x / g.enemies[e].getWeight(),
+					g.player.gun.bullets[b].velocity.y / g.enemies[e].getWeight(),
+				}
+				g.enemies[e].setPosition(Vec2f{g.enemies[e].getPosition().x + vel.x, g.enemies[e].getPosition().y + vel.y})
+
+				// Destroy bullet
 				g.player.gun.bullets[b].destroy = true
 				break
 			}
@@ -228,14 +237,4 @@ func renderEnemies(g *Game, screen *ebiten.Image) {
 
 func removeEnemy(slice []Enemy, e int) []Enemy {
 	return append(slice[:e], slice[e+1:]...)
-}
-
-//EnemySpawnHandlerContext is a context holding data for spawning enemies in
-type EnemySpawnHandlerContext struct {
-	spawnTimer    int
-	spawnTimerMax int
-}
-
-func (e *EnemySpawnHandlerContext) resetTimer() {
-	e.spawnTimer = e.spawnTimerMax
 }

@@ -100,7 +100,7 @@ func updateEnemies(g *Game) {
 			enemiesPathfinding(g, g.enemies[e])
 		}
 
-		// Bullet collisions
+		// Bullet collisions and knockback
 		for b := 0; b < len(g.player.gun.bullets); b++ {
 			if isAABBCollision(g.enemies[e].getCurrentSubImageRect(), g.player.gun.bullets[b].collisionRect) {
 				g.enemies[e].damage(g.player.gun.calculateDamage())
@@ -137,6 +137,13 @@ func enemiesPathfinding(g *Game, e Enemy) {
 		defer wg.Wait()
 
 		// Get the path if it's finished
+		if astarChannel == nil { // Hopefully fixes bug where game would crash sometimes on nil path
+			// Make a path concurrently
+			wg.Add(1)
+			go calculatePath(astarChannel, g.currentMap.mapNodes, start, end)
+
+			defer wg.Wait()
+		}
 		e.setPath(*<-astarChannel)
 		if len(e.getPath().Cells) > 4 {
 			e.setCanPathfind(false)

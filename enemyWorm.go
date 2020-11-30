@@ -139,6 +139,10 @@ func (w *Worm) update(game *Game) {
 
 	w.subImageRect = image.Rect(int(w.position.x), int(w.position.y), endPosition.x, endPosition.y)
 	w.center = newVec2f(w.position.x+float64(w.size.x)/2, w.position.y+float64(w.size.y)/2)
+
+	// Attack
+
+	w.attack(game)
 }
 
 func (w *Worm) isDead() bool {

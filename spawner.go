@@ -45,17 +45,17 @@ func createImageBits(position Vec2f, subImage image.Rectangle, _image *ebiten.Im
 			startPosition := Vec2f{float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))}
 
 			// Randomly corrupt
-			corruptionChance := rand.Intn(100)
+			//corruptionChance := rand.Intn(100)
 			im := _image
 			imageRect := image.Rect(i, j, max.x, max.y)
-			if corruptionChance > 85 { // 15% chance; 85+
+			/*if corruptionChance > 85 { // 15% chance; 85+
 				im = icorruptionSpritesheet
 				x := rand.Intn(ienemiesSpritesheet.Bounds().Dx() - size)
 				y := rand.Intn(ienemiesSpritesheet.Bounds().Dy() - size)
 				x2 := x + size
 				y2 := y + size
 				imageRect = image.Rect(x, y, x2, y2)
-			}
+			}*/
 
 			bits = append(bits, ImageBit{
 				startPosition: startPosition,

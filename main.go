@@ -186,13 +186,14 @@ func updateGame(screen *ebiten.Image, g *Game) {
 	for i := range g.enemySpawners {
 		g.enemySpawners[i].update(g)
 	}
-	updateEnemies(g)
 
 	// Update gib handlers
 	updateGibHandlers(g)
 
 	// Update light
 	g.lightHandler.update()
+
+	updateEnemies(g)
 
 	// Game info update/check
 	checkChangeDisplayInfo()

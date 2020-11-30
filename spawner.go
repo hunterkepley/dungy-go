@@ -126,7 +126,7 @@ func (e *EnemySpawner) update(g *Game) {
 
 			for i := 0; i < len(e.bits); i++ {
 
-				moveSpeed := rand.Float64() + 2.
+				moveSpeed := rand.Float64() + 4.
 
 				if e.currentBit < len(e.bits) {
 					// Calculate movement using an imaginary vector :)

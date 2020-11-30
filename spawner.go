@@ -2,13 +2,17 @@ package main
 
 import (
 	"image"
+	"math"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten"
 )
 
 // ImageBit is a piece of an image
 type ImageBit struct {
-	position Vec2f
+	startPosition Vec2f // Where it flies from
+	endPosition   Vec2f // Where it flies to
+	position      Vec2f
 
 	rotation  float64
 	scale     Vec2f
@@ -38,16 +42,33 @@ func createImageBits(position Vec2f, subImage image.Rectangle, _image *ebiten.Im
 				max.y = subImage.Max.Y
 			}
 
+			startPosition := Vec2f{float64(rand.Intn(screenWidth)), float64(rand.Intn(screenHeight))}
+
+			// Randomly corrupt
+			corruptionChance := rand.Intn(100)
+			im := _image
+			imageRect := image.Rect(i, j, max.x, max.y)
+			if corruptionChance > 85 { // 15% chance; 85+
+				im = icorruptionSpritesheet
+				x := rand.Intn(ienemiesSpritesheet.Bounds().Dx() - size)
+				y := rand.Intn(ienemiesSpritesheet.Bounds().Dy() - size)
+				x2 := x + size
+				y2 := y + size
+				imageRect = image.Rect(x, y, x2, y2)
+			}
+
 			bits = append(bits, ImageBit{
-				position: bitPosition,
+				startPosition: startPosition,
+				position:      startPosition,
+				endPosition:   bitPosition,
 
 				rotation:  0.,
 				scale:     Vec2f{1, 1},
-				imageRect: image.Rect(i, j, max.x, max.y),
+				imageRect: imageRect,
 
 				render: false,
 
-				image: _image,
+				image: im,
 			})
 			bitPosition.y += float64(size)
 		}
@@ -102,6 +123,28 @@ func (e *EnemySpawner) update(g *Game) {
 	} else {
 		if e.bitTimer > 0 {
 			e.bitTimer--
+
+			for i := 0; i < len(e.bits); i++ {
+
+				moveSpeed := rand.Float64() + 2.
+
+				if e.currentBit < len(e.bits) {
+					// Calculate movement using an imaginary vector :)
+					dx := e.bits[i].endPosition.x - e.bits[i].position.x
+					dy := e.bits[i].endPosition.y - e.bits[i].position.y
+
+					ln := math.Sqrt(dx*dx + dy*dy)
+
+					dx /= ln
+					dy /= ln
+
+					// Move towards portal
+					e.bits[i].position.x += dx * moveSpeed
+					e.bits[i].position.y += dy * moveSpeed
+
+					e.bits[i].rotation = dx * dy // Rotation
+				}
+			}
 		} else {
 			if e.currentBit == len(e.bits) {
 				// Finished bitting
@@ -120,7 +163,8 @@ func (e *EnemySpawner) update(g *Game) {
 
 			} else {
 				e.bits[e.currentBit].render = true
-				e.currentBit++
+
+				e.currentBit++ // Iterate bit
 			}
 			e.bitTimer = e.bitTimerMax
 		}

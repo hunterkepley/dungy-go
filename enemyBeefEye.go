@@ -212,7 +212,7 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 		animationSpeeds: BeefEyeAnimationSpeeds{
 			walk:   1.3,
 			die:    2.,
-			attack: 3.,
+			attack: 5.,
 		},
 
 		astarNodes:  []pathfinding.Node{},

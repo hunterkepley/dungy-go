@@ -33,10 +33,11 @@ type Drone struct {
 	deathExplosion         bool // When the death explosion is playing
 	deathExplosionFinished bool // When the death explosion is finished
 	dying                  bool
-	remove                 bool // Do we remove this enemy?
-	flipped                bool // Is the enemy flipped?
-	idle                   bool // Is the enemy idling?
-	attacking              bool // Is the enemy attacking?
+	remove                 bool    // Do we remove this enemy?
+	flipped                bool    // Is the enemy flipped?
+	idle                   bool    // Is the enemy idling?
+	attacking              bool    // Is the enemy attacking?
+	attackRadius           float64 // When the player is in this radius, the enemy will attack!
 
 	shadow *Shadow // The shadow below the enemy
 
@@ -68,9 +69,10 @@ func createDrone(position Vec2f, game *Game) *Drone {
 		moveSpeed: 1.4,
 		weight:    0.3,
 
-		health:    15,
-		maxHealth: 15,
-		dead:      false,
+		health:       15,
+		maxHealth:    15,
+		dead:         false,
+		attackRadius: 60,
 
 		shadow: &shadow,
 

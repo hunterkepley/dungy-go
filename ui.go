@@ -18,6 +18,8 @@ const (
 	UIHealthMeter
 	// UIEnergyMeter ... UIIMAGE ENUM [4]
 	UIEnergyMeter
+	// UIBlinkMeter ... UIIMAG ENUM [5]
+	UIBlinkMeter
 )
 
 func (u UIImage) String() string {
@@ -27,6 +29,7 @@ func (u UIImage) String() string {
 		"UIEnergyBar",
 		"UIHealthMeter",
 		"UIEnergyMeter",
+		"UIBlinkMeter",
 	}[u]
 }
 
@@ -36,9 +39,10 @@ func (u UIImage) String() string {
 func generateUI(image *ebiten.Image) []UI {
 	return []UI{
 		createStaticImage(newVec2i(4, screenHeight-14), UIHealthBar, image),
-		createStaticImage(newVec2i(52, screenHeight-14), UIEnergyBar, image),
+		createStaticImage(newVec2i(55, screenHeight-14), UIEnergyBar, image),
 		createMeterImage(newVec2i(20, screenHeight-12), UIHealthMeter, image),
-		createMeterImage(newVec2i(68, screenHeight-12), UIEnergyMeter, image),
+		createMeterImage(newVec2i(71, screenHeight-12), UIEnergyMeter, image),
+		createMeterImage(newVec2i(108, screenHeight-14), UIBlinkMeter, image),
 	}
 }
 
@@ -60,6 +64,8 @@ func getUIRect(ui UIImage) image.Rectangle {
 		return image.Rect(16, 64, 43, 70)
 	case (UIEnergyMeter):
 		return image.Rect(16, 82, 43, 88)
+	case (UIBlinkMeter):
+		return image.Rect(0, 88, 17, 99)
 	}
 	// Default, empty
 	return image.Rectangle{}
@@ -148,6 +154,8 @@ func updateUI(g *Game) {
 			u.update(newVec2i(g.player.health, g.player.maxHealth))
 		case u.uiImage() == UIEnergyMeter:
 			u.update(newVec2i(g.player.energy, g.player.maxEnergy))
+		case u.uiImage() == UIBlinkMeter:
+			u.update(newVec2i(g.player.blinkTimer, g.player.blinkTimerMax))
 		default:
 			go u.update(Vec2i{})
 		}

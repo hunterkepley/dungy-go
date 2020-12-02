@@ -23,6 +23,8 @@ type Player struct {
 	energyRegenTimerMax  int // Regeneration timer tick rate
 	sprintEnergyTimer    int // Keeps track of how fast sprint is depleting energy
 	sprintEnergyTimerMax int // Sprint energy depletion tick rate
+	blinkTimer           int // How long until you can blink again
+	blinkTimerMax        int
 
 	dynamicSize Vec2i // This is the player's dynamic size
 	staticSize  Vec2i // This value is the player's largest size for wall collisions
@@ -82,11 +84,10 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 	health := 9
 
 	energy := 9
-	energyTimer := 120
+	energyTimer := 110
 	sprintEnergyTimer := 20
 
-	canBlinkTimer := 0
-	endBlinkTimer := 0
+	blinkTimer := 120
 
 	walkSpeed := 0.9
 	runSpeed := 1.3
@@ -119,6 +120,8 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 		energyRegenTimerMax:  energyTimer,
 		sprintEnergyTimer:    sprintEnergyTimer,
 		sprintEnergyTimerMax: sprintEnergyTimer,
+		blinkTimer:           blinkTimer,
+		blinkTimerMax:        blinkTimer,
 
 		dynamicSize: newVec2i(0, 0),                          // Dynamic size
 		staticSize:  runningRightSpritesheet.sprites[0].size, // Static size
@@ -129,10 +132,8 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 		isConscious: true,
 		isDead:      false,
 
-		canBlinkTimer: canBlinkTimer, // Time between blinks
-		endBlinkTimer: endBlinkTimer, // Time for each blink
-		isBlinking:    false,
-		blinkTrail:    createBlinkTrail(0.5),
+		isBlinking: false,
+		blinkTrail: createBlinkTrail(0.5),
 
 		shadow:           createShadow(shadowRect, iplayerSpritesheet, generateUniqueShadowID(game)),
 		lightID:          lightID,
@@ -184,6 +185,10 @@ func createPlayer(position Vec2f, game *Game, lightID int) Player {
 }
 
 func (p *Player) update(g *Game) {
+	// Blink update
+	p.updateBlinkTrail()
+	p.blinkTrail.update()
+
 	if !p.isDead {
 		switch p.movement {
 		case (Idle):
@@ -195,10 +200,6 @@ func (p *Player) update(g *Game) {
 		}
 		p.input(g)
 		go p.updateLevels(g)
-
-		// Blink update
-		p.updateBlinkTrail()
-		p.blinkTrail.update()
 
 		// Item/Lua update
 		p.updateItems()
@@ -462,19 +463,14 @@ func (p *Player) changeRight() {
 
 // BLINK
 func (p *Player) blinkHandler() {
-	betweenBlinkTime := 20
 	blinkTime := 15
-
-	blinkEnergyDepleter := 3
 	// FIX THIS MONSTROSITY AT SOME POINT JESUS CHRIST
-	if p.canBlinkTimer >= betweenBlinkTime &&
-		ebiten.IsKeyPressed(ebiten.KeyControl) &&
-		!p.isBlinking && p.energy >= blinkEnergyDepleter {
-		p.energy -= blinkEnergyDepleter // Get rid of some energy and blink!
+	if ebiten.IsKeyPressed(ebiten.KeyControl) &&
+		!p.isBlinking && p.blinkTimer >= p.blinkTimerMax {
 		p.isBlinking = true
-		p.canBlinkTimer = 0
+		p.blinkTimer = 0
 	} else {
-		p.canBlinkTimer++
+		p.blinkTimer++
 	}
 
 	// If actually blinking

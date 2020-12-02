@@ -164,6 +164,8 @@ type BeefEye struct {
 	idle                   bool    // Is the enemy idling?
 	attacking              bool    // Is the enemy attacking?
 	attackRadius           float64 // When the player is in this radius, the enemy will attack!
+	knockedBack            bool    // Is the enemy being knocked back?
+	knockedBackTimer       float64
 
 	shadow           *Shadow                 // The shadow below the enemy
 	shockwaveHandler BeefEyeShockwaveHandler // The shockwave handler for when the BeefEye attacks
@@ -195,11 +197,11 @@ func createBeefEye(position Vec2f, game *Game) *BeefEye {
 	b := &BeefEye{
 		position:  position,
 		velocity:  newVec2f(0, 0),
-		moveSpeed: 1.1,
+		moveSpeed: 1.2,
 		weight:    0.6,
 
-		health:       35,
-		maxHealth:    35,
+		health:       25,
+		maxHealth:    25,
 		idle:         true,
 		attackRadius: 30,
 
@@ -250,6 +252,9 @@ func (b *BeefEye) render(screen *ebiten.Image) {
 	// POSITION
 	op.GeoM.Translate(float64(b.position.x), float64(b.position.y))
 	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+
+	// Knockback (turning red) render
+	b.knockedBack, b.knockedBackTimer = enemyKnockbackRender(op, b.knockedBack, b.knockedBackTimer)
 
 	b.shockwaveHandler.render(screen)
 
@@ -418,4 +423,12 @@ func (b *BeefEye) setCanPathfind(canPathfind bool) {
 
 func (b *BeefEye) getWeight() float64 {
 	return b.weight
+}
+
+func (b *BeefEye) getKnockedBack() bool {
+	return b.knockedBack
+}
+
+func (b *BeefEye) setKnockedBack(knockedBack bool) {
+	b.knockedBack = knockedBack
 }

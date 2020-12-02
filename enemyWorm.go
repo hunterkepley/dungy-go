@@ -38,6 +38,8 @@ type Worm struct {
 	idle                   bool    // Is the enemy idling?
 	attacking              bool    // Is the enemy attacking?
 	attackRadius           float64 // When the player is in this radius, the enemy will attack!
+	knockedBack            bool    // Is the enemy being knocked back?
+	knockedBackTimer       float64
 
 	shadow *Shadow // The shadow below the enemy
 
@@ -66,11 +68,11 @@ func createWorm(position Vec2f, game *Game) *Worm {
 	return &Worm{
 		position:  position,
 		velocity:  newVec2f(0, 0),
-		moveSpeed: 1.4,
+		moveSpeed: 1.5,
 		weight:    0.3,
 
-		health:       15,
-		maxHealth:    15,
+		health:       10,
+		maxHealth:    10,
 		dead:         false,
 		attackRadius: 40,
 
@@ -113,6 +115,9 @@ func (w *Worm) render(screen *ebiten.Image) {
 	// POSITION
 	op.GeoM.Translate(float64(w.position.x), float64(w.position.y))
 	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+
+	// Knockback (turning red) render
+	w.knockedBack, w.knockedBackTimer = enemyKnockbackRender(op, w.knockedBack, w.knockedBackTimer)
 
 	screen.DrawImage(w.image.SubImage(w.subImageRect).(*ebiten.Image), op) // Draw worm
 }
@@ -241,4 +246,12 @@ func (w *Worm) setCanPathfind(canPathfind bool) {
 
 func (w *Worm) getWeight() float64 {
 	return w.weight
+}
+
+func (w *Worm) getKnockedBack() bool {
+	return w.knockedBack
+}
+
+func (w *Worm) setKnockedBack(knockedBack bool) {
+	w.knockedBack = knockedBack
 }

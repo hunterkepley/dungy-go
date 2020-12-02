@@ -37,9 +37,10 @@ type Enemy interface {
 	getFlipped() bool                        // Is enemy flipped?
 	getSize() Vec2i
 	getMoveSpeed() float64
-	getDying() bool     // Is the enemy dying?
-	getAttacking() bool // Is the enemy attacking currently?
-	getWeight() float64 // Enemy's weight (for knockback)
+	getDying() bool       // Is the enemy dying?
+	getAttacking() bool   // Is the enemy attacking currently?
+	getWeight() float64   // Enemy's weight (for knockback)
+	getKnockedBack() bool // Is the enemy knocked back?
 
 	// Mostly pathfinding stuff
 	getCanPathfind() bool // Can enemy find a path?
@@ -49,6 +50,7 @@ type Enemy interface {
 	setFlipped(bool)
 	setPath(paths.Path)
 	setCanPathfind(bool)
+	setKnockedBack(bool) // Set the enemy's knocked back value
 }
 
 // Generates an enemy then adds to enemy list automatically
@@ -112,6 +114,9 @@ func updateEnemies(g *Game) {
 					g.player.gun.bullets[b].velocity.y / g.enemies[e].getWeight(),
 				}
 				g.enemies[e].setPosition(Vec2f{g.enemies[e].getPosition().x + vel.x, g.enemies[e].getPosition().y + vel.y})
+				// Turn red
+
+				g.enemies[e].setKnockedBack(true)
 
 				// Destroy bullet
 				g.player.gun.bullets[b].destroy = true
@@ -167,7 +172,7 @@ func enemiesPathfinding(g *Game, e Enemy) {
 			dx /= ln
 			dy /= ln
 
-			// Move towards portal
+			// Move towards player
 			e.setPosition(Vec2f{e.getPosition().x + dx*e.getMoveSpeed(), e.getPosition().y + dy*e.getMoveSpeed()})
 		}
 	} else if !e.getPathfinding() && !e.getCanPathfind() {
@@ -233,6 +238,18 @@ func renderEnemies(g *Game, screen *ebiten.Image) {
 	for _, e := range g.enemies {
 		e.render(screen)
 	}
+}
+
+func enemyKnockbackRender(op *ebiten.DrawImageOptions, knockedBack bool, knockedBackTimer float64) (bool, float64) {
+	if knockedBackTimer > 0 && knockedBack {
+		op.ColorM.Translate(0xff, 0x0, 0x0, 0)
+		// Alternatively: op.ColorM.Scale(3, 1, 1, 1)
+		knockedBackTimer--
+	} else if knockedBackTimer <= 0 {
+		knockedBackTimer = 15
+		knockedBack = false
+	}
+	return knockedBack, knockedBackTimer
 }
 
 func removeEnemy(slice []Enemy, e int) []Enemy {

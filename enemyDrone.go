@@ -38,6 +38,8 @@ type Drone struct {
 	idle                   bool    // Is the enemy idling?
 	attacking              bool    // Is the enemy attacking?
 	attackRadius           float64 // When the player is in this radius, the enemy will attack!
+	knockedBack            bool    // Is the enemy being knocked back?
+	knockedBackTimer       float64
 
 	shadow *Shadow // The shadow below the enemy
 
@@ -113,6 +115,9 @@ func (d *Drone) render(screen *ebiten.Image) {
 	// POSITION
 	op.GeoM.Translate(float64(d.position.x), float64(d.position.y))
 	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+
+	// Knockback (turning red) render
+	d.knockedBack, d.knockedBackTimer = enemyKnockbackRender(op, d.knockedBack, d.knockedBackTimer)
 
 	screen.DrawImage(d.image.SubImage(d.subImageRect).(*ebiten.Image), op) // Draw Drone
 }
@@ -237,4 +242,12 @@ func (d *Drone) setCanPathfind(canPathfind bool) {
 
 func (d *Drone) getWeight() float64 {
 	return d.weight
+}
+
+func (d *Drone) getKnockedBack() bool {
+	return d.knockedBack
+}
+
+func (d *Drone) setKnockedBack(knockedBack bool) {
+	d.knockedBack = knockedBack
 }

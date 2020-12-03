@@ -2,6 +2,7 @@ package main
 
 import (
 	"image"
+	"math"
 
 	paths "github.com/SolarLune/paths"
 	"github.com/hajimehoshi/ebiten"
@@ -26,6 +27,7 @@ type Worm struct {
 	velocity  Vec2f
 	moveSpeed float64
 	weight    float64
+	rotation  float64
 
 	health                 int
 	maxHealth              int
@@ -33,13 +35,21 @@ type Worm struct {
 	deathExplosion         bool // When the death explosion is playing
 	deathExplosionFinished bool // When the death explosion is finished
 	dying                  bool
-	remove                 bool    // Do we remove this enemy?
-	flipped                bool    // Is the enemy flipped?
-	idle                   bool    // Is the enemy idling?
-	attacking              bool    // Is the enemy attacking?
-	attackRadius           float64 // When the player is in this radius, the enemy will attack!
-	knockedBack            bool    // Is the enemy being knocked back?
+	remove                 bool // Do we remove this enemy?
+	flipped                bool // Is the enemy flipped?
+	idle                   bool // Is the enemy idling?
+	knockedBack            bool // Is the enemy being knocked back?
 	knockedBackTimer       float64
+
+	// Attack
+	attackMoveVelocity Vec2f
+	attacking          bool    // Is the enemy attacking?
+	attackRadius       float64 // When the player is in this radius, the enemy will attack!
+	attackMoveSpeed    float64
+	attackTimer        float64
+	attackTimerMax     float64
+	attackCooldown     float64
+	attackCooldownMax  float64
 
 	shadow *Shadow // The shadow below the enemy
 
@@ -68,13 +78,12 @@ func createWorm(position Vec2f, game *Game) *Worm {
 	return &Worm{
 		position:  position,
 		velocity:  newVec2f(0, 0),
-		moveSpeed: 1.5,
+		moveSpeed: 1.4,
 		weight:    0.3,
 
-		health:       10,
-		maxHealth:    10,
-		dead:         false,
-		attackRadius: 40,
+		health:    10,
+		maxHealth: 10,
+		dead:      false,
 
 		shadow: &shadow,
 
@@ -85,6 +94,14 @@ func createWorm(position Vec2f, game *Game) *Worm {
 		animationSpeeds: WormAnimationSpeeds{
 			idle: 0.9,
 		},
+
+		attackMoveVelocity: Vec2f{},
+		attackMoveSpeed:    4,
+		attackRadius:       50,
+		attackTimer:        20, // How long the attack lasts
+		attackTimerMax:     20,
+		attackCooldown:     60, // How long until an attack can be performed again
+		attackCooldownMax:  60,
 
 		astarNodes:  []pathfinding.Node{},
 		pathFinding: false,
@@ -105,6 +122,7 @@ func (w *Worm) render(screen *ebiten.Image) {
 	// ROTATE & FLIP
 	op.GeoM.Translate(float64(0-w.size.x)/2, float64(0-w.size.y)/2)
 	op.GeoM.Scale(flip.x, flip.y)
+	op.GeoM.Rotate(w.rotation)
 	op.GeoM.Translate(float64(w.size.x)/2, float64(w.size.y)/2)
 	w.subImageRect = image.Rect(
 		w.spritesheet.sprites[w.animation.currentFrame].startPosition.x,
@@ -114,7 +132,7 @@ func (w *Worm) render(screen *ebiten.Image) {
 	)
 	// POSITION
 	op.GeoM.Translate(float64(w.position.x), float64(w.position.y))
-	op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
+	op.Filter = ebiten.FilterNearest
 
 	// Knockback (turning red) render
 	w.knockedBack, w.knockedBackTimer = enemyKnockbackRender(op, w.knockedBack, w.knockedBackTimer)
@@ -167,8 +185,57 @@ func (w *Worm) isDead() bool {
 func (w *Worm) attack(game *Game) {
 	if w.attacking {
 
-	} else if !w.attacking && isCircularCollision(game.player.getBoundsDynamic(), image.Rect(int(w.center.x-w.attackRadius), int(w.center.y-w.attackRadius), int(w.center.x+w.attackRadius), int(w.center.y+w.attackRadius))) {
+		if w.attackMoveVelocity == (Vec2f{}) {
+			// Calculate movement using an imaginary vector :)
+			dx := game.player.position.x - w.center.x
+			dy := game.player.position.y - w.center.y
+
+			ln := math.Sqrt(dx*dx + dy*dy)
+
+			dx /= ln
+			dy /= ln
+
+			w.attackMoveVelocity.x = dx // Ensure that we only calculate velocity once
+			w.attackMoveVelocity.y = dy
+
+			w.rotation = dx * dy // Rotation
+		}
+
+		if w.attackTimer > 0 {
+			// Move towards portal
+			w.position.x += w.attackMoveVelocity.x * w.attackMoveSpeed
+			w.position.y += w.attackMoveVelocity.y * w.attackMoveSpeed
+
+			// Check collision with player, then damage
+			if !gameReference.player.isBlinking && isAABBCollision(w.subImageRect, game.player.getBoundsDynamic()) {
+				game.player.health--
+				w.attackTimer -= 5
+			}
+
+			w.attackTimer--
+		} else {
+			w.idle = true
+			w.attacking = false
+			w.rotation = 0
+			w.attackCooldown = w.attackCooldownMax
+		}
+
+	} else if !w.attacking &&
+		isCircularCollision(
+			game.player.getBoundsDynamic(),
+			image.Rect(int(w.center.x-w.attackRadius),
+				int(w.center.y-w.attackRadius),
+				int(w.center.x+w.attackRadius),
+				int(w.center.y+w.attackRadius))) &&
+		w.attackCooldown <= 0 {
+
 		w.attacking = true
+		w.attackMoveVelocity = Vec2f{}   // Reset move velocity so it can be recalculated
+		w.attackTimer = w.attackTimerMax // Reset attack timer
+	}
+
+	if w.attackCooldown > 0 && !w.attacking {
+		w.attackCooldown--
 	}
 }
 

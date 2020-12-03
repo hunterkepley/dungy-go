@@ -43,7 +43,7 @@ func (b *BeefEyeShockwave) update(beefEye BeefEye, i int) {
 		) {
 			b.destroy = true
 			if !gameReference.player.isBlinking {
-				gameReference.player.health -= b.damage
+				gameReference.player.health -= b.damage // Damage player if hit
 			}
 		}
 	}()

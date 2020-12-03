@@ -159,22 +159,25 @@ func enemiesPathfinding(g *Game, e Enemy) {
 			defer wg.Wait()
 		}
 		e.setPath(*<-astarChannel)
-		if len(e.getPath().Cells) > 4 {
+		if len(e.getPath().Cells) > 2 {
 			e.setCanPathfind(false)
-		} else {
-			// This moves the enemy to the player if the path is too short to traverse ( < 5)
-			// Calculate movement using an imaginary vector :)
-			dx := g.player.position.x + float64(g.player.staticSize.x) - e.getPosition().x
-			dy := g.player.position.y + float64(g.player.staticSize.y) - e.getCenter().y
+		} /*
+			  * This else was used to move towards the enemy when the path was too short (causing movement issues)
 
-			ln := math.Sqrt(dx*dx + dy*dy)
+			else {
+				// This moves the enemy to the player if the path is too short to traverse ( < 5)
+				// Calculate movement using an imaginary vector :)
+				dx := g.player.position.x + float64(g.player.staticSize.x) - e.getPosition().x
+				dy := g.player.position.y + float64(g.player.staticSize.y) - e.getCenter().y
 
-			dx /= ln
-			dy /= ln
+				ln := math.Sqrt(dx*dx + dy*dy)
 
-			// Move towards player
-			e.setPosition(Vec2f{e.getPosition().x + dx*e.getMoveSpeed(), e.getPosition().y + dy*e.getMoveSpeed()})
-		}
+				dx /= ln
+				dy /= ln
+
+				// Move towards player
+				e.setPosition(Vec2f{e.getPosition().x + dx*e.getMoveSpeed(), e.getPosition().y + dy*e.getMoveSpeed()})
+			}*/
 	} else if !e.getPathfinding() && !e.getCanPathfind() {
 
 		// Pathfinding
@@ -197,7 +200,6 @@ func enemiesPathfinding(g *Game, e Enemy) {
 					dx /= ln
 					dy /= ln
 
-					// Move towards portal
 					e.setPosition(Vec2f{e.getPosition().x + dx*e.getMoveSpeed(), e.getPosition().y + dy*e.getMoveSpeed()})
 
 					if isAABBCollision(

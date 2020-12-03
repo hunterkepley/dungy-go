@@ -227,7 +227,8 @@ func (w *Worm) attack(game *Game) {
 				int(w.center.y-w.attackRadius),
 				int(w.center.x+w.attackRadius),
 				int(w.center.y+w.attackRadius))) &&
-		w.attackCooldown <= 0 {
+		w.attackCooldown <= 0 &&
+		!game.player.isBlinking {
 
 		w.attacking = true
 		w.attackMoveVelocity = Vec2f{}   // Reset move velocity so it can be recalculated

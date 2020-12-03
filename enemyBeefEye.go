@@ -338,7 +338,14 @@ func (b *BeefEye) attack(game *Game) {
 				b.idle = true
 				b.shockwaveHandler.init(b, 21)
 			}
-		} else if !b.attacking && isCircularCollision(game.player.getBoundsDynamic(), image.Rect(int(b.center.x-b.attackRadius), int(b.center.y-b.attackRadius), int(b.center.x+b.attackRadius), int(b.center.y+b.attackRadius))) {
+		} else if !b.attacking &&
+			isCircularCollision(
+				game.player.getBoundsDynamic(),
+				image.Rect(int(b.center.x-b.attackRadius),
+					int(b.center.y-b.attackRadius),
+					int(b.center.x+b.attackRadius),
+					int(b.center.y+b.attackRadius))) &&
+			!game.player.isBlinking {
 
 			b.animation = b.animations.attack
 			b.animation.startBackwards()

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sync"
 
 	paths "github.com/SolarLune/paths"
@@ -64,7 +63,6 @@ func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, en
 		// Break out with a nil path if unable to path (start/end on non-walkable cells)
 		if !mapLayout.Get(start.column, start.row).Walkable || !mapLayout.Get(end.column, end.row).Walkable {
 			channel <- mapLayout.GetPath(mapLayout.Get(3, 3), mapLayout.Get(3, 4), false)
-			fmt.Print("E")
 			return
 		}
 		p := mapLayout.GetPath(mapLayout.Get(start.column, start.row), mapLayout.Get(end.column, end.row), false)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sync"
 
 	paths "github.com/SolarLune/paths"
@@ -35,6 +36,14 @@ func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, en
 
 	mapLayout := paths.NewGridFromStringArrays(mapNodes)
 
+	// Take enemies into account for pathfinding
+	for _, e := range gameReference.enemies {
+		pos := Vec2i{int(e.getPosition().x) / smallTileSize.x, int(e.getPosition().y) / smallTileSize.y}
+
+		mapLayout.Data[pos.y][pos.x] = &paths.Cell{X: pos.x, Y: pos.y, Character: 'x'}
+
+	}
+
 	// After creating the Grid, you can edit it using the Grid's functions. Note that here, we're using 'x'
 	// to get Cells that have the rune for the lowercase x character 'x', not the string "x".
 	for _, cell := range mapLayout.GetCellsByRune('x') {
@@ -54,10 +63,11 @@ func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, en
 	for {
 		// Break out with a nil path if unable to path (start/end on non-walkable cells)
 		if !mapLayout.Get(start.column, start.row).Walkable || !mapLayout.Get(end.column, end.row).Walkable {
-			channel <- nil
+			channel <- mapLayout.GetPath(mapLayout.Get(3, 3), mapLayout.Get(3, 4), false)
+			fmt.Print("E")
 			return
 		}
-		p := mapLayout.GetPath(mapLayout.Get(start.column, start.row), mapLayout.Get(end.column, end.row), true)
+		p := mapLayout.GetPath(mapLayout.Get(start.column, start.row), mapLayout.Get(end.column, end.row), false)
 		if p != nil {
 			channel <- p
 			break

@@ -103,6 +103,8 @@ func updateEnemies(g *Game) {
 			enemiesPathfinding(g, g.enemies[e])
 		}
 
+		// Bounds collision
+
 		// Bullet collisions and knockback
 		for b := 0; b < len(g.player.gun.bullets); b++ {
 			if isAABBCollision(g.enemies[e].getCurrentSubImageRect(), g.player.gun.bullets[b].collisionRect) {

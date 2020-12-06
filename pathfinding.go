@@ -36,10 +36,12 @@ func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, en
 	mapLayout := paths.NewGridFromStringArrays(mapNodes)
 
 	// Take enemies into account for pathfinding
-	for _, e := range gameReference.enemies {
+	for _, e := range gameReference.enemies { // TODO: MAKE SURE ENEMIES DONT COUNT THEMSELVES LOL
 		pos := Vec2i{int(e.getPosition().x) / smallTileSize.x, int(e.getPosition().y) / smallTileSize.y}
 
-		mapLayout.Data[pos.y][pos.x] = &paths.Cell{X: pos.x, Y: pos.y, Character: 'x'}
+		if len(mapLayout.Data) > pos.y && len(mapLayout.Data[0]) > pos.x {
+			mapLayout.Data[pos.y][pos.x] = &paths.Cell{X: pos.x, Y: pos.y, Character: 'x'}
+		}
 
 	}
 

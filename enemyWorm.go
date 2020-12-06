@@ -124,12 +124,14 @@ func (w *Worm) render(screen *ebiten.Image) {
 	op.GeoM.Scale(flip.x, flip.y)
 	op.GeoM.Rotate(w.rotation)
 	op.GeoM.Translate(float64(w.size.x)/2, float64(w.size.y)/2)
-	w.subImageRect = image.Rect(
-		w.spritesheet.sprites[w.animation.currentFrame].startPosition.x,
-		w.spritesheet.sprites[w.animation.currentFrame].startPosition.y,
-		w.spritesheet.sprites[w.animation.currentFrame].endPosition.x,
-		w.spritesheet.sprites[w.animation.currentFrame].endPosition.y,
-	)
+	if !w.attacking {
+		w.subImageRect = image.Rect(
+			w.spritesheet.sprites[w.animation.currentFrame].startPosition.x,
+			w.spritesheet.sprites[w.animation.currentFrame].startPosition.y,
+			w.spritesheet.sprites[w.animation.currentFrame].endPosition.x,
+			w.spritesheet.sprites[w.animation.currentFrame].endPosition.y,
+		)
+	}
 	// POSITION
 	op.GeoM.Translate(float64(w.position.x), float64(w.position.y))
 	op.Filter = ebiten.FilterNearest
@@ -202,12 +204,24 @@ func (w *Worm) attack(game *Game) {
 		}
 
 		if w.attackTimer > 0 {
+
+			// Set to attack image
+			w.subImageRect = image.Rect(68, 0, 85, 22)
+
 			// Move towards portal
 			w.position.x += w.attackMoveVelocity.x * w.attackMoveSpeed
 			w.position.y += w.attackMoveVelocity.y * w.attackMoveSpeed
 
 			// Check collision with player, then damage
-			if !gameReference.player.isBlinking && isAABBCollision(w.subImageRect, game.player.getBoundsDynamic()) {
+			if !gameReference.player.isBlinking && isAABBCollision(
+				image.Rect(
+					int(w.position.x),
+					int(w.position.y),
+					int(w.position.x)+w.size.x,
+					int(w.position.y)+w.size.y,
+				),
+				game.player.getBoundsDynamic()) {
+
 				game.player.health--
 				w.attackTimer -= 5
 			}

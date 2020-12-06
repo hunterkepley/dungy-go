@@ -23,7 +23,7 @@ Or multiple waitgroups? Every enemy could have one
 
 */
 
-func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, end Rolumn) {
+func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, end Rolumn, enemy *Enemy) {
 	// This line creates a new Grid, comprised of Cells. The size is 10x10. By default, all Cells are
 	// walkable and have a cost of 1, and a blank character of ' '.
 	//firstMap := paths.NewGrid(10, 10)
@@ -36,11 +36,14 @@ func calculatePath(channel chan *paths.Path, mapNodes []string, start Rolumn, en
 	mapLayout := paths.NewGridFromStringArrays(mapNodes)
 
 	// Take enemies into account for pathfinding
-	for _, e := range gameReference.enemies { // TODO: MAKE SURE ENEMIES DONT COUNT THEMSELVES LOL
+	for _, e := range gameReference.enemies {
 		pos := Vec2i{int(e.getPosition().x) / smallTileSize.x, int(e.getPosition().y) / smallTileSize.y}
 
-		if len(mapLayout.Data) > pos.y && len(mapLayout.Data[0]) > pos.x {
-			mapLayout.Data[pos.y][pos.x] = &paths.Cell{X: pos.x, Y: pos.y, Character: 'x'}
+		if e.getShadow().id != (*enemy).getShadow().id {
+
+			if len(mapLayout.Data) > pos.y && len(mapLayout.Data[0]) > pos.x {
+				mapLayout.Data[pos.y][pos.x] = &paths.Cell{X: pos.x, Y: pos.y, Character: 'x'}
+			}
 		}
 
 	}

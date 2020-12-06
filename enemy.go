@@ -148,7 +148,7 @@ func enemiesPathfinding(g *Game, e Enemy) {
 
 		// Make a path concurrently
 		wg.Add(1)
-		go calculatePath(astarChannel, g.currentMap.mapNodes, start, end)
+		go calculatePath(astarChannel, g.currentMap.mapNodes, start, end, &e)
 
 		defer wg.Wait()
 
@@ -156,7 +156,7 @@ func enemiesPathfinding(g *Game, e Enemy) {
 		if astarChannel == nil { // Hopefully fixes bug where game would crash sometimes on nil path
 			// Make a path concurrently
 			wg.Add(1)
-			go calculatePath(astarChannel, g.currentMap.mapNodes, start, end)
+			go calculatePath(astarChannel, g.currentMap.mapNodes, start, end, &e)
 
 			defer wg.Wait()
 		}

@@ -97,3 +97,12 @@ func (b *BloodEmitter) spawn(position Vec2f, size Vec2i) {
 		},
 	)
 }
+
+// ~~~ BLOOD SQUIRTER ~~~
+
+// BloodSquirter squirts out blood
+type BloodSquirter struct {
+	position Vec2f
+
+	drops []Blood
+}

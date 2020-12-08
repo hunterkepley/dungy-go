@@ -158,6 +158,8 @@ func enemiesPathfinding(g *Game, e Enemy) {
 			wg.Add(1)
 			go calculatePath(astarChannel, g.currentMap.mapNodes, start, end, &e)
 
+			e.setPosition(Vec2f{e.getPosition().x + 1, e.getPosition().y + 1})
+
 			defer wg.Wait()
 		}
 		e.setPath(*<-astarChannel)

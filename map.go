@@ -8,15 +8,20 @@ import (
 
 // Map is a map, it contains MapData, tiles, etc
 type Map struct {
-	tiles    []*Tile
+	tiles    [][]Tile
 	lights   []*Light // Background/level-specific lights
 	mapNodes []string
 	phases   Phases
 }
 
 func initMaps(g *Game) {
-	g.maps = append(gameReference.maps, Map{})
-	g.maps[0] = initMapSpaceship() // Spaceship
+	for i := 0; i < 2; i++ { // Two total maps
+		g.maps = append(gameReference.maps, Map{})
+	}
+	// Spaceship
+	g.maps[0] = initMapSpaceship1() // Spaceship room 1
+	g.maps[1] = initMapSpaceship2() // Spaceship room 2
+
 	g.currentMap = g.maps[0]
 }
 
@@ -51,9 +56,13 @@ func (m *Map) randomPosition() Vec2f {
 	return position
 }
 
-func initMapSpaceship() Map {
-	index := 0
+func initMapSpaceship1() Map {
+	index := 0 // First map
+
 	gameReference.maps[index].phases = initPhases()
+
+	gameReference.maps[index].tiles = generateTiles(itileSpritesheet) // Tiles
+
 	// Lights
 	for i := 0; i < 12; i++ {
 		offset := 17.
@@ -81,6 +90,47 @@ func initMapSpaceship() Map {
 		"x                            x",
 		"x                            x",
 		"x                            x",
+		"x                            x",
+		"x                            x",
+		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	}
+
+	return gameReference.maps[index]
+}
+
+func initMapSpaceship2() Map {
+	index := 1 // Second map
+
+	gameReference.maps[index].phases = initPhases()
+
+	gameReference.maps[index].tiles = generateTiles(itileSpritesheet) // Tiles
+	// Lights
+	for i := 0; i < 6; i++ {
+		offset := 120.
+		lightPosition := newVec2f(offset+float64(i)*50, 25)
+		lightRotation := 0.
+		rect := gameReference.lightHandler.lightImages.rectangleLight1
+		id := gameReference.lightHandler.addLightStatic(rect, lightRotation, lightPosition) // Create light
+		// Add it to the map's light reference array
+		gameReference.maps[index].lights = append(gameReference.maps[index].lights,
+			&gameReference.lightHandler.lights[gameReference.lightHandler.getLightIndex(id)],
+		)
+	}
+
+	gameReference.maps[index].mapNodes = []string{
+		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		"x             xx             x",
+		"x             xx             x",
+		"x             xx             x",
+		"x             xx             x",
+		"x      xxxxxxxxxxxxxxxx      x",
+		"x                            x",
+		"x                            x",
+		"x             xx             x",
+		"x             xx             x",
+		"x           xxxxxx           x",
+		"x             xx             x",
+		"x             xx             x",
 		"x                            x",
 		"x                            x",
 		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",

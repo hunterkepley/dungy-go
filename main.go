@@ -42,7 +42,6 @@ type Game struct {
 	bulletExplosions []BulletExplosion
 	shadows          []*Shadow
 	walls            []Tile
-	tiles            [][]Tile
 	borders          []Border
 	ui               []UI
 	maps             []Map
@@ -114,8 +113,7 @@ func (g *Game) Init() {
 
 	// Generate starting walls
 	g.walls = generateWalls(itileSpritesheet)
-	g.tiles = generateTiles(itileSpritesheet)
-	generateBigTiles(g.tiles, itileSpritesheet)
+	generateBigTiles(g.currentMap.tiles, itileSpritesheet)
 	g.borders = generateBorders(itileSpritesheet)
 	g.ui = generateUI(iUISpritesheet)
 

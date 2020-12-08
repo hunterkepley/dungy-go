@@ -54,7 +54,7 @@ func initPhases() Phases {
 	p := Phases{
 		chunks: []PhaseChunk{},
 
-		timer:    1000,
+		timer:    1,
 		timerMax: 1000,
 	}
 
@@ -107,21 +107,24 @@ func (p *Phases) phase() {
 		for i := 0; i < len(chosenChunk.mapNodes); i++ {
 			for j := 0; j < len(chosenChunk.mapNodes[i]); j++ {
 
-				if index.x+i < len(gameReference.tiles) &&
-					index.y+j < len(gameReference.tiles[i]) &&
-					gameReference.tiles[index.x+j][index.y+i].tileType == SmallTile &&
+				if index.x+i < len(gameReference.currentMap.tiles) &&
+					index.y+j < len(gameReference.currentMap.tiles[i]) &&
+					gameReference.currentMap.tiles[index.x+j][index.y+i].tileType == SmallTile &&
 					i+j < len(chosenChunk.tiles) {
 
 					currentTile = Vec2i{index.x + j, index.y + i}
 
-					gameReference.tiles[currentTile.x][currentTile.y].imageRect = chosenChunk.tiles[i+j].imageRect
+					gameReference.currentMap.tiles[currentTile.x][currentTile.y].imageRect = chosenChunk.tiles[i+j].imageRect
 
 					// Portal
 					if portalCounter > 2 {
-						chosenChunk.portal = createPortal(Vec2f{
-							gameReference.tiles[currentTile.x][currentTile.y].position.x,
-							gameReference.tiles[currentTile.x][currentTile.y].position.y,
-						})
+						chosenChunk.portal = createPortal(
+							Vec2f{
+								gameReference.currentMap.tiles[currentTile.x][currentTile.y].position.x,
+								gameReference.currentMap.tiles[currentTile.x][currentTile.y].position.y,
+							},
+							1,
+						)
 
 						gameReference.portals = append(gameReference.portals, chosenChunk.portal)
 						portalCounter = -100

@@ -202,15 +202,15 @@ func renderTiles(g *Game, screen *ebiten.Image) {
 	for _, w := range g.walls {
 		w.render(screen)
 	}
-	for i := 0; i < len(g.tiles); i++ {
-		for j := 0; j < len(g.tiles[i]); j++ {
-			g.tiles[i][j].render(screen)
+	for i := 0; i < len(g.currentMap.tiles); i++ {
+		for j := 0; j < len(g.currentMap.tiles[i]); j++ {
+			g.currentMap.tiles[i][j].render(screen)
 		}
 	}
 }
 
 func getRandomTile(g *Game, lessen Vec2i) (Tile, Vec2i) {
-	index := newVec2i(rand.Intn(len(g.tiles)-lessen.x), rand.Intn(len(g.tiles[0])-lessen.y))
+	index := newVec2i(rand.Intn(len(g.currentMap.tiles)-lessen.x), rand.Intn(len(g.currentMap.tiles[0])-lessen.y))
 
-	return g.tiles[index.x][index.y], index
+	return g.currentMap.tiles[index.x][index.y], index
 }

@@ -27,12 +27,14 @@ const (
 	BigTile
 	// WallTile ... TILETYPE ENUM [3]
 	WallTile
-	// Empty ... TILETYPE ENUM [4]
+	// HoleTile ... TILETYPE ENUM [4]
+	HoleTile
+	// Empty ... TILETYPE ENUM [5]
 	Empty // Used for holes or big tiles
 )
 
 func (t TileType) String() string {
-	return [...]string{"Unknown", "SmallTile", "BigTile", "WallTile", "Empty"}[t]
+	return [...]string{"Unknown", "SmallTile", "BigTile", "WallTile", "HoleTile", "Empty"}[t]
 }
 
 // ^ TILETYPE ENUM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,7 +90,9 @@ func (t *Tile) render(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Rotate(t.rotation)
 		op.GeoM.Scale(t.scale.x, t.scale.y)
+
 		op.GeoM.Translate(t.position.x, t.position.y)
+
 		op.Filter = ebiten.FilterNearest // Maybe fix rotation grossness?
 		if t.imageRect.Empty() {
 			// If empty, give rect based on sprite
@@ -120,7 +124,7 @@ func createWallsFromMap(m Map, image *ebiten.Image) [][]Tile {
 	for i := 0; i < len(m.tiles); i++ {
 		for j := 0; j < len(m.tiles[i]); j++ {
 			if m.mapNodes[i][j] == 'x' {
-				m.tiles[i][j] = createTile(m.tiles[i][j].position, WallTile, image) // Make a wall if not
+				m.tiles[i][j] = createTile(m.tiles[i][j].position, HoleTile, image) // Make a wall if not
 			}
 		}
 	}

@@ -126,7 +126,7 @@ func (p *Phases) phase() {
 							1,
 						)
 
-						gameReference.portals = append(gameReference.portals, chosenChunk.portal)
+						gameReference.currentMap.portals = append(gameReference.currentMap.portals, chosenChunk.portal)
 						portalCounter = -100
 					}
 					portalCounter++

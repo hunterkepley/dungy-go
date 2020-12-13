@@ -7,9 +7,6 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-/* TODO: Make tiles become holes?
- */
-
 /*this comment is here bc vscode go linter is trash and keeps making an extra / * every time I save*/
 
 const (
@@ -117,6 +114,17 @@ func generateWalls(image *ebiten.Image) []Tile {
 		t[i] = createTile(newVec2f(float64(i*(wallTileSize.x-1))+offset.x, offset.y), WallTile, image)
 	}
 	return t
+}
+
+func createWallsFromMap(m Map, image *ebiten.Image) [][]Tile {
+	for i := 0; i < len(m.tiles); i++ {
+		for j := 0; j < len(m.tiles[i]); j++ {
+			if m.mapNodes[i][j] == 'x' {
+				m.tiles[i][j] = createTile(m.tiles[i][j].position, WallTile, image) // Make a wall if not
+			}
+		}
+	}
+	return m.tiles
 }
 
 func getNumberOfTilesPossible() Vec2i {

@@ -52,6 +52,9 @@ func (p *Portal) update(g *Game) {
 func (p *Portal) eatTiles(g *Game) {
 	moveSpeed := 1.
 	for i := 0; i < len(g.currentMap.tiles); i++ {
+		if p.state == 1 {
+			break
+		}
 		for j := 0; j < len(g.currentMap.tiles[i]); j++ {
 			// Calculate movement using an imaginary vector :)
 			dx := p.position.x - g.currentMap.tiles[i][j].position.x
@@ -76,8 +79,9 @@ func (p *Portal) eatTiles(g *Game) {
 
 			if g.currentMap.tiles[i][j].scale.x <= 0 || g.currentMap.tiles[i][j].scale.y <= 0 {
 				// Switch map
-				g.currentMap = g.maps[1]
+				switchMap(g, p.mapNumber)
 				p.state = 1
+				break
 			}
 		}
 	}

@@ -12,6 +12,7 @@ type Map struct {
 	lights   []*Light // Background/level-specific lights
 	mapNodes []string
 	phases   Phases
+	portals  []Portal
 }
 
 func initMaps(g *Game) {
@@ -56,6 +57,14 @@ func (m *Map) randomPosition() Vec2f {
 	return position
 }
 
+func switchMap(g *Game, mapNumber int) {
+	g.currentMap = g.maps[mapNumber] // Switch current map
+
+	g.currentMap.phases = Phases{}    // Reset phases
+	g.currentMap.portals = []Portal{} // Reset portals
+	g.enemies = []Enemy{}             // Reset enemies
+}
+
 func initMapSpaceship1() Map {
 	index := 0 // First map
 
@@ -77,22 +86,20 @@ func initMapSpaceship1() Map {
 	}
 
 	gameReference.maps[index].mapNodes = []string{
-		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"x                            x",
-		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		"                              ",
+		"                              ",
+		"                              ",
+		"                              ",
+		"                              ",
+		"                              ",
+		"                              ",
+		"                              ",
+		"                              ",
+		"                              ",
+		"                              ",
+		"                              ",
+		"                              ",
+		"                              ",
 	}
 
 	return gameReference.maps[index]
@@ -118,23 +125,23 @@ func initMapSpaceship2() Map {
 	}
 
 	gameReference.maps[index].mapNodes = []string{
-		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-		"x             xx             x",
-		"x             xx             x",
-		"x             xx             x",
-		"x             xx             x",
-		"x      xxxxxxxxxxxxxxxx      x",
-		"x                            x",
-		"x                            x",
-		"x             xx             x",
-		"x             xx             x",
-		"x           xxxxxx           x",
-		"x             xx             x",
-		"x             xx             x",
-		"x                            x",
-		"x                            x",
-		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		"              xx              ",
+		"              xx              ",
+		"              xx              ",
+		"              xx              ",
+		"              xx              ",
+		"       xxxxxxxxxxxxxxxx       ",
+		"                              ",
+		"                              ",
+		"              xx              ",
+		"              xx              ",
+		"            xxxxxx            ",
+		"              xx              ",
+		"              xx              ",
+		"              xx              ",
 	}
+
+	gameReference.maps[index].tiles = createWallsFromMap(gameReference.maps[index], itileSpritesheet)
 
 	return gameReference.maps[index]
 }
